@@ -1,0 +1,129 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:growerp/bloc/register_form_bloc.dart';
+import '../services/user_repository.dart';
+import '../widgets/widgets.dart';
+
+class RegisterForm extends StatefulWidget {
+  final UserRepository userRepository;
+
+  RegisterForm({Key key, @required this.userRepository})
+    : assert(userRepository != null),
+      super(key: key);
+
+  @override
+  _RegisterFormState createState() => _RegisterFormState(userRepository);
+}
+
+class _RegisterFormState extends State<RegisterForm> {
+  final UserRepository userRepository;
+
+  RegisterFormBloc _formBloc;
+  List<FocusNode> _focusNodes;
+
+  _RegisterFormState(this.userRepository);
+
+  @override
+  void initState() {
+    _formBloc = RegisterFormBloc(
+      userRepository: userRepository);  
+    _focusNodes = [FocusNode(), FocusNode(), FocusNode()];
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _formBloc.close();
+    _focusNodes.forEach((focusNode) => focusNode.dispose());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => RegisterFormBloc(userRepository: userRepository),
+      child: Builder(
+        builder: (context) {
+          final registerFormBloc = context.bloc<RegisterFormBloc>();
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(title: Text('Register new Account')),
+            body: FormBlocListener<RegisterFormBloc, String, String>(
+              onSubmitting: (context, state) {
+                LoadingDialog.show(context);
+              },
+              onSuccess: (context, state) {
+                LoadingDialog.hide(context);
+                Navigator.of(context).pushNamed('/login');
+                Notifications.showSnackBarWithSuccess(
+                  context, ' now login with the email provided pasword');
+              },
+              onFailure: (context, state) {
+                LoadingDialog.hide(context);
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(content: Text(state.failureResponse)));
+              },
+              child: SingleChildScrollView(
+                physics: ClampingScrollPhysics(),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 20),
+                    TextFieldBlocBuilder(
+                      textFieldBloc: registerFormBloc.company,
+                      decoration: InputDecoration(
+                        labelText: 'Company',
+                        prefixIcon: Icon(Icons.hotel),
+                      ),
+                      nextFocusNode: _focusNodes[0],
+                    ),
+                    DropdownFieldBlocBuilder<String>(
+                      selectFieldBloc: registerFormBloc.currency,
+                      showEmptyItem: false,
+                      millisecondsForShowDropdownItemsWhenKeyboardIsOpen: 320,
+                      itemBuilder: (context, value) => value,
+                      decoration: InputDecoration(
+                        labelText: 'Currency',
+                        prefixIcon: Icon(Icons.attach_money),
+                      ),
+                      focusNode: _focusNodes[0],
+                      nextFocusNode: _focusNodes[1],
+                    ),
+                    TextFieldBlocBuilder(
+                      textFieldBloc: registerFormBloc.fullName,
+                      decoration: InputDecoration(
+                        labelText: 'First and Last name',
+                        prefixIcon: Icon(Icons.person),
+                      ),
+                      focusNode: _focusNodes[1],
+                      nextFocusNode: _focusNodes[2],
+                    ),
+                    Text('Password will be sent by Email!',
+                      style: TextStyle(color: Color(0xFFce5310),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    TextFieldBlocBuilder(
+                      textFieldBloc: registerFormBloc.email,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      focusNode: _focusNodes[2],
+                    ),
+                    RaisedButton(
+                      onPressed: registerFormBloc.submit,
+                      child: Text('REGISTER'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
