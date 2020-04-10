@@ -49,7 +49,7 @@ class LoginFormBloc extends FormBloc<String, String> {
         password: password.value,
       );
       emitSuccess();
-      authenticationBloc.add(LoggedIn(token: authenticate.apiKey));
+      authenticationBloc.add(LoggedIn(token: authenticate));
     } on DioError catch(e) {
       if(e.response.statusCode == 404){
          print(e.response.statusCode);

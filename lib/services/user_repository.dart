@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter_keychain/flutter_keychain.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
 import 'dart:convert';
@@ -25,7 +25,6 @@ class UserRepository {
     _client.options.connectTimeout = 5000; //5s
     _client.options.receiveTimeout = 3000;
     _client.options.headers = {"Content-Type": "application/json"};
-    getSessionToken();
   }
 
   String responseCode(error) {
@@ -60,21 +59,17 @@ class UserRepository {
     return errorDescription;
   }
 
-  Future <void> getSessionToken() async {
+  Future <bool> getSessionToken() async {
     try {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;
-      print("====tk: $sessionToken");
     } catch(e) {
       sessionToken = null;
       print("Exception occured: $e ");
     }
-  }
-  
-  bool connected() { 
     return sessionToken != null; 
   }
-  
+    
   Future<List> getCurrencies() async {
     Response response = await _client.get('s1/growerp/CurrencyList');
     Map<String, dynamic> parsedData = json.decode(json.encode(response.data));
@@ -96,19 +91,23 @@ class UserRepository {
 
   Future<void> deleteToken() async {
     print("repository delete token");
-    await FlutterKeychain.remove(key: "token");
+    await FlutterKeychain.remove(key: "authenticate");
     return;
   }
 
-  Future<void> persistToken(String token) async {
-    print("repository persist token: $token");
-    await FlutterKeychain.put(key: "token", value: "token");
+  Future<void> persistToken(Authenticate authenticate) async {
+    print("repository persist token: $authenticate");
+    await FlutterKeychain.put(
+      key: "authenticate", value: authenticateToJson(authenticate));
     return;
   }
 
-  Future<bool> hasToken() async {
-    print("repository has token");
-    return await FlutterKeychain.get(key: "token") != null;
+  Future<Authenticate> hasToken() async {
+    String jsonString = await FlutterKeychain.get(key: "authenticate");
+    print("repository has token: ${jsonString!=null} session: $sessionToken");
+    if (jsonString != null) {
+      return authenticateFromJson(jsonString);
+    } else return null;
   }
 
   Future<void> signUp(

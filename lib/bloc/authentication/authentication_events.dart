@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import '../../models/models.dart';
 
 abstract class AuthenticationEvent extends Equatable {
   const AuthenticationEvent();
@@ -12,7 +13,7 @@ class ConnectionProblem extends AuthenticationEvent {}
 class AppStarted extends AuthenticationEvent {}
 
 class LoggedIn extends AuthenticationEvent {
-  final String token;
+  final Authenticate token;
 
   const LoggedIn({@required this.token});
 

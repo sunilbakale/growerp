@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import '../../services/user_repository.dart';
+import '../../models/models.dart';
 import 'authentication.dart';
 
 class AuthenticationBloc
@@ -16,23 +17,25 @@ class AuthenticationBloc
 
   @override
   Stream<AuthenticationState> mapEventToState(
-    AuthenticationEvent event,
-  ) async* {
-    if (event is ConnectionProblem) {
+    AuthenticationEvent event) async* {
+    if (event is AppStarted) {
+      final connected = await userRepository.getSessionToken();
+      if (connected != true) {
         yield AuthenticationConnectionProblem();
-    } else if (event is AppStarted) {
-      final bool hasToken = await userRepository.hasToken();
-      if (hasToken) {
-        yield AuthenticationAuthenticated();
       } else {
-        yield AuthenticationUnauthenticated();
+        final Authenticate authenticate = await userRepository.hasToken();
+        if (authenticate != null) {
+          yield AuthenticationAuthenticated(authenticate: authenticate);
+        } else {
+          yield AuthenticationUnauthenticated();
+        }
       }
     }
 
     if (event is LoggedIn) {
       yield AuthenticationLoading();
       await userRepository.persistToken(event.token);
-      yield AuthenticationAuthenticated();
+      yield AuthenticationAuthenticated(authenticate: event.token);
     }
 
     if (event is LoggedOut) {

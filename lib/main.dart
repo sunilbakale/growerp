@@ -35,10 +35,6 @@ void main() {
   runApp(
     BlocProvider<AuthenticationBloc>(
       create: (context) {
-        if(!userRepository.connected()) {
-          AuthenticationBloc(userRepository: userRepository)
-          ..add(ConnectionProblem());
-          }
         return AuthenticationBloc(userRepository: userRepository)
           ..add(AppStarted());
       },
