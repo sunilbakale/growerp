@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
+import 'package:dio/dio.dart';
 import '../services/user_repository.dart';
 
 class RegisterFormBloc extends FormBloc<String, String> {
@@ -64,8 +65,17 @@ class RegisterFormBloc extends FormBloc<String, String> {
         companyName: company.value, currency: currency.value,
         firstName: names[0], lastName: lastName, email: email.value);
       emitSuccess();
-    } catch (error) {
-      emitFailure(failureResponse: error);
+    } on DioError catch(e) {
+      if(e.response != null) {
+          print(e.response.data);
+          print(e.response.headers);
+          print(e.response.request);
+      } else{
+          // Something happened in setting up or sending the request that triggered an Error
+          print(e.request);
+          print(e.message);
+      }
+      emitFailure(failureResponse: 'Registration error');
     }
   }
 }

@@ -52,13 +52,9 @@ class _LoginFormState extends State<LoginForm> {
             resizeToAvoidBottomInset: false,
             body: FormBlocListener<LoginFormBloc, String, String>(
               onSubmitting: (context, state) {
-                LoadingDialog.show(context);
-              },
-              onSuccess: (context, state) {
-                LoadingDialog.hide(context);
+                LoadingIndicator();
               },
               onFailure: (context, state) {
-                LoadingDialog.hide(context);
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse)));
               },

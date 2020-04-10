@@ -64,6 +64,9 @@ class App extends StatelessWidget {
       theme: Themes.formTheme,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
+          if (state is AuthenticationConnectionProblem) {
+            return NoConnectionForm();
+          }
           if (state is AuthenticationAuthenticated) {
             return HomeForm();
           }
