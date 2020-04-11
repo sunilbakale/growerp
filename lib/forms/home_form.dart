@@ -24,9 +24,13 @@ class HomeForm extends StatelessWidget {
           children: <Widget>[
             Icon(Icons.tag_faces, size: 100),
             SizedBox(height: 10),
-            Text(
-              'Home',
+            Text('Home',
               style: TextStyle(fontSize: 54, color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Text( 'username come here',
+              style: TextStyle(fontSize: 20, color: Colors.black),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),

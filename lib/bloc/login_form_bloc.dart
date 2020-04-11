@@ -51,16 +51,16 @@ class LoginFormBloc extends FormBloc<String, String> {
       emitSuccess();
       authenticationBloc.add(LoggedIn(token: authenticate));
     } on DioError catch(e) {
-      if(e.response != null) {
-          print(e.response.data);
-          print(e.response.headers);
-          print(e.response.request);
+/*      if(e.response != null) {
+          print("login error data: ${e.response.data}");
+          print("login error header: ${e.response.headers}");
+          print("login error request: ${e.response.request}");
       } else{
           // Something happened in setting up or sending the request that triggered an Error
-          print(e.request);
-          print(e.message);
+          print("login no response, request: ${e.request}");
+          print("login no response, message: ${e.message}");
       }
-      emitFailure(failureResponse: 'Login error');
+*/      emitFailure(failureResponse: e.response.data['errors']);
     }
   }
 }

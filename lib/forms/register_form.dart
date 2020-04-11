@@ -56,68 +56,105 @@ class _RegisterFormState extends State<RegisterForm> {
                 LoadingDialog.hide(context);
                 Navigator.of(context).pushNamed('/login');
                 Notifications.showSnackBarWithSuccess(
-                  context, ' now login with the email provided pasword');
+                  context, ' now login with the email provided password...');
               },
               onFailure: (context, state) {
                 LoadingDialog.hide(context);
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse)));
               },
-              child: SingleChildScrollView(
-                physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    TextFieldBlocBuilder(
-                      textFieldBloc: registerFormBloc.company,
-                      decoration: InputDecoration(
-                        labelText: 'Company',
-                        prefixIcon: Icon(Icons.hotel),
+              child: BlocBuilder<RegisterFormBloc, FormBlocState>(
+                condition: (previous, current) =>
+                    previous.runtimeType != current.runtimeType ||
+                    previous is FormBlocLoading && current is FormBlocLoading,
+                builder: (context, state) {
+                  if (state is FormBlocLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is FormBlocLoadFailed) {
+                    return Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            Icon(Icons.sentiment_dissatisfied, size: 70),
+                            SizedBox(height: 20),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              alignment: Alignment.center,
+                              child: Text(
+                                state.failureResponse ??
+                                    'An error has occurred please try again later',
+                                style: TextStyle(fontSize: 25),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            RaisedButton(
+                              onPressed: registerFormBloc.reload,
+                              child: Text('RETRY'),
+                            ),
+                          ],
+                        ),
                       ),
-                      nextFocusNode: _focusNodes[0],
-                    ),
-                    DropdownFieldBlocBuilder<String>(
-                      selectFieldBloc: registerFormBloc.currency,
-                      showEmptyItem: false,
-                      millisecondsForShowDropdownItemsWhenKeyboardIsOpen: 320,
-                      itemBuilder: (context, value) => value,
-                      decoration: InputDecoration(
-                        labelText: 'Currency',
-                        prefixIcon: Icon(Icons.attach_money),
+                    );
+                  } else {
+                    return SingleChildScrollView(
+                      physics: ClampingScrollPhysics(),
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 20),
+                          TextFieldBlocBuilder(
+                            textFieldBloc: registerFormBloc.company,
+                            decoration: InputDecoration(
+                              labelText: 'Company',
+                              prefixIcon: Icon(Icons.hotel),
+                            ),
+                            nextFocusNode: _focusNodes[0],
+                          ),
+                          DropdownFieldBlocBuilder<String>(
+                            selectFieldBloc: registerFormBloc.currency,
+                            showEmptyItem: false,
+                            millisecondsForShowDropdownItemsWhenKeyboardIsOpen: 320,
+                            itemBuilder: (context, value) => value,
+                            decoration: InputDecoration(
+                              labelText: 'Currency',
+                              prefixIcon: Icon(Icons.attach_money),
+                            ),
+                            focusNode: _focusNodes[0],
+                            nextFocusNode: _focusNodes[1],
+                          ),
+                          TextFieldBlocBuilder(
+                            textFieldBloc: registerFormBloc.fullName,
+                            decoration: InputDecoration(
+                              labelText: 'First and Last name',
+                              prefixIcon: Icon(Icons.person),
+                            ),
+                            focusNode: _focusNodes[1],
+                            nextFocusNode: _focusNodes[2],
+                          ),
+                          Text('Password will be sent by Email!',
+                            style: TextStyle(color: Color(0xFFce5310),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          TextFieldBlocBuilder(
+                            textFieldBloc: registerFormBloc.email,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: InputDecoration(
+                              labelText: 'Email',
+                              prefixIcon: Icon(Icons.email),
+                            ),
+                            focusNode: _focusNodes[2],
+                          ),
+                          RaisedButton(
+                            onPressed: registerFormBloc.submit,
+                            child: Text('REGISTER'),
+                          ),
+                        ],
                       ),
-                      focusNode: _focusNodes[0],
-                      nextFocusNode: _focusNodes[1],
-                    ),
-                    TextFieldBlocBuilder(
-                      textFieldBloc: registerFormBloc.fullName,
-                      decoration: InputDecoration(
-                        labelText: 'First and Last name',
-                        prefixIcon: Icon(Icons.person),
-                      ),
-                      focusNode: _focusNodes[1],
-                      nextFocusNode: _focusNodes[2],
-                    ),
-                    Text('Password will be sent by Email!',
-                      style: TextStyle(color: Color(0xFFce5310),
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    TextFieldBlocBuilder(
-                      textFieldBloc: registerFormBloc.email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                      ),
-                      focusNode: _focusNodes[2],
-                    ),
-                    RaisedButton(
-                      onPressed: registerFormBloc.submit,
-                      child: Text('REGISTER'),
-                    ),
-                  ],
-                ),
+                    );
+                  }
+                }
               ),
             ),
           );

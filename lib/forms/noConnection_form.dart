@@ -22,7 +22,7 @@ class NoConnectionForm extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.error_outline, size: 100),
+            Icon(Icons.sentiment_dissatisfied, size: 100),
             SizedBox(height: 10),
             Text(
               'No Connection, Please check internet',

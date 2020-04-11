@@ -70,13 +70,10 @@ class UserRepository {
     return sessionToken != null; 
   }
     
-  Future<List> getCurrencies() async {
+  Future<dynamic> getCurrencies() async {
     Response response = await _client.get('s1/growerp/CurrencyList');
-    Map<String, dynamic> parsedData = json.decode(json.encode(response.data));
-    List parsedData1 = parsedData["currencyList"];
-    List currencies = [];
-    parsedData1.forEach((r) => currencies.add(r["display"]));
-    return currencies;
+    CurrencyList currencyList = currencyListFromJson(response.toString());
+    return currencyList.currencyList;
   }
 
   Future<dynamic> authenticate(

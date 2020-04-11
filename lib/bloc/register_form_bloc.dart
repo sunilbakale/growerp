@@ -7,21 +7,14 @@ class RegisterFormBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
 
   final company = TextFieldBloc(
-    validators: [
-        FieldBlocValidators.required,
-    ],
-  );
-  final currency = SelectFieldBloc(
-    validators: [
-        FieldBlocValidators.required,
-    ],
-    items: ['EUR', 'USD', 'THB'],
-  );
+    validators: [FieldBlocValidators.required]);
+
+  final currency = SelectFieldBloc<String, dynamic>(
+    validators: [FieldBlocValidators.required]);
+
   final fullName = TextFieldBloc(
-    validators: [
-        FieldBlocValidators.required,
-    ],
-  );
+    validators: [FieldBlocValidators.required]);
+
   final email = TextFieldBloc(
     validators: [
       FieldBlocValidators.required,
@@ -33,17 +26,25 @@ class RegisterFormBloc extends FormBloc<String, String> {
 
   RegisterFormBloc({
     @required this.userRepository,
-    })  : assert(userRepository != null)       
+    })  : assert(userRepository != null), super(isLoading: true)
       {    
     addFieldBlocs(
-      fieldBlocs: [
-        company,
-        currency,
-        fullName,
-        email,
-        showSuccessResponse,
-      ],
+      fieldBlocs: [company, currency, fullName, email, showSuccessResponse]
     );
+  }
+
+  @override
+  void onLoading() async {
+    try {
+      final currencies = await userRepository.getCurrencies();
+      List<String> temp = [];
+      currencies.forEach((r) => temp.add(r.display));
+      currency..updateItems(temp);
+      emitLoaded();
+    } catch(e) {
+      print("currency loading problem: $e ");
+      emitLoadFailed();
+    }
   }
 
   @override
@@ -66,16 +67,16 @@ class RegisterFormBloc extends FormBloc<String, String> {
         firstName: names[0], lastName: lastName, email: email.value);
       emitSuccess();
     } on DioError catch(e) {
-      if(e.response != null) {
-          print(e.response.data);
-          print(e.response.headers);
-          print(e.response.request);
+/*      if(e.response != null) {
+          print("register error data: ${e.response.data}");
+          print("register error header: ${e.response.headers}");
+          print("register error request: ${e.response.request}");
       } else{
           // Something happened in setting up or sending the request that triggered an Error
-          print(e.request);
-          print(e.message);
+          print("register no response, request: ${e.request}");
+          print("register no response, message: ${e.message}");
       }
-      emitFailure(failureResponse: 'Registration error');
+*/    emitFailure(failureResponse: e.response.data['errors']);
     }
   }
 }
