@@ -23,7 +23,7 @@ class AuthenticationBloc
       if (connected != true) {
         yield AuthenticationConnectionProblem();
       } else {
-        final Authenticate authenticate = await userRepository.hasToken();
+        final Authenticate authenticate = await userRepository.hasAuthenticate();
         if (authenticate != null) {
           yield AuthenticationAuthenticated(authenticate: authenticate);
         } else {
@@ -34,8 +34,8 @@ class AuthenticationBloc
 
     if (event is LoggedIn) {
       yield AuthenticationLoading();
-      await userRepository.persistToken(event.token);
-      yield AuthenticationAuthenticated(authenticate: event.token);
+      await userRepository.persistToken(event.authenticate);
+      yield AuthenticationAuthenticated(authenticate: event.authenticate);
     }
 
     if (event is LoggedOut) {

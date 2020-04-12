@@ -12,25 +12,26 @@ class SimpleBlocDelegate extends BlocDelegate {
   @override
   void onEvent(Bloc bloc, Object event) {
     super.onEvent(bloc, event);
-    print(event);
+    print("===event: $event");
   }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    print(transition);
+    print("===Transition: $transition");
   }
 
   @override
   void onError(Bloc bloc, Object error, StackTrace stacktrace) {
     super.onError(bloc, error, stacktrace);
-    print(error);
+    print("===error: $error");
   }
 }
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final userRepository = UserRepository();
+  final authenticationBloc = AuthenticationBloc(userRepository: userRepository);
 
   runApp(
     BlocProvider<AuthenticationBloc>(
@@ -38,7 +39,8 @@ void main() {
         return AuthenticationBloc(userRepository: userRepository)
           ..add(AppStarted());
       },
-      child: App(userRepository: userRepository),
+      child: App(userRepository: userRepository,
+          authenticationBloc: authenticationBloc),
     ),
   );
 }
@@ -55,8 +57,12 @@ Widget buildError(BuildContext context, FlutterErrorDetails error) {
  }
 class App extends StatelessWidget {
   final UserRepository userRepository;
+  final AuthenticationBloc authenticationBloc;
 
-  App({Key key, @required this.userRepository}) : super(key: key);
+  App({Key key, @required this.userRepository,
+                     @required this.authenticationBloc})
+    : assert(userRepository != null, authenticationBloc != null),
+    super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +74,8 @@ class App extends StatelessWidget {
             return NoConnectionForm();
           }
           if (state is AuthenticationAuthenticated) {
-            return HomeForm();
+            return HomeForm(userRepository: userRepository,
+              authenticationBloc: authenticationBloc);
           }
           if (state is AuthenticationUnauthenticated) {
             return LoginForm(userRepository: userRepository);

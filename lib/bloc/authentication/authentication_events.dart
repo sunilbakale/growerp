@@ -13,15 +13,15 @@ class ConnectionProblem extends AuthenticationEvent {}
 class AppStarted extends AuthenticationEvent {}
 
 class LoggedIn extends AuthenticationEvent {
-  final Authenticate token;
+  final Authenticate authenticate;
 
-  const LoggedIn({@required this.token});
-
-  @override
-  List<Object> get props => [token];
+  const LoggedIn({@required this.authenticate});
 
   @override
-  String toString() => 'LoggedIn { token: $token }';
+  List<Object> get props => [authenticate];
+
+  @override
+  String toString() => 'LoggedIn { authenticate: $authenticate }';
 }
 
 class LoggedOut extends AuthenticationEvent {}

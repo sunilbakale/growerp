@@ -30,11 +30,7 @@ class LoginFormBloc extends FormBloc<String, String> {
         assert(authenticationBloc != null)
       {    
       addFieldBlocs(
-      fieldBlocs: [
-        email,
-        password,
-      ],
-    );
+      fieldBlocs: [email, password]);
   }
 
   @override
@@ -49,7 +45,7 @@ class LoginFormBloc extends FormBloc<String, String> {
         password: password.value,
       );
       emitSuccess();
-      authenticationBloc.add(LoggedIn(token: authenticate));
+      authenticationBloc.add(LoggedIn(authenticate: authenticate));
     } on DioError catch(e) {
 /*      if(e.response != null) {
           print("login error data: ${e.response.data}");

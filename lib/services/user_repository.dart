@@ -99,7 +99,7 @@ class UserRepository {
     return;
   }
 
-  Future<Authenticate> hasToken() async {
+  Future<Authenticate> hasAuthenticate() async {
     String jsonString = await FlutterKeychain.get(key: "authenticate");
     print("repository has token: ${jsonString!=null} session: $sessionToken");
     if (jsonString != null) {
