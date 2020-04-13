@@ -83,6 +83,7 @@ class UserRepository {
       'password': password,
       'moquiSessionToken': sessionToken
     });
+    print("======login response: $response");
     return authenticateFromJson(response.toString());
   }
 

@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final authenticate = authenticateFromJson(jsonString);
-
 class User {
     String partyId;
     String userId;
