@@ -22,14 +22,12 @@ class RegisterFormBloc extends FormBloc<String, String> {
     ],
   );
   
-  final showSuccessResponse = BooleanFieldBloc();
-
   RegisterFormBloc({
     @required this.userRepository,
     })  : assert(userRepository != null), super(isLoading: true)
-      {    
+  {    
     addFieldBlocs(
-      fieldBlocs: [company, currency, fullName, email, showSuccessResponse]
+      fieldBlocs: [company, currency, fullName, email]
     );
   }
 
@@ -61,9 +59,11 @@ class RegisterFormBloc extends FormBloc<String, String> {
         lastName += names[x];
     else lastName = "enter LastName?";
 
+    String currencyAbr = currency.value.substring(currency.value.indexOf('[')+1);
+    currencyAbr = currencyAbr.substring(0, currencyAbr.indexOf(']'));
     try {
       await userRepository.signUp(
-        companyName: company.value, currency: currency.value,
+        companyName: company.value, currency: currencyAbr,
         firstName: names[0], lastName: lastName, email: email.value);
       emitSuccess();
     } on DioError catch(e) {
