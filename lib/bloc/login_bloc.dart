@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
-import '../services/user_repository.dart';
-import 'authentication/authentication.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import '../services/user_repository.dart';
+import 'authentication/authentication.dart';
 
 class LoginBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
@@ -18,7 +18,7 @@ class LoginBloc extends FormBloc<String, String> {
   );
 
   final password = TextFieldBloc(
-    initialValue: kReleaseMode==false?'qqqqqq9!':'',
+    initialValue: kReleaseMode==false?'qqqqqq9!':null,
     validators: [
       FieldBlocValidators.required,
     ],

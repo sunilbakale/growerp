@@ -29,6 +29,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: ^4.1.1
+  test_coverage: ^0.4.0
+  bloc_test: ^4.0.0
 
 flutter:
   uses-material-design: true
