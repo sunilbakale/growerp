@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import 'package:growerp/bloc/home_form_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/authentication/authentication.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import '../bloc/bloc.dart';
 import '../services/user_repository.dart';
 
 class HomeForm extends StatefulWidget {
@@ -43,10 +42,10 @@ class _HomeFormState extends State<HomeForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeFormBloc(
+      create: (context) => HomeBloc(
         authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
         userRepository: userRepository),
-      child:  BlocBuilder<HomeFormBloc, FormBlocState>(
+      child:  BlocBuilder<HomeBloc, FormBlocState>(
         condition: (previous, current) =>
           previous.runtimeType != current.runtimeType ||
           previous is FormBlocLoading && current is FormBlocLoading,
@@ -54,7 +53,7 @@ class _HomeFormState extends State<HomeForm> {
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
           } else {
-            final homeFormBloc = context.bloc<HomeFormBloc>();
+            final homeFormBloc = context.bloc<HomeBloc>();
             return Scaffold(
               appBar: AppBar(
                 title: Text('Home'),

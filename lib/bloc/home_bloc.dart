@@ -6,14 +6,14 @@ import 'authentication/authentication.dart';
 import 'dart:async';
 
 
-class HomeFormBloc extends FormBloc<String, String> {
+class HomeBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
   final AuthenticationBloc authenticationBloc;
   Authenticate authenticate;
   final company = TextFieldBloc();
   StreamSubscription authSubscription;
 
-  HomeFormBloc({@required this.userRepository,
+  HomeBloc({@required this.userRepository,
               @required this.authenticationBloc})
   : assert(userRepository != null),
     assert(authenticationBloc != null),

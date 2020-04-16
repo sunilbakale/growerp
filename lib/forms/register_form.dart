@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import 'package:growerp/bloc/register_form_bloc.dart';
+import '../bloc/bloc.dart';
 import '../services/user_repository.dart';
 import '../widgets/widgets.dart';
 
@@ -18,14 +18,14 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final UserRepository userRepository;
 
-  RegisterFormBloc _formBloc;
+  RegisterBloc _formBloc;
   List<FocusNode> _focusNodes;
 
   _RegisterFormState(this.userRepository);
 
   @override
   void initState() {
-    _formBloc = RegisterFormBloc(
+    _formBloc = RegisterBloc(
       userRepository: userRepository);  
     _focusNodes = [FocusNode(), FocusNode(), FocusNode()];
     super.initState();
@@ -41,14 +41,14 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RegisterFormBloc(userRepository: userRepository),
+      create: (context) => RegisterBloc(userRepository: userRepository),
       child: Builder(
         builder: (context) {
-          final registerFormBloc = context.bloc<RegisterFormBloc>();
+          final registerFormBloc = context.bloc<RegisterBloc>();
           return Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(title: Text('Register new Account')),
-            body: FormBlocListener<RegisterFormBloc, String, String>(
+            body: FormBlocListener<RegisterBloc, String, String>(
               onSubmitting: (context, state) {
                 LoadingDialog.show(context);
               },
@@ -63,7 +63,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse)));
               },
-              child: BlocBuilder<RegisterFormBloc, FormBlocState>(
+              child: BlocBuilder<RegisterBloc, FormBlocState>(
                 condition: (previous, current) =>
                     previous.runtimeType != current.runtimeType ||
                     previous is FormBlocLoading && current is FormBlocLoading,

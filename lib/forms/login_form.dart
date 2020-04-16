@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../services/user_repository.dart';
-import '../bloc/login_form_bloc.dart';
-import '../bloc/authentication/authentication.dart';
+import '../bloc/bloc.dart';
 import '../widgets/widgets.dart';
 
 class LoginForm extends StatefulWidget {
@@ -13,19 +12,19 @@ class LoginForm extends StatefulWidget {
       super(key: key);
 
   @override
-  _LoginFormState createState() => _LoginFormState(userRepository);
+  _LoginState createState() => _LoginState(userRepository);
 }
-class _LoginFormState extends State<LoginForm> {
+class _LoginState extends State<LoginForm> {
   final UserRepository userRepository;
 
-  LoginFormBloc _formBloc;
+  LoginBloc _formBloc;
   List<FocusNode> _focusNodes;
 
-  _LoginFormState(this.userRepository);
+  _LoginState(this.userRepository);
 
   @override
   void initState() {
-    _formBloc = LoginFormBloc(
+    _formBloc = LoginBloc(
       authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
       userRepository: userRepository);
     _focusNodes = [FocusNode()];
@@ -42,15 +41,15 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginFormBloc(
+      create: (context) => LoginBloc(
         authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
         userRepository: userRepository),
       child: Builder(
         builder: (context) {
-          final loginFormBloc = context.bloc<LoginFormBloc>();
+          final loginFormBloc = context.bloc<LoginBloc>();
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            body: FormBlocListener<LoginFormBloc, String, String>(
+            body: FormBlocListener<LoginBloc, String, String>(
               onSubmitting: (context, state) {
                 LoadingIndicator();
               },

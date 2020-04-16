@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import '../services/user_repository.dart';
 import 'package:flutter/foundation.dart';
 
-class RegisterFormBloc extends FormBloc<String, String> {
+class RegisterBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
 
   final company = TextFieldBloc(
@@ -27,7 +27,7 @@ class RegisterFormBloc extends FormBloc<String, String> {
     ],
   );
   
-  RegisterFormBloc({
+  RegisterBloc({
     @required this.userRepository,
     })  : assert(userRepository != null), super(isLoading: true)
   {    

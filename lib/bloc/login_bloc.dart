@@ -5,7 +5,7 @@ import 'authentication/authentication.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-class LoginFormBloc extends FormBloc<String, String> {
+class LoginBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
   final AuthenticationBloc authenticationBloc;
   
@@ -24,7 +24,7 @@ class LoginFormBloc extends FormBloc<String, String> {
     ],
   );
 
-  LoginFormBloc({
+  LoginBloc({
     @required this.userRepository,
     @required this.authenticationBloc,
     })  : assert(userRepository != null),
