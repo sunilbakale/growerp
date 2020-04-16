@@ -5,7 +5,6 @@ import 'package:flutter_keychain/flutter_keychain.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
-import 'dart:convert';
 import '../models/models.dart';
 
 class UserRepository {
@@ -15,11 +14,11 @@ class UserRepository {
 
   UserRepository() {
     _client = new Dio();
-    if (kReleaseMode) { // is Release Mode ??
+    if (kReleaseMode==true) { // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
-    } else if (Platform.isAndroid) {
+    } else if (Platform.isAndroid==true) {
       _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
-    } else if (Platform.isIOS) {
+    } else if (Platform.isIOS==true) {
       _client.options.baseUrl = 'http://localhost:8080/rest/';
     }
     _client.options.connectTimeout = 5000; //5s

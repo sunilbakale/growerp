@@ -72,18 +72,14 @@ class App extends StatelessWidget {
         builder: (context, state) {
           if (state is AuthenticationConnectionProblem) {
             return NoConnectionForm();
-          }
-          if (state is AuthenticationAuthenticated) {
+          } else if (state is AuthenticationAuthenticated) {
             return HomeForm(userRepository: userRepository,
               authenticationBloc: authenticationBloc);
-          }
-          if (state is AuthenticationUnauthenticated) {
+          } else if (state is AuthenticationUnauthenticated) {
             return LoginForm(userRepository: userRepository);
-          }
-          if (state is AuthenticationLoading) {
+          } else if (state is AuthenticationLoading) {
             return LoadingIndicator();
-          }
-          return SplashForm();
+          } else return SplashForm();
         },
       ),
       routes: {

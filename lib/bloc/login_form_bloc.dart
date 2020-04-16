@@ -3,12 +3,14 @@ import 'package:form_bloc/form_bloc.dart';
 import '../services/user_repository.dart';
 import 'authentication/authentication.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class LoginFormBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
   final AuthenticationBloc authenticationBloc;
   
   final email = TextFieldBloc(
+    initialValue: kReleaseMode==false? "info@growerp.com": null,
     validators: [
       FieldBlocValidators.required,
       FieldBlocValidators.email,
@@ -16,36 +18,39 @@ class LoginFormBloc extends FormBloc<String, String> {
   );
 
   final password = TextFieldBloc(
+    initialValue: kReleaseMode==false?'qqqqqq9!':'',
     validators: [
       FieldBlocValidators.required,
     ],
   );
 
-  final showSuccessResponse = BooleanFieldBloc();
-
   LoginFormBloc({
     @required this.userRepository,
     @required this.authenticationBloc,
     })  : assert(userRepository != null),
-        assert(authenticationBloc != null)
+        assert(authenticationBloc != null), super(isLoading: true)
       {    
       addFieldBlocs(
       fieldBlocs: [email, password]);
   }
 
   @override
+  void onLoading() async {
+    emitLoaded();
+  }
+
+  @override
   void onSubmitting() async {
     print(email.value);
     print(password.value);
-    print(showSuccessResponse.value);
 
     try {
       final authenticate = await userRepository.authenticate(
         username: email.value,
         password: password.value,
       );
-      emitSuccess();
       authenticationBloc.add(LoggedIn(authenticate: authenticate));
+      emitSuccess();
     } on DioError catch(e) {
 /*      if(e.response != null) {
           print("login error data: ${e.response.data}");

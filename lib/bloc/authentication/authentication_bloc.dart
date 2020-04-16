@@ -16,6 +16,7 @@ class AuthenticationBloc
   AuthenticationState get initialState => AuthenticationUninitialized();
 
   @override
+  // actual userRepository.authentiate done by login bloc
   Stream<AuthenticationState> mapEventToState(
     AuthenticationEvent event) async* {
     if (event is AppStarted) {
@@ -30,15 +31,11 @@ class AuthenticationBloc
           yield AuthenticationUnauthenticated();
         }
       }
-    }
-
-    if (event is LoggedIn) {
+    } else if (event is LoggedIn) {
       yield AuthenticationLoading();
       await userRepository.persistToken(event.authenticate);
       yield AuthenticationAuthenticated(authenticate: event.authenticate);
-    }
-
-    if (event is LoggedOut) {
+    } else if (event is LoggedOut) {
       yield AuthenticationLoading();
       await userRepository.deleteToken();
       yield AuthenticationUnauthenticated();

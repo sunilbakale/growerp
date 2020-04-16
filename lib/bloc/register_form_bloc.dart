@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import '../services/user_repository.dart';
+import 'package:flutter/foundation.dart';
 
 class RegisterFormBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
 
   final company = TextFieldBloc(
+    initialValue: kReleaseMode==false?"Test Company":"",
     validators: [FieldBlocValidators.required]);
 
   final currency = SelectFieldBloc<String, dynamic>(
+    initialValue: kReleaseMode==false?"Thailand Baht [THB]":"",
     validators: [FieldBlocValidators.required]);
 
   final fullName = TextFieldBloc(
+    initialValue: kReleaseMode==false?"GrowERP Admin":"",
     validators: [FieldBlocValidators.required]);
 
   final email = TextFieldBloc(
+    initialValue: kReleaseMode==false?"info@growerp.com":"",
     validators: [
       FieldBlocValidators.required,
       FieldBlocValidators.email,

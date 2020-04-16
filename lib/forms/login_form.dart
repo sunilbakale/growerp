@@ -58,8 +58,7 @@ class _LoginFormState extends State<LoginForm> {
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse)));
               },
-              child: SingleChildScrollView(
-                physics: ClampingScrollPhysics(),
+              child: Center(
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 40),
@@ -84,7 +83,6 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                     TextFieldBlocBuilder(
                       textFieldBloc: loginFormBloc.password,
-                      textInputAction: TextInputAction.done,
                       suffixButton: SuffixButton.obscureText,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -92,6 +90,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       focusNode: _focusNodes[0],
                     ),
+                    SizedBox(height: 20),
                     RaisedButton(
                       onPressed: loginFormBloc.submit,
                       child: Text('LOGIN'),

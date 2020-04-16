@@ -8,12 +8,9 @@ abstract class AuthenticationState extends Equatable {
   List<Object> get props => [];
 }
 
-class AuthenticationConnectionProblem extends AuthenticationState {}
-
 class AuthenticationUninitialized extends AuthenticationState {}
-
+class AuthenticationConnectionProblem extends AuthenticationState {}
 class AuthenticationUnauthenticated extends AuthenticationState {}
-
 class AuthenticationAuthenticated extends AuthenticationState {
   final Authenticate authenticate;
 
@@ -22,6 +19,7 @@ class AuthenticationAuthenticated extends AuthenticationState {
 
   @override
   List<Object> get props => [authenticate];
+  @override
+  String toString() => 'Authenticated { authenticate: $authenticate.company.name }';
 }
-
 class AuthenticationLoading extends AuthenticationState {}
