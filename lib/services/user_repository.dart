@@ -58,7 +58,7 @@ class UserRepository {
     return errorDescription;
   }
 
-  Future <bool> getSessionToken() async {
+  Future <bool> connected() async {
     try {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;
@@ -82,26 +82,26 @@ class UserRepository {
       'password': password,
       'moquiSessionToken': sessionToken
     });
-    print("======login response: $response");
     return authenticateFromJson(response.toString());
   }
 
-  Future<void> deleteToken() async {
+  Future<Authenticate> deleteApiKey() async {
     print("repository delete token");
-    await FlutterKeychain.remove(key: "authenticate");
-    return;
+    Authenticate authenticate = await getAuthenticate();
+    authenticate.apiKey = null;
+    await persistAuthenticate(authenticate);
+    return authenticate;
   }
 
-  Future<void> persistToken(Authenticate authenticate) async {
-    print("repository persist token: $authenticate");
+  Future<void> persistAuthenticate(Authenticate authenticate) async {
+    print("repository persist authenticate: ${authenticate?.user?.name}");
     await FlutterKeychain.put(
       key: "authenticate", value: authenticateToJson(authenticate));
     return;
   }
 
-  Future<Authenticate> hasAuthenticate() async {
+  Future<Authenticate> getAuthenticate() async {
     String jsonString = await FlutterKeychain.get(key: "authenticate");
-    print("repository has token: ${jsonString!=null} session: $sessionToken");
     if (jsonString != null) {
       return authenticateFromJson(jsonString);
     } else return null;
@@ -127,5 +127,10 @@ class UserRepository {
       'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
       'moquiSessionToken': sessionToken
     });
+    Authenticate auth = new Authenticate.fromJson({ // save for login
+      'moquiSessionToken': sessionToken,
+      'company': {'name': companyName},
+      'user': {'name': email }});
+    await persistAuthenticate(auth);
   }
 }

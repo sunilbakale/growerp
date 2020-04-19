@@ -20,25 +20,25 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
     AuthenticationEvent event) async* {
     if (event is AppStarted) {
-      final connected = await userRepository.getSessionToken();
-      if (connected != true) {
+      final connected = await userRepository.connected();
+      if (!connected) {
         yield AuthenticationConnectionProblem();
       } else {
-        final Authenticate authenticate = await userRepository.hasAuthenticate();
-        if (authenticate != null) {
+        final Authenticate authenticate = await userRepository.getAuthenticate();
+        if (authenticate?.apiKey != null) {
           yield AuthenticationAuthenticated(authenticate: authenticate);
         } else {
-          yield AuthenticationUnauthenticated();
+          yield AuthenticationUnauthenticated(authenticate: authenticate);
         }
       }
     } else if (event is LoggedIn) {
       yield AuthenticationLoading();
-      await userRepository.persistToken(event.authenticate);
+      await userRepository.persistAuthenticate(event.authenticate);
       yield AuthenticationAuthenticated(authenticate: event.authenticate);
     } else if (event is LoggedOut) {
       yield AuthenticationLoading();
-      await userRepository.deleteToken();
-      yield AuthenticationUnauthenticated();
+      final Authenticate authenticate = await userRepository.deleteApiKey();
+      yield AuthenticationUnauthenticated(authenticate: authenticate);
     }
   }
 }

@@ -4,10 +4,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../services/user_repository.dart';
 import 'authentication/authentication.dart';
+import '../models/authenticate.dart';
+import 'dart:async';
 
 class LoginBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
   final AuthenticationBloc authenticationBloc;
+  Authenticate authenticate;
+  StreamSubscription authSubscription;
+
   
   final email = TextFieldBloc(
     initialValue: kReleaseMode==false? "info@growerp.com": null,
@@ -36,7 +41,19 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
-    emitLoaded();
+    try {
+      authSubscription = await authenticationBloc.listen((state) {
+        if (state is AuthenticationUnauthenticated) {
+          authenticate = 
+            (authenticationBloc.state as AuthenticationUnauthenticated)
+              .authenticate;
+          email.updateInitialValue(authenticate?.user?.name);
+        }
+      });
+      emitLoaded();
+    } catch(e) {
+      emitLoadFailed(failureResponse: "catch, error: $e");
+    }
   }
 
   @override

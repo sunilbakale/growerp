@@ -4,7 +4,6 @@ import '../../models/models.dart';
 
 abstract class AuthenticationEvent extends Equatable {
   const AuthenticationEvent();
-
   @override
   List<Object> get props => [];
 }
@@ -14,14 +13,19 @@ class AppStarted extends AuthenticationEvent {}
 
 class LoggedIn extends AuthenticationEvent {
   final Authenticate authenticate;
-
   const LoggedIn({@required this.authenticate});
-
   @override
   List<Object> get props => [authenticate];
-
   @override
-  String toString() => 'LoggedIn { authenticate: $authenticate }';
+  String toString() => 'loggedIn userName: ${authenticate.user.name}';
 }
 
-class LoggedOut extends AuthenticationEvent {}
+class LoggedOut extends AuthenticationEvent {
+  final Authenticate authenticate;
+  const LoggedOut({this.authenticate});
+  @override
+  List<Object> get props => [authenticate];
+  @override
+  String toString() => 'loggedOut userName: ${authenticate?.user?.name}';
+}
+

@@ -82,6 +82,12 @@ class _HomeFormState extends State<HomeForm> {
                           fontSize: 20, color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
+                    SizedBox(height: 10),
+                    Text(homeFormBloc.authenticate.user.name,
+                      style: TextStyle(
+                          fontSize: 20, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
                     SizedBox(height: 20),
                     RaisedButton(
                       onPressed: homeFormBloc.reload,
