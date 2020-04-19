@@ -53,7 +53,7 @@ class _HomeFormState extends State<HomeForm> {
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
           } else {
-            final homeFormBloc = context.bloc<HomeBloc>();
+            final homeBloc = context.bloc<HomeBloc>();
             return Scaffold(
               appBar: AppBar(
                 title: Text('Home'),
@@ -68,6 +68,7 @@ class _HomeFormState extends State<HomeForm> {
               body: Center(
                 child: Column(
                   children: <Widget>[
+                    SizedBox(height: 100),
                     Icon(Icons.tag_faces, size: 100),
                     SizedBox(height: 10),
                     Text(
@@ -77,20 +78,20 @@ class _HomeFormState extends State<HomeForm> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
-                    Text(homeFormBloc.company.value,
+                    Text(homeBloc.company.value,
                       style: TextStyle(
                           fontSize: 20, color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
-                    Text(homeFormBloc.authenticate.user.name,
+                    Text(homeBloc.authenticate.user.name,
                       style: TextStyle(
                           fontSize: 20, color: Colors.black),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 20),
                     RaisedButton(
-                      onPressed: homeFormBloc.reload,
+                      onPressed: homeBloc.reload,
                       child: Text('Reload'),
                     ),
                   ]

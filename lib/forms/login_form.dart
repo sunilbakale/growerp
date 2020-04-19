@@ -17,23 +17,18 @@ class LoginForm extends StatefulWidget {
 class _LoginState extends State<LoginForm> {
   final UserRepository userRepository;
 
-  LoginBloc _formBloc;
   List<FocusNode> _focusNodes;
 
   _LoginState(this.userRepository);
 
   @override
   void initState() {
-    _formBloc = LoginBloc(
-      authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
-      userRepository: userRepository);
     _focusNodes = [FocusNode()];
     super.initState();
   }
 
   @override
   void dispose() {
-    _formBloc.close();
     _focusNodes.forEach((focusNode) => focusNode.dispose());
     super.dispose();
   }

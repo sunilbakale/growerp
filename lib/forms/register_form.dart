@@ -18,22 +18,18 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final UserRepository userRepository;
 
-  RegisterBloc _formBloc;
   List<FocusNode> _focusNodes;
 
   _RegisterFormState(this.userRepository);
 
   @override
   void initState() {
-    _formBloc = RegisterBloc(
-      userRepository: userRepository);  
     _focusNodes = [FocusNode(), FocusNode(), FocusNode()];
     super.initState();
   }
 
   @override
   void dispose() {
-    _formBloc.close();
     _focusNodes.forEach((focusNode) => focusNode.dispose());
     super.dispose();
   }
@@ -44,7 +40,7 @@ class _RegisterFormState extends State<RegisterForm> {
       create: (context) => RegisterBloc(userRepository: userRepository),
       child: Builder(
         builder: (context) {
-          final registerFormBloc = context.bloc<RegisterBloc>();
+          final registerBloc = context.bloc<RegisterBloc>();
           return Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: AppBar(title: Text('Register new Account')),
@@ -89,7 +85,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             ),
                             SizedBox(height: 20),
                             RaisedButton(
-                              onPressed: registerFormBloc.reload,
+                              onPressed: registerBloc.reload,
                               child: Text('RETRY'),
                             ),
                           ],
@@ -103,7 +99,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         children: <Widget>[
                           SizedBox(height: 20),
                           TextFieldBlocBuilder(
-                            textFieldBloc: registerFormBloc.company,
+                            textFieldBloc: registerBloc.company,
                             decoration: InputDecoration(
                               labelText: 'Company',
                               prefixIcon: Icon(Icons.hotel),
@@ -111,7 +107,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             nextFocusNode: _focusNodes[0],
                           ),
                           DropdownFieldBlocBuilder<String>(
-                            selectFieldBloc: registerFormBloc.currency,
+                            selectFieldBloc: registerBloc.currency,
                             showEmptyItem: false,
                             millisecondsForShowDropdownItemsWhenKeyboardIsOpen: 320,
                             itemBuilder: (context, value) => value,
@@ -123,7 +119,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             nextFocusNode: _focusNodes[1],
                           ),
                           TextFieldBlocBuilder(
-                            textFieldBloc: registerFormBloc.fullName,
+                            textFieldBloc: registerBloc.fullName,
                             decoration: InputDecoration(
                               labelText: 'First and Last name',
                               prefixIcon: Icon(Icons.person),
@@ -138,7 +134,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             textAlign: TextAlign.center,
                           ),
                           TextFieldBlocBuilder(
-                            textFieldBloc: registerFormBloc.email,
+                            textFieldBloc: registerBloc.email,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: 'Email',
@@ -147,7 +143,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             focusNode: _focusNodes[2],
                           ),
                           RaisedButton(
-                            onPressed: registerFormBloc.submit,
+                            onPressed: registerBloc.submit,
                             child: Text('REGISTER'),
                           ),
                         ],
