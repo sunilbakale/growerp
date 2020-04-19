@@ -37,7 +37,9 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RegisterBloc(userRepository: userRepository),
+      create: (context) => RegisterBloc(
+        authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+        userRepository: userRepository),
       child: Builder(
         builder: (context) {
           final registerBloc = context.bloc<RegisterBloc>();
