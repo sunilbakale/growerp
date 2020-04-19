@@ -44,66 +44,73 @@ class _LoginState extends State<LoginForm> {
       create: (context) => LoginBloc(
         authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
         userRepository: userRepository),
-      child: Builder(
-        builder: (context) {
-          final loginFormBloc = context.bloc<LoginBloc>();
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: FormBlocListener<LoginBloc, String, String>(
-              onSubmitting: (context, state) {
-                LoadingIndicator();
-              },
-              onFailure: (context, state) {
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text(state.failureResponse)));
-              },
-              child: Center(
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 40),
-                    Image.asset('assets/growerp.png', height: 100),
-                    Text(
-                      'Hotel',
-                      style: TextStyle(
-                          color: Color(0xFFB52727),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 10),
-                    TextFieldBlocBuilder(
-                      textFieldBloc: loginFormBloc.email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
+        child:  BlocBuilder<LoginBloc, FormBlocState>(
+          condition: (previous, current) =>
+            previous.runtimeType != current.runtimeType ||
+            previous is FormBlocLoading && current is FormBlocLoading,
+          builder: (context, state) {
+          if (state is FormBlocLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            final loginFormBloc = context.bloc<LoginBloc>();
+            return Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: FormBlocListener<LoginBloc, String, String>(
+                onSubmitting: (context, state) {
+                  LoadingIndicator();
+                },
+                onFailure: (context, state) {
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text(state.failureResponse)));
+                },
+                child: Center(
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(height: 40),
+                      Image.asset('assets/growerp.png', height: 100),
+                      Text( loginFormBloc?.authenticate?.company?.name == null?
+                        'Hotel':loginFormBloc?.authenticate?.company?.name,
+                        style: TextStyle(
+                            color: Color(0xFFB52727),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
                       ),
-                      nextFocusNode: _focusNodes[0],
-                    ),
-                    TextFieldBlocBuilder(
-                      textFieldBloc: loginFormBloc.password,
-                      suffixButton: SuffixButton.obscureText,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
+                      SizedBox(height: 10),
+                      TextFieldBlocBuilder(
+                        textFieldBloc: loginFormBloc.email,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        nextFocusNode: _focusNodes[0],
                       ),
-                      focusNode: _focusNodes[0],
-                    ),
-                    SizedBox(height: 20),
-                    RaisedButton(
-                      onPressed: loginFormBloc.submit,
-                      child: Text('LOGIN'),
-                    ),
-                    RaisedButton(
-                      onPressed: () => 
-                        Navigator.of(context).pushNamed('/register'),
-                      child: Text('register new account'),
-                    ),
-                  ],
+                      TextFieldBlocBuilder(
+                        textFieldBloc: loginFormBloc.password,
+                        suffixButton: SuffixButton.obscureText,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: Icon(Icons.lock),
+                        ),
+                        focusNode: _focusNodes[0],
+                      ),
+                      SizedBox(height: 20),
+                      RaisedButton(
+                        onPressed: loginFormBloc.submit,
+                        child: Text('LOGIN'),
+                      ),
+                      RaisedButton(
+                        onPressed: () => 
+                          Navigator.of(context).pushNamed('/register'),
+                        child: Text('register new account'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
         },
       ),
     );
