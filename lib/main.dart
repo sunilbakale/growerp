@@ -70,21 +70,30 @@ class App extends StatelessWidget {
       theme: Themes.formTheme,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
+          print("====main.dart=====state: $state");
           if (state is AuthenticationConnectionProblem) {
             return NoConnectionForm();
           } else if (state is AuthenticationAuthenticated) {
+            print("==main.dart: yes autenticated, go to home form");
             return HomeForm(userRepository: userRepository,
               authenticationBloc: authenticationBloc);
           } else if (state is AuthenticationUnauthenticated) {
-            return LoginForm(userRepository: userRepository);
+            print("==main.dart: no, not autenticated, go to login form");
+            return LoginForm(userRepository: userRepository,
+              authenticationBloc: authenticationBloc);
           } else if (state is AuthenticationLoading) {
             return LoadingIndicator();
+          } else if (state is AuthenticationRegister) {
+            return RegisterForm(userRepository: userRepository);
           } else return SplashForm();
         },
       ),
       routes: {
+        '/home': (context) => HomeForm(userRepository: userRepository,
+            authenticationBloc: authenticationBloc),
         '/register': (context) => RegisterForm(userRepository: userRepository),
-        '/login': (context) => LoginForm(userRepository: userRepository),
+        '/login': (context) => LoginForm(userRepository: userRepository,
+            authenticationBloc: authenticationBloc),
       },   
     );
   }

@@ -26,12 +26,21 @@ class AuthenticationBloc
       } else {
         final Authenticate authenticate = await userRepository.getAuthenticate();
         if (authenticate?.apiKey != null) {
+          print("=====apiKey found!");
           yield AuthenticationAuthenticated(authenticate: authenticate);
         } else {
+          print("==NO===apiKey found!");
           yield AuthenticationUnauthenticated(authenticate: authenticate);
         }
       }
-    } else if (event is LoggedIn) {
+/*    } else if (event is Subscribe) {
+      yield AuthenticationLoading();
+      await userRepository.signUp(
+        companyName: event.companyName, partyId: event.partyId,
+        firstName: event.firstName, lastName: event.lastName,
+        currency: event.currency, email: event.email);
+      yield AuthenticationUnauthenticated();
+*/    } else if (event is LoggedIn) {
       yield AuthenticationLoading();
       await userRepository.persistAuthenticate(event.authenticate);
       yield AuthenticationAuthenticated(authenticate: event.authenticate);
@@ -39,6 +48,9 @@ class AuthenticationBloc
       yield AuthenticationLoading();
       final Authenticate authenticate = await userRepository.deleteApiKey();
       yield AuthenticationUnauthenticated(authenticate: authenticate);
+    } else if (event is Register) {
+      yield AuthenticationLoading();
+      yield AuthenticationRegister();
     }
   }
 }

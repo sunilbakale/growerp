@@ -6,20 +6,25 @@ import '../widgets/widgets.dart';
 
 class LoginForm extends StatefulWidget {
   final UserRepository userRepository;
+  final AuthenticationBloc authenticationBloc;
 
-  LoginForm({Key key, @required this.userRepository})
-    : assert(userRepository != null),
-      super(key: key);
+  LoginForm(
+      {Key key,
+      @required this.userRepository,
+      @required this.authenticationBloc})
+      : assert(userRepository != null, authenticationBloc != null);
 
   @override
-  _LoginState createState() => _LoginState(userRepository);
+  _LoginState createState() => _LoginState(userRepository, authenticationBloc);
 }
+
 class _LoginState extends State<LoginForm> {
   final UserRepository userRepository;
+  final AuthenticationBloc authenticationBloc;
 
   List<FocusNode> _focusNodes;
 
-  _LoginState(this.userRepository);
+  _LoginState(this.userRepository, this.authenticationBloc);
 
   @override
   void initState() {
@@ -37,13 +42,13 @@ class _LoginState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LoginBloc(
-        authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
-        userRepository: userRepository),
-        child:  BlocBuilder<LoginBloc, FormBlocState>(
-          condition: (previous, current) =>
+          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          userRepository: userRepository),
+      child: BlocBuilder<LoginBloc, FormBlocState>(
+        condition: (previous, current) =>
             previous.runtimeType != current.runtimeType ||
             previous is FormBlocLoading && current is FormBlocLoading,
-          builder: (context, state) {
+        builder: (context, state) {
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
           } else {
@@ -54,6 +59,13 @@ class _LoginState extends State<LoginForm> {
                 onSubmitting: (context, state) {
                   LoadingIndicator();
                 },
+                onSuccess: (context, state) =>
+                  BlocProvider.of<AuthenticationBloc>(context)
+                      .add(AppStarted()),
+//                  Navigator.of(context).popAndPushNamed('/home');
+//                  Notifications.showSnackBarWithSuccess(
+//                      context, ' successfully logged in.');
+//                },
                 onFailure: (context, state) {
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text(state.failureResponse)));
@@ -63,8 +75,10 @@ class _LoginState extends State<LoginForm> {
                     children: <Widget>[
                       SizedBox(height: 40),
                       Image.asset('assets/growerp.png', height: 100),
-                      Text( loginFormBloc?.authenticate?.company?.name == null?
-                        'Hotel':loginFormBloc?.authenticate?.company?.name,
+                      Text(
+                        loginFormBloc?.authenticate?.company?.name == null
+                            ? 'Hotel'
+                            : loginFormBloc?.authenticate?.company?.name,
                         style: TextStyle(
                             color: Color(0xFFB52727),
                             fontSize: 20,
@@ -96,8 +110,9 @@ class _LoginState extends State<LoginForm> {
                         child: Text('LOGIN'),
                       ),
                       RaisedButton(
-                        onPressed: () => 
-                          Navigator.of(context).pushNamed('/register'),
+                        onPressed: () =>
+                            BlocProvider.of<AuthenticationBloc>(context)
+                              .add(Register()),
                         child: Text('register new account'),
                       ),
                     ],

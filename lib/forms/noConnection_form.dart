@@ -9,7 +9,7 @@ class NoConnectionForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('No connection!'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),

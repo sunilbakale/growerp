@@ -82,6 +82,8 @@ class UserRepository {
       'password': password,
       'moquiSessionToken': sessionToken
     });
+    Authenticate authenticate = authenticateFromJson(response.toString());
+    persistAuthenticate(authenticate);
     return authenticateFromJson(response.toString());
   }
 

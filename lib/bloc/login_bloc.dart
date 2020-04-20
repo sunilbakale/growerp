@@ -13,9 +13,8 @@ class LoginBloc extends FormBloc<String, String> {
   Authenticate authenticate;
   StreamSubscription authSubscription;
 
-  
   final email = TextFieldBloc(
-    initialValue: kReleaseMode==false? "info@growerp.com": null,
+    initialValue: kReleaseMode == false ? "info@growerp.com" : null,
     validators: [
       FieldBlocValidators.required,
       FieldBlocValidators.email,
@@ -23,20 +22,17 @@ class LoginBloc extends FormBloc<String, String> {
   );
 
   final password = TextFieldBloc(
-    initialValue: kReleaseMode==false?'qqqqqq9!':null,
+    initialValue: kReleaseMode == false ? 'qqqqqq9!' : null,
     validators: [
       FieldBlocValidators.required,
     ],
   );
 
-  LoginBloc({
-    @required this.userRepository,
-    @required this.authenticationBloc,
-    })  : assert(userRepository != null),
-        assert(authenticationBloc != null), super(isLoading: true)
-      {    
-      addFieldBlocs(
-      fieldBlocs: [email, password]);
+  LoginBloc({@required this.userRepository, @required this.authenticationBloc})
+      : assert(userRepository != null),
+        assert(authenticationBloc != null),
+        super(isLoading: true) {
+    addFieldBlocs(fieldBlocs: [email, password]);
   }
 
   @override
@@ -44,14 +40,14 @@ class LoginBloc extends FormBloc<String, String> {
     try {
       authSubscription = await authenticationBloc.listen((state) {
         if (state is AuthenticationUnauthenticated) {
-          authenticate = 
-            (authenticationBloc.state as AuthenticationUnauthenticated)
-              .authenticate;
+          authenticate =
+              (authenticationBloc.state as AuthenticationUnauthenticated)
+                  .authenticate;
           email.updateInitialValue(authenticate?.user?.name);
         }
       });
       emitLoaded();
-    } catch(e) {
+    } catch (e) {
       emitLoadFailed(failureResponse: "catch, error: $e");
     }
   }
@@ -62,13 +58,13 @@ class LoginBloc extends FormBloc<String, String> {
     print(password.value);
 
     try {
-      final authenticate = await userRepository.authenticate(
+      await userRepository.authenticate(
         username: email.value,
         password: password.value,
       );
-      authenticationBloc.add(LoggedIn(authenticate: authenticate));
+//      authenticationBloc.add(AppStarted());
       emitSuccess();
-    } on DioError catch(e) {
+    } on DioError catch (e) {
 /*      if(e.response != null) {
           print("login error data: ${e.response.data}");
           print("login error header: ${e.response.headers}");
@@ -78,8 +74,14 @@ class LoginBloc extends FormBloc<String, String> {
           print("login no response, request: ${e.request}");
           print("login no response, message: ${e.message}");
       }
-*/      emitFailure(failureResponse: e.response.data['errors']);
+*/
+      emitFailure(failureResponse: e.response.data['errors']);
     }
   }
-}
 
+  @override
+  Future<void> close() {
+    authSubscription.cancel();
+    return super.close();
+  }
+}

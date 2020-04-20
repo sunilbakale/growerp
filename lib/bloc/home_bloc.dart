@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import 'package:growerp/models/authenticate.dart';
+import 'package:form_bloc/form_bloc.dart';
+import 'package:flutter/foundation.dart';
 import '../services/user_repository.dart';
 import 'authentication/authentication.dart';
+import '../models/authenticate.dart';
 import 'dart:async';
-
 
 class HomeBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
@@ -13,12 +13,29 @@ class HomeBloc extends FormBloc<String, String> {
   final company = TextFieldBloc();
   StreamSubscription authSubscription;
 
-  HomeBloc({@required this.userRepository,
-              @required this.authenticationBloc})
-  : assert(userRepository != null),
-    assert(authenticationBloc != null),
-    super(isLoading: true) {
-      addFieldBlocs(fieldBlocs: [company]);
+  HomeBloc({@required this.userRepository, @required this.authenticationBloc})
+      : assert(userRepository != null),
+        assert(authenticationBloc != null),
+        super(isLoading: true) {
+    addFieldBlocs(fieldBlocs: [company]);
+  }
+
+  @override
+  void onLoading() async {
+    try {
+      authSubscription = await authenticationBloc.listen((state) {
+        print("====home bloc state: $state");
+        if (state is AuthenticationAuthenticated) {
+          authenticate =
+              (authenticationBloc.state as AuthenticationAuthenticated)
+                  .authenticate;
+        }
+      });
+      print("=====home bloc company: ${authenticate?.company?.name}");
+      emitLoaded();
+    } catch (e) {
+      emitLoadFailed(failureResponse: "catch, error: $e");
+    }
   }
 
   @override
@@ -27,26 +44,8 @@ class HomeBloc extends FormBloc<String, String> {
   }
 
   @override
-  void onLoading() async { // for reload
-  try {
-    authSubscription = await authenticationBloc.listen((state) {
-      if (state is AuthenticationAuthenticated) {
-        authenticate = 
-          (authenticationBloc.state as AuthenticationAuthenticated)
-          .authenticate;
-      }
-    });
-    company.updateInitialValue(authenticate.company.name);
-    emitLoaded();
-    } catch(e) {
-      emitLoadFailed(failureResponse: "catch, error: $e");
-    }
-  }
-  @override
   Future<void> close() {
     authSubscription.cancel();
     return super.close();
   }
 }
-
-

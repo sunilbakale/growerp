@@ -75,7 +75,7 @@ class RegisterBloc extends FormBloc<String, String> {
       await userRepository.signUp(
         companyName: company.value, currency: currencyAbr,
         firstName: names[0], lastName: lastName, email: email.value);
-      authenticationBloc.add(AppStarted());
+//      authenticationBloc.add(AppStarted());
       emitSuccess();
     } on DioError catch(e) {
 /*      if(e.response != null) {
