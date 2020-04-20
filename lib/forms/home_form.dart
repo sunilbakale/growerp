@@ -6,26 +6,26 @@ import '../services/user_repository.dart';
 
 class HomeForm extends StatefulWidget {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   HomeForm(
       {Key key,
       @required this.userRepository,
-      @required this.authenticationBloc})
-      : assert(userRepository != null, authenticationBloc != null);
+      @required this.authBloc})
+      : assert(userRepository != null, authBloc != null);
 
   @override
   _HomeFormState createState() =>
-      _HomeFormState(userRepository, authenticationBloc);
+      _HomeFormState(userRepository, authBloc);
 }
 
 class _HomeFormState extends State<HomeForm> {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   List<FocusNode> _focusNodes;
 
-  _HomeFormState(this.userRepository, this.authenticationBloc);
+  _HomeFormState(this.userRepository, this.authBloc);
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _HomeFormState extends State<HomeForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => HomeBloc(
-            authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+            authBloc: BlocProvider.of<AuthBloc>(context),
             userRepository: userRepository),
         child: BlocBuilder<HomeBloc, FormBlocState>(
             condition: (previous, current) =>
@@ -61,7 +61,7 @@ class _HomeFormState extends State<HomeForm> {
                         IconButton(
                             icon: Icon(Icons.exit_to_app),
                             onPressed: () =>
-                                BlocProvider.of<AuthenticationBloc>(context)
+                                BlocProvider.of<AuthBloc>(context)
                                     .add(LoggedOut()))
                       ],
                     ),

@@ -38,7 +38,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => RegisterBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          authBloc: BlocProvider.of<AuthBloc>(context),
           userRepository: userRepository),
       child: Builder(
         builder: (context) {
@@ -51,7 +51,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   LoadingIndicator();
               },
               onSuccess: (context, state) {
-                BlocProvider.of<AuthenticationBloc>(context)
+                BlocProvider.of<AuthBloc>(context)
                       .add(AppStarted());
 //                Navigator.of(context).pushNamed('/login');
 //                Notifications.showSnackBarWithSuccess(

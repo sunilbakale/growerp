@@ -6,25 +6,25 @@ import '../widgets/widgets.dart';
 
 class LoginForm extends StatefulWidget {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   LoginForm(
       {Key key,
       @required this.userRepository,
-      @required this.authenticationBloc})
-      : assert(userRepository != null, authenticationBloc != null);
+      @required this.authBloc})
+      : assert(userRepository != null, authBloc != null);
 
   @override
-  _LoginState createState() => _LoginState(userRepository, authenticationBloc);
+  _LoginState createState() => _LoginState(userRepository, authBloc);
 }
 
 class _LoginState extends State<LoginForm> {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   List<FocusNode> _focusNodes;
 
-  _LoginState(this.userRepository, this.authenticationBloc);
+  _LoginState(this.userRepository, this.authBloc);
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _LoginState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LoginBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          authBloc: BlocProvider.of<AuthBloc>(context),
           userRepository: userRepository),
       child: BlocBuilder<LoginBloc, FormBlocState>(
         condition: (previous, current) =>
@@ -60,7 +60,7 @@ class _LoginState extends State<LoginForm> {
                   LoadingIndicator();
                 },
                 onSuccess: (context, state) =>
-                  BlocProvider.of<AuthenticationBloc>(context)
+                  BlocProvider.of<AuthBloc>(context)
                       .add(AppStarted()),
 //                  Navigator.of(context).popAndPushNamed('/home');
 //                  Notifications.showSnackBarWithSuccess(
@@ -111,7 +111,7 @@ class _LoginState extends State<LoginForm> {
                       ),
                       RaisedButton(
                         onPressed: () =>
-                            BlocProvider.of<AuthenticationBloc>(context)
+                            BlocProvider.of<AuthBloc>(context)
                               .add(Register()),
                         child: Text('register new account'),
                       ),

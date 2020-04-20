@@ -3,13 +3,13 @@ import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../services/user_repository.dart';
-import 'authentication/authentication.dart';
+import 'auth/auth.dart';
 import '../models/authenticate.dart';
 import 'dart:async';
 
 class LoginBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
   Authenticate authenticate;
   StreamSubscription authSubscription;
 
@@ -28,9 +28,9 @@ class LoginBloc extends FormBloc<String, String> {
     ],
   );
 
-  LoginBloc({@required this.userRepository, @required this.authenticationBloc})
+  LoginBloc({@required this.userRepository, @required this.authBloc})
       : assert(userRepository != null),
-        assert(authenticationBloc != null),
+        assert(authBloc != null),
         super(isLoading: true) {
     addFieldBlocs(fieldBlocs: [email, password]);
   }
@@ -38,10 +38,10 @@ class LoginBloc extends FormBloc<String, String> {
   @override
   void onLoading() async {
     try {
-      authSubscription = await authenticationBloc.listen((state) {
-        if (state is AuthenticationUnauthenticated) {
+      authSubscription = await authBloc.listen((state) {
+        if (state is AuthUnauthenticated) {
           authenticate =
-              (authenticationBloc.state as AuthenticationUnauthenticated)
+              (authBloc.state as AuthUnauthenticated)
                   .authenticate;
           email.updateInitialValue(authenticate?.user?.name);
         }
@@ -62,7 +62,7 @@ class LoginBloc extends FormBloc<String, String> {
         username: email.value,
         password: password.value,
       );
-//      authenticationBloc.add(AppStarted());
+//      authBloc.add(AppStarted());
       emitSuccess();
     } on DioError catch (e) {
 /*      if(e.response != null) {

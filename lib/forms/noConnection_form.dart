@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/authentication/authentication.dart';
+import '../bloc/auth/auth.dart';
 
 class NoConnectionForm extends StatelessWidget {
   NoConnectionForm({Key key}) : super(key: key);
@@ -14,7 +14,7 @@ class NoConnectionForm extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () =>
-              BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut())
+              BlocProvider.of<AuthBloc>(context).add(LoggedOut())
           )
         ],
       ),
@@ -32,7 +32,7 @@ class NoConnectionForm extends StatelessWidget {
             SizedBox(height: 80),
             RaisedButton.icon(
               onPressed: () => 
-                BlocProvider.of<AuthenticationBloc>(context).add(AppStarted()),
+                BlocProvider.of<AuthBloc>(context).add(AppStarted()),
               icon: Icon(Icons.replay),
               label: Text('Retry'),
             ),

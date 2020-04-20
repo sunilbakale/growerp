@@ -16,25 +16,25 @@ void main() {
     mockRepository = MockRepository();
     loginBloc = LoginBloc(
       userRepository: mockRepository, 
-      authenticationBloc: 
-      AuthenticationBloc(userRepository: mockRepository));
+      authBloc: 
+      AuthBloc(userRepository: mockRepository));
   });
 
   tearDown(() {
     loginBloc?.close();
   });
 
-  test('should assert if authenticationBloc null', () {
+  test('should assert if authBloc null', () {
     expect(
       () => LoginBloc(userRepository: mockRepository, 
-      authenticationBloc: null),
+      authBloc: null),
       throwsA(isAssertionError),
     );
   });
   test('should assert if repository null', () {
     expect(
       () => LoginBloc(userRepository: null, 
-      authenticationBloc: AuthenticationBloc(userRepository: mockRepository)),
+      authBloc: AuthBloc(userRepository: mockRepository)),
       throwsA(isAssertionError),
     );
   });

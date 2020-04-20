@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../services/user_repository.dart';
-import 'authentication/authentication.dart';
+import 'auth/auth.dart';
 import '../models/authenticate.dart';
 import 'dart:async';
 
 class HomeBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
   Authenticate authenticate;
   final company = TextFieldBloc();
   StreamSubscription authSubscription;
 
-  HomeBloc({@required this.userRepository, @required this.authenticationBloc})
+  HomeBloc({@required this.userRepository, @required this.authBloc})
       : assert(userRepository != null),
-        assert(authenticationBloc != null),
+        assert(authBloc != null),
         super(isLoading: true) {
     addFieldBlocs(fieldBlocs: [company]);
   }
@@ -23,11 +23,11 @@ class HomeBloc extends FormBloc<String, String> {
   @override
   void onLoading() async {
     try {
-      authSubscription = await authenticationBloc.listen((state) {
+      authSubscription = await authBloc.listen((state) {
         print("====home bloc state: $state");
-        if (state is AuthenticationAuthenticated) {
+        if (state is AuthAuthenticated) {
           authenticate =
-              (authenticationBloc.state as AuthenticationAuthenticated)
+              (authBloc.state as AuthAuthenticated)
                   .authenticate;
         }
       });

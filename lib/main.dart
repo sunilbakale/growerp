@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'services/user_repository.dart';
 
-import 'bloc/authentication/authentication.dart';
+import 'bloc/auth/auth.dart';
 import 'forms/forms.dart';
 import 'widgets/widgets.dart';
 
@@ -31,16 +31,16 @@ class SimpleBlocDelegate extends BlocDelegate {
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final userRepository = UserRepository();
-  final authenticationBloc = AuthenticationBloc(userRepository: userRepository);
+  final authBloc = AuthBloc(userRepository: userRepository);
 
   runApp(
-    BlocProvider<AuthenticationBloc>(
+    BlocProvider<AuthBloc>(
       create: (context) {
-        return AuthenticationBloc(userRepository: userRepository)
+        return AuthBloc(userRepository: userRepository)
           ..add(AppStarted());
       },
       child: App(userRepository: userRepository,
-          authenticationBloc: authenticationBloc),
+          authBloc: authBloc),
     ),
   );
 }
@@ -57,43 +57,43 @@ Widget buildError(BuildContext context, FlutterErrorDetails error) {
  }
 class App extends StatelessWidget {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   App({Key key, @required this.userRepository,
-                     @required this.authenticationBloc})
-    : assert(userRepository != null, authenticationBloc != null),
+                     @required this.authBloc})
+    : assert(userRepository != null, authBloc != null),
     super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: Themes.formTheme,
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           print("====main.dart=====state: $state");
-          if (state is AuthenticationConnectionProblem) {
+          if (state is AuthConnectionProblem) {
             return NoConnectionForm();
-          } else if (state is AuthenticationAuthenticated) {
+          } else if (state is AuthAuthenticated) {
             print("==main.dart: yes autenticated, go to home form");
             return HomeForm(userRepository: userRepository,
-              authenticationBloc: authenticationBloc);
-          } else if (state is AuthenticationUnauthenticated) {
+              authBloc: authBloc);
+          } else if (state is AuthUnauthenticated) {
             print("==main.dart: no, not autenticated, go to login form");
             return LoginForm(userRepository: userRepository,
-              authenticationBloc: authenticationBloc);
-          } else if (state is AuthenticationLoading) {
+              authBloc: authBloc);
+          } else if (state is AuthLoading) {
             return LoadingIndicator();
-          } else if (state is AuthenticationRegister) {
+          } else if (state is AuthRegister) {
             return RegisterForm(userRepository: userRepository);
           } else return SplashForm();
         },
       ),
       routes: {
         '/home': (context) => HomeForm(userRepository: userRepository,
-            authenticationBloc: authenticationBloc),
+            authBloc: authBloc),
         '/register': (context) => RegisterForm(userRepository: userRepository),
         '/login': (context) => LoginForm(userRepository: userRepository,
-            authenticationBloc: authenticationBloc),
+            authBloc: authBloc),
       },   
     );
   }

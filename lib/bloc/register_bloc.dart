@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'authentication/authentication.dart';
+import 'auth/auth.dart';
 import '../services/user_repository.dart';
 
 
 class RegisterBloc extends FormBloc<String, String> {
   final UserRepository userRepository;
-  final AuthenticationBloc authenticationBloc;
+  final AuthBloc authBloc;
 
   final company = TextFieldBloc(
     initialValue: kReleaseMode==false?"Test Company":"",
@@ -32,9 +32,9 @@ class RegisterBloc extends FormBloc<String, String> {
   
   RegisterBloc({
     @required this.userRepository,
-    @required this.authenticationBloc,
+    @required this.authBloc,
     })  : assert(userRepository != null),
-        assert(authenticationBloc != null), super(isLoading: true)
+        assert(authBloc != null), super(isLoading: true)
   {    
     addFieldBlocs(
       fieldBlocs: [company, currency, fullName, email]
@@ -75,7 +75,7 @@ class RegisterBloc extends FormBloc<String, String> {
       await userRepository.signUp(
         companyName: company.value, currency: currencyAbr,
         firstName: names[0], lastName: lastName, email: email.value);
-//      authenticationBloc.add(AppStarted());
+//      authBloc.add(AppStarted());
       emitSuccess();
     } on DioError catch(e) {
 /*      if(e.response != null) {
