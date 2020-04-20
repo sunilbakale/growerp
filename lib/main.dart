@@ -70,15 +70,12 @@ class App extends StatelessWidget {
       theme: Themes.formTheme,
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          print("====main.dart=====state: $state");
           if (state is AuthConnectionProblem) {
             return NoConnectionForm();
           } else if (state is AuthAuthenticated) {
-            print("==main.dart: yes autenticated, go to home form");
             return HomeForm(repos: repos,
               authBloc: authBloc);
           } else if (state is AuthUnauthenticated) {
-            print("==main.dart: no, not autenticated, go to login form");
             return LoginForm(repos: repos,
               authBloc: authBloc);
           } else if (state is AuthLoading) {

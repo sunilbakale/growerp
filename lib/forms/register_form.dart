@@ -48,16 +48,15 @@ class _RegisterFormState extends State<RegisterForm> {
             appBar: AppBar(title: Text('Register new Account')),
             body: FormBlocListener<RegisterBloc, String, String>(
               onSubmitting: (context, state) {
-                  LoadingIndicator();
+                LoadingDialog.show(context);
               },
               onSuccess: (context, state) {
+                LoadingDialog.hide(context);
                 BlocProvider.of<AuthBloc>(context)
                       .add(AppStarted());
-//                Navigator.of(context).pushNamed('/login');
-//                Notifications.showSnackBarWithSuccess(
-//                    context, ' now login with the email provided password...');
               },
               onFailure: (context, state) {
+                LoadingDialog.hide(context);
                 Scaffold.of(context).showSnackBar(
                     SnackBar(content: Text(state.failureResponse)));
               },

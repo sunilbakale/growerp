@@ -57,16 +57,15 @@ class _LoginState extends State<LoginForm> {
               resizeToAvoidBottomInset: false,
               body: FormBlocListener<LoginBloc, String, String>(
                 onSubmitting: (context, state) {
-                  LoadingIndicator();
+                  LoadingDialog.show(context);
                 },
-                onSuccess: (context, state) =>
+                onSuccess: (context, state) {
+                  LoadingDialog.hide(context);
                   BlocProvider.of<AuthBloc>(context)
-                      .add(AppStarted()),
-//                  Navigator.of(context).popAndPushNamed('/home');
-//                  Notifications.showSnackBarWithSuccess(
-//                      context, ' successfully logged in.');
-//                },
+                      .add(AppStarted());
+                },
                 onFailure: (context, state) {
+                  LoadingDialog.hide(context);
                   Scaffold.of(context).showSnackBar(
                       SnackBar(content: Text(state.failureResponse)));
                 },
