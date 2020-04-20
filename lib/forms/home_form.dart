@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../bloc/bloc.dart';
-import '../services/user_repository.dart';
+import '../services/repos.dart';
 
 class HomeForm extends StatefulWidget {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
   HomeForm(
       {Key key,
-      @required this.userRepository,
+      @required this.repos,
       @required this.authBloc})
-      : assert(userRepository != null, authBloc != null);
+      : assert(repos != null, authBloc != null);
 
   @override
   _HomeFormState createState() =>
-      _HomeFormState(userRepository, authBloc);
+      _HomeFormState(repos, authBloc);
 }
 
 class _HomeFormState extends State<HomeForm> {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
   List<FocusNode> _focusNodes;
 
-  _HomeFormState(this.userRepository, this.authBloc);
+  _HomeFormState(this.repos, this.authBloc);
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _HomeFormState extends State<HomeForm> {
     return BlocProvider(
         create: (context) => HomeBloc(
             authBloc: BlocProvider.of<AuthBloc>(context),
-            userRepository: userRepository),
+            repos: repos),
         child: BlocBuilder<HomeBloc, FormBlocState>(
             condition: (previous, current) =>
                 previous.runtimeType != current.runtimeType ||

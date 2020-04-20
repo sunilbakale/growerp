@@ -4,9 +4,9 @@ import 'package:mockito/mockito.dart';
 
 import 'package:growerp/bloc/bloc.dart';
 import 'package:growerp/models/models.dart';
-import 'package:growerp/services/user_repository.dart';
+import 'package:growerp/services/repos.dart';
 
-class MockRepository extends Mock implements UserRepository {}
+class MockRepository extends Mock implements Repos {}
 
 void main() {
   LoginBloc loginBloc;
@@ -15,9 +15,9 @@ void main() {
   setUp(() {
     mockRepository = MockRepository();
     loginBloc = LoginBloc(
-      userRepository: mockRepository, 
+      repos: mockRepository, 
       authBloc: 
-      AuthBloc(userRepository: mockRepository));
+      AuthBloc(repos: mockRepository));
   });
 
   tearDown(() {
@@ -26,15 +26,15 @@ void main() {
 
   test('should assert if authBloc null', () {
     expect(
-      () => LoginBloc(userRepository: mockRepository, 
+      () => LoginBloc(repos: mockRepository, 
       authBloc: null),
       throwsA(isAssertionError),
     );
   });
   test('should assert if repository null', () {
     expect(
-      () => LoginBloc(userRepository: null, 
-      authBloc: AuthBloc(userRepository: mockRepository)),
+      () => LoginBloc(repos: null, 
+      authBloc: AuthBloc(repos: mockRepository)),
       throwsA(isAssertionError),
     );
   });

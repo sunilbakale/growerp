@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../bloc/bloc.dart';
-import '../services/user_repository.dart';
+import '../services/repos.dart';
 import '../widgets/widgets.dart';
 
 class RegisterForm extends StatefulWidget {
-  final UserRepository userRepository;
+  final Repos repos;
 
-  RegisterForm({Key key, @required this.userRepository})
-      : assert(userRepository != null),
+  RegisterForm({Key key, @required this.repos})
+      : assert(repos != null),
         super(key: key);
 
   @override
-  _RegisterFormState createState() => _RegisterFormState(userRepository);
+  _RegisterFormState createState() => _RegisterFormState(repos);
 }
 
 class _RegisterFormState extends State<RegisterForm> {
-  final UserRepository userRepository;
+  final Repos repos;
 
   List<FocusNode> _focusNodes;
 
-  _RegisterFormState(this.userRepository);
+  _RegisterFormState(this.repos);
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return BlocProvider(
       create: (context) => RegisterBloc(
           authBloc: BlocProvider.of<AuthBloc>(context),
-          userRepository: userRepository),
+          repos: repos),
       child: Builder(
         builder: (context) {
           final registerBloc = context.bloc<RegisterBloc>();

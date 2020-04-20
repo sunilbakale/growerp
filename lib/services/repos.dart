@@ -7,12 +7,12 @@ import 'dart:io' show Platform;
 import 'dart:async';
 import '../models/models.dart';
 
-class UserRepository {
+class Repos {
   Dio _client;
   Response response;
   String sessionToken;
 
-  UserRepository() {
+  Repos() {
     _client = new Dio();
     if (kReleaseMode==true) { // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';

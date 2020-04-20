@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../services/user_repository.dart';
+import '../services/repos.dart';
 import 'auth/auth.dart';
 import '../models/authenticate.dart';
 import 'dart:async';
 
 class LoginBloc extends FormBloc<String, String> {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
   Authenticate authenticate;
   StreamSubscription authSubscription;
@@ -28,8 +28,8 @@ class LoginBloc extends FormBloc<String, String> {
     ],
   );
 
-  LoginBloc({@required this.userRepository, @required this.authBloc})
-      : assert(userRepository != null),
+  LoginBloc({@required this.repos, @required this.authBloc})
+      : assert(repos != null),
         assert(authBloc != null),
         super(isLoading: true) {
     addFieldBlocs(fieldBlocs: [email, password]);
@@ -58,7 +58,7 @@ class LoginBloc extends FormBloc<String, String> {
     print(password.value);
 
     try {
-      await userRepository.authenticate(
+      await repos.authenticate(
         username: email.value,
         password: password.value,
       );

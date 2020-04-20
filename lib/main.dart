@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:growerp/styles/themes.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'services/user_repository.dart';
+import 'services/repos.dart';
 
 import 'bloc/auth/auth.dart';
 import 'forms/forms.dart';
@@ -30,16 +30,16 @@ class SimpleBlocDelegate extends BlocDelegate {
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
-  final userRepository = UserRepository();
-  final authBloc = AuthBloc(userRepository: userRepository);
+  final repos = Repos();
+  final authBloc = AuthBloc(repos: repos);
 
   runApp(
     BlocProvider<AuthBloc>(
       create: (context) {
-        return AuthBloc(userRepository: userRepository)
+        return AuthBloc(repos: repos)
           ..add(AppStarted());
       },
-      child: App(userRepository: userRepository,
+      child: App(repos: repos,
           authBloc: authBloc),
     ),
   );
@@ -56,12 +56,12 @@ Widget buildError(BuildContext context, FlutterErrorDetails error) {
    );
  }
 class App extends StatelessWidget {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
-  App({Key key, @required this.userRepository,
+  App({Key key, @required this.repos,
                      @required this.authBloc})
-    : assert(userRepository != null, authBloc != null),
+    : assert(repos != null, authBloc != null),
     super(key: key);
 
   @override
@@ -75,24 +75,24 @@ class App extends StatelessWidget {
             return NoConnectionForm();
           } else if (state is AuthAuthenticated) {
             print("==main.dart: yes autenticated, go to home form");
-            return HomeForm(userRepository: userRepository,
+            return HomeForm(repos: repos,
               authBloc: authBloc);
           } else if (state is AuthUnauthenticated) {
             print("==main.dart: no, not autenticated, go to login form");
-            return LoginForm(userRepository: userRepository,
+            return LoginForm(repos: repos,
               authBloc: authBloc);
           } else if (state is AuthLoading) {
             return LoadingIndicator();
           } else if (state is AuthRegister) {
-            return RegisterForm(userRepository: userRepository);
+            return RegisterForm(repos: repos);
           } else return SplashForm();
         },
       ),
       routes: {
-        '/home': (context) => HomeForm(userRepository: userRepository,
+        '/home': (context) => HomeForm(repos: repos,
             authBloc: authBloc),
-        '/register': (context) => RegisterForm(userRepository: userRepository),
-        '/login': (context) => LoginForm(userRepository: userRepository,
+        '/register': (context) => RegisterForm(repos: repos),
+        '/login': (context) => LoginForm(repos: repos,
             authBloc: authBloc),
       },   
     );

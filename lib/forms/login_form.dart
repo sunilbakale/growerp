@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import '../services/user_repository.dart';
+import '../services/repos.dart';
 import '../bloc/bloc.dart';
 import '../widgets/widgets.dart';
 
 class LoginForm extends StatefulWidget {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
   LoginForm(
       {Key key,
-      @required this.userRepository,
+      @required this.repos,
       @required this.authBloc})
-      : assert(userRepository != null, authBloc != null);
+      : assert(repos != null, authBloc != null);
 
   @override
-  _LoginState createState() => _LoginState(userRepository, authBloc);
+  _LoginState createState() => _LoginState(repos, authBloc);
 }
 
 class _LoginState extends State<LoginForm> {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
   List<FocusNode> _focusNodes;
 
-  _LoginState(this.userRepository, this.authBloc);
+  _LoginState(this.repos, this.authBloc);
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _LoginState extends State<LoginForm> {
     return BlocProvider(
       create: (context) => LoginBloc(
           authBloc: BlocProvider.of<AuthBloc>(context),
-          userRepository: userRepository),
+          repos: repos),
       child: BlocBuilder<LoginBloc, FormBlocState>(
         condition: (previous, current) =>
             previous.runtimeType != current.runtimeType ||

@@ -3,11 +3,11 @@ import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'auth/auth.dart';
-import '../services/user_repository.dart';
+import '../services/repos.dart';
 
 
 class RegisterBloc extends FormBloc<String, String> {
-  final UserRepository userRepository;
+  final Repos repos;
   final AuthBloc authBloc;
 
   final company = TextFieldBloc(
@@ -31,9 +31,9 @@ class RegisterBloc extends FormBloc<String, String> {
   );
   
   RegisterBloc({
-    @required this.userRepository,
+    @required this.repos,
     @required this.authBloc,
-    })  : assert(userRepository != null),
+    })  : assert(repos != null),
         assert(authBloc != null), super(isLoading: true)
   {    
     addFieldBlocs(
@@ -44,7 +44,7 @@ class RegisterBloc extends FormBloc<String, String> {
   @override
   void onLoading() async {
     try {
-      final currencies = await userRepository.getCurrencies();
+      final currencies = await repos.getCurrencies();
       List<String> temp = [];
       currencies.forEach((r) => temp.add(r.display));
       currency..updateItems(temp);
@@ -72,7 +72,7 @@ class RegisterBloc extends FormBloc<String, String> {
     String currencyAbr = currency.value.substring(currency.value.indexOf('[')+1);
     currencyAbr = currencyAbr.substring(0, currencyAbr.indexOf(']'));
     try {
-      await userRepository.signUp(
+      await repos.signUp(
         companyName: company.value, currency: currencyAbr,
         firstName: names[0], lastName: lastName, email: email.value);
 //      authBloc.add(AppStarted());
