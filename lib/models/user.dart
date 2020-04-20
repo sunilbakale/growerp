@@ -1,29 +1,29 @@
 class User {
-    String partyId;
-    String userId;
-    String firstName;
-    String lastName;
-    String name;
-    String email;
-    String groupDescription;
-    String userGroupId;
-    String locale;
-    dynamic externalId;
+  String partyId;
+  String userId;
+  String firstName;
+  String lastName;
+  String name;
+  String email;
+  String groupDescription;
+  String userGroupId;
+  String locale;
+  dynamic externalId;
 
-    User({
-        this.partyId,
-        this.userId,
-        this.firstName,
-        this.lastName,
-        this.name,
-        this.email,
-        this.groupDescription,
-        this.userGroupId,
-        this.locale,
-        this.externalId,
-    });
+  User({
+    this.partyId,
+    this.userId,
+    this.firstName,
+    this.lastName,
+    this.name,
+    this.email,
+    this.groupDescription,
+    this.userGroupId,
+    this.locale,
+    this.externalId,
+  });
 
-    factory User.fromJson(Map<String, dynamic> json) => User(
+  factory User.fromJson(Map<String, dynamic> json) => User(
         partyId: json["partyId"],
         userId: json["userId"],
         firstName: json["firstName"],
@@ -34,9 +34,9 @@ class User {
         userGroupId: json["userGroupId"],
         locale: json["locale"],
         externalId: json["externalId"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "partyId": partyId,
         "userId": userId,
         "firstName": firstName,
@@ -47,5 +47,5 @@ class User {
         "userGroupId": userGroupId,
         "locale": locale,
         "externalId": externalId,
-    };
+      };
 }

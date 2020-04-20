@@ -8,10 +8,7 @@ class LoginForm extends StatefulWidget {
   final Repos repos;
   final AuthBloc authBloc;
 
-  LoginForm(
-      {Key key,
-      @required this.repos,
-      @required this.authBloc})
+  LoginForm({Key key, @required this.repos, @required this.authBloc})
       : assert(repos != null, authBloc != null);
 
   @override
@@ -41,9 +38,8 @@ class _LoginState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginBloc(
-          authBloc: BlocProvider.of<AuthBloc>(context),
-          repos: repos),
+      create: (context) =>
+          LoginBloc(authBloc: BlocProvider.of<AuthBloc>(context), repos: repos),
       child: BlocBuilder<LoginBloc, FormBlocState>(
         condition: (previous, current) =>
             previous.runtimeType != current.runtimeType ||
@@ -61,8 +57,7 @@ class _LoginState extends State<LoginForm> {
                 },
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
-                  BlocProvider.of<AuthBloc>(context)
-                      .add(AppStarted());
+                  BlocProvider.of<AuthBloc>(context).add(AppStarted());
                 },
                 onFailure: (context, state) {
                   LoadingDialog.hide(context);
@@ -110,8 +105,7 @@ class _LoginState extends State<LoginForm> {
                       ),
                       RaisedButton(
                         onPressed: () =>
-                            BlocProvider.of<AuthBloc>(context)
-                              .add(Register()),
+                            BlocProvider.of<AuthBloc>(context).add(Register()),
                         child: Text('register new account'),
                       ),
                     ],

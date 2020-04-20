@@ -24,14 +24,10 @@ class HomeBloc extends FormBloc<String, String> {
   void onLoading() async {
     try {
       authSubscription = await authBloc.listen((state) {
-        print("====home bloc state: $state");
         if (state is AuthAuthenticated) {
-          authenticate =
-              (authBloc.state as AuthAuthenticated)
-                  .authenticate;
+          authenticate = (authBloc.state as AuthAuthenticated).authenticate;
         }
       });
-      print("=====home bloc company: ${authenticate?.company?.name}");
       emitLoaded();
     } catch (e) {
       emitLoadFailed(failureResponse: "catch, error: $e");

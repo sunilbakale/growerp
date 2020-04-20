@@ -38,8 +38,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => RegisterBloc(
-          authBloc: BlocProvider.of<AuthBloc>(context),
-          repos: repos),
+          authBloc: BlocProvider.of<AuthBloc>(context), repos: repos),
       child: Builder(
         builder: (context) {
           final registerBloc = context.bloc<RegisterBloc>();
@@ -52,8 +51,7 @@ class _RegisterFormState extends State<RegisterForm> {
               },
               onSuccess: (context, state) {
                 LoadingDialog.hide(context);
-                BlocProvider.of<AuthBloc>(context)
-                      .add(AppStarted());
+                BlocProvider.of<AuthBloc>(context).add(AppStarted());
               },
               onFailure: (context, state) {
                 LoadingDialog.hide(context);

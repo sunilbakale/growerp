@@ -40,9 +40,7 @@ class LoginBloc extends FormBloc<String, String> {
     try {
       authSubscription = await authBloc.listen((state) {
         if (state is AuthUnauthenticated) {
-          authenticate =
-              (authBloc.state as AuthUnauthenticated)
-                  .authenticate;
+          authenticate = (authBloc.state as AuthUnauthenticated).authenticate;
           email.updateInitialValue(authenticate?.user?.name);
         }
       });
@@ -62,19 +60,8 @@ class LoginBloc extends FormBloc<String, String> {
         username: email.value,
         password: password.value,
       );
-//      authBloc.add(AppStarted());
       emitSuccess();
     } on DioError catch (e) {
-/*      if(e.response != null) {
-          print("login error data: ${e.response.data}");
-          print("login error header: ${e.response.headers}");
-          print("login error request: ${e.response.request}");
-      } else{
-          // Something happened in setting up or sending the request that triggered an Error
-          print("login no response, request: ${e.request}");
-          print("login no response, message: ${e.message}");
-      }
-*/
       emitFailure(failureResponse: e.response.data['errors']);
     }
   }

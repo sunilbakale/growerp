@@ -9,7 +9,9 @@ abstract class AuthEvent extends Equatable {
 }
 
 class ConnectionProblem extends AuthEvent {}
+
 class AppStarted extends AuthEvent {}
+
 class Register extends AuthEvent {}
 
 class LoggedIn extends AuthEvent {
@@ -29,4 +31,3 @@ class LoggedOut extends AuthEvent {
   @override
   String toString() => 'loggedOut userName: ${authenticate?.user?.name}';
 }
-

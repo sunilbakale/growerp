@@ -14,11 +14,12 @@ class Repos {
 
   Repos() {
     _client = new Dio();
-    if (kReleaseMode==true) { // is Release Mode ??
+    if (kReleaseMode == true) {
+      // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
-    } else if (Platform.isAndroid==true) {
+    } else if (Platform.isAndroid == true) {
       _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
-    } else if (Platform.isIOS==true) {
+    } else if (Platform.isIOS == true) {
       _client.options.baseUrl = 'http://localhost:8080/rest/';
     }
     _client.options.connectTimeout = 5000; //5s
@@ -58,17 +59,17 @@ class Repos {
     return errorDescription;
   }
 
-  Future <bool> connected() async {
+  Future<bool> connected() async {
     try {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;
-    } catch(e) {
+    } catch (e) {
       sessionToken = null;
       print("Exception occured: $e ");
     }
-    return sessionToken != null; 
+    return sessionToken != null;
   }
-    
+
   Future<dynamic> getCurrencies() async {
     Response response = await _client.get('s1/growerp/CurrencyList');
     CurrencyList currencyList = currencyListFromJson(response.toString());
@@ -98,7 +99,7 @@ class Repos {
   Future<void> persistAuthenticate(Authenticate authenticate) async {
     print("repository persist authenticate: ${authenticate?.user?.name}");
     await FlutterKeychain.put(
-      key: "authenticate", value: authenticateToJson(authenticate));
+        key: "authenticate", value: authenticateToJson(authenticate));
     return;
   }
 
@@ -106,7 +107,8 @@ class Repos {
     String jsonString = await FlutterKeychain.get(key: "authenticate");
     if (jsonString != null) {
       return authenticateFromJson(jsonString);
-    } else return null;
+    } else
+      return null;
   }
 
   Future<void> signUp(
@@ -116,7 +118,8 @@ class Repos {
       @required String lastName,
       @required String currency,
       @required String email,
-      List data}) async { // create some category and product when company empty
+      List data}) async {
+    // create some category and product when company empty
     response = await _client.post('s1/growerp/RegisterUserAndCompany', data: {
       'username': email, 'emailAddress': email,
       'newPassword': 'qqqqqq9!', 'firstName': firstName,
@@ -129,10 +132,12 @@ class Repos {
       'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
       'moquiSessionToken': sessionToken
     });
-    Authenticate auth = new Authenticate.fromJson({ // save for login
+    Authenticate auth = new Authenticate.fromJson({
+      // save for login
       'moquiSessionToken': sessionToken,
       'company': {'name': companyName},
-      'user': {'name': email }});
+      'user': {'name': email}
+    });
     await persistAuthenticate(auth);
   }
 }

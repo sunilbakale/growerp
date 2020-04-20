@@ -5,20 +5,17 @@ import '../../services/repos.dart';
 import '../../models/models.dart';
 import 'auth.dart';
 
-class AuthBloc
-    extends Bloc<AuthEvent, AuthState> {
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Repos repos;
 
-  AuthBloc({@required this.repos})
-      : assert(repos != null);
+  AuthBloc({@required this.repos}) : assert(repos != null);
 
   @override
   AuthState get initialState => AuthUninitialized();
 
   @override
   // actual repos.authentiate done by login bloc
-  Stream<AuthState> mapEventToState(
-    AuthEvent event) async* {
+  Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is AppStarted) {
       final connected = await repos.connected();
       if (!connected) {
@@ -26,10 +23,8 @@ class AuthBloc
       } else {
         final Authenticate authenticate = await repos.getAuthenticate();
         if (authenticate?.apiKey != null) {
-          print("=====apiKey found!");
           yield AuthAuthenticated(authenticate: authenticate);
         } else {
-          print("==NO===apiKey found!");
           yield AuthUnauthenticated(authenticate: authenticate);
         }
       }
@@ -40,7 +35,8 @@ class AuthBloc
         firstName: event.firstName, lastName: event.lastName,
         currency: event.currency, email: event.email);
       yield AuthUnauthenticated();
-*/    } else if (event is LoggedIn) {
+*/
+    } else if (event is LoggedIn) {
       yield AuthLoading();
       await repos.persistAuthenticate(event.authenticate);
       yield AuthAuthenticated(authenticate: event.authenticate);

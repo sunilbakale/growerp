@@ -8,15 +8,11 @@ class HomeForm extends StatefulWidget {
   final Repos repos;
   final AuthBloc authBloc;
 
-  HomeForm(
-      {Key key,
-      @required this.repos,
-      @required this.authBloc})
+  HomeForm({Key key, @required this.repos, @required this.authBloc})
       : assert(repos != null, authBloc != null);
 
   @override
-  _HomeFormState createState() =>
-      _HomeFormState(repos, authBloc);
+  _HomeFormState createState() => _HomeFormState(repos, authBloc);
 }
 
 class _HomeFormState extends State<HomeForm> {
@@ -43,8 +39,7 @@ class _HomeFormState extends State<HomeForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => HomeBloc(
-            authBloc: BlocProvider.of<AuthBloc>(context),
-            repos: repos),
+            authBloc: BlocProvider.of<AuthBloc>(context), repos: repos),
         child: BlocBuilder<HomeBloc, FormBlocState>(
             condition: (previous, current) =>
                 previous.runtimeType != current.runtimeType ||
@@ -60,9 +55,8 @@ class _HomeFormState extends State<HomeForm> {
                       actions: <Widget>[
                         IconButton(
                             icon: Icon(Icons.exit_to_app),
-                            onPressed: () =>
-                                BlocProvider.of<AuthBloc>(context)
-                                    .add(LoggedOut()))
+                            onPressed: () => BlocProvider.of<AuthBloc>(context)
+                                .add(LoggedOut()))
                       ],
                     ),
                     body: Center(
@@ -76,15 +70,15 @@ class _HomeFormState extends State<HomeForm> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
-                      Text(homeBloc.authenticate.company.name,
-                        style: TextStyle(
-                            fontSize: 20, color: Colors.black),
+                      Text(
+                        homeBloc.authenticate.company.name,
+                        style: TextStyle(fontSize: 20, color: Colors.black),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
-                      Text(homeBloc.authenticate.user.name,
-                        style: TextStyle(
-                            fontSize: 20, color: Colors.black),
+                      Text(
+                        homeBloc.authenticate.user.name,
+                        style: TextStyle(fontSize: 20, color: Colors.black),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 20),
