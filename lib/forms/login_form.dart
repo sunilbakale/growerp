@@ -48,7 +48,7 @@ class _LoginState extends State<LoginForm> {
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
           } else {
-            final loginFormBloc = context.bloc<LoginBloc>();
+            final loginBloc = context.bloc<LoginBloc>();
             return Scaffold(
               resizeToAvoidBottomInset: false,
               body: FormBlocListener<LoginBloc, String, String>(
@@ -57,7 +57,8 @@ class _LoginState extends State<LoginForm> {
                 },
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
-                  BlocProvider.of<AuthBloc>(context).add(AppStarted());
+                  BlocProvider.of<AuthBloc>(context)
+                  .add(LoggedIn(authenticate: loginBloc.authenticate));
                 },
                 onFailure: (context, state) {
                   LoadingDialog.hide(context);
@@ -70,9 +71,9 @@ class _LoginState extends State<LoginForm> {
                       SizedBox(height: 40),
                       Image.asset('assets/growerp.png', height: 100),
                       Text(
-                        loginFormBloc?.authenticate?.company?.name == null
+                        loginBloc?.authenticate?.company?.name == null
                             ? 'Hotel'
-                            : loginFormBloc?.authenticate?.company?.name,
+                            : loginBloc?.authenticate?.company?.name,
                         style: TextStyle(
                             color: Color(0xFFB52727),
                             fontSize: 20,
@@ -81,7 +82,7 @@ class _LoginState extends State<LoginForm> {
                       ),
                       SizedBox(height: 10),
                       TextFieldBlocBuilder(
-                        textFieldBloc: loginFormBloc.email,
+                        textFieldBloc: loginBloc.email,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           labelText: 'Email',
@@ -90,7 +91,7 @@ class _LoginState extends State<LoginForm> {
                         nextFocusNode: _focusNodes[0],
                       ),
                       TextFieldBlocBuilder(
-                        textFieldBloc: loginFormBloc.password,
+                        textFieldBloc: loginBloc.password,
                         suffixButton: SuffixButton.obscureText,
                         decoration: InputDecoration(
                           labelText: 'Password',
@@ -100,14 +101,18 @@ class _LoginState extends State<LoginForm> {
                       ),
                       SizedBox(height: 20),
                       RaisedButton(
-                        onPressed: loginFormBloc.submit,
+                        onPressed: loginBloc.submit,
                         child: Text('LOGIN'),
                       ),
-                      RaisedButton(
-                        onPressed: () =>
-                            BlocProvider.of<AuthBloc>(context).add(Register()),
-                        child: Text('register new account'),
-                      ),
+                      SizedBox(height: 30),
+                      GestureDetector(
+                        child: Text(
+                          'register new account',
+                        ),
+                        onTap: () {
+                          BlocProvider.of<AuthBloc>(context).add(Register());
+                        }
+                      )
                     ],
                   ),
                 ),

@@ -52,11 +52,11 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onSubmitting() async {
-    print(email.value);
-    print(password.value);
+    // print(email.value);
+    // print(password.value);
 
     try {
-      await repos.authenticate(
+      await repos.login(
         username: email.value,
         password: password.value,
       );

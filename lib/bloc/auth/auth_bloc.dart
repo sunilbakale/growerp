@@ -28,24 +28,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           yield AuthUnauthenticated(authenticate: authenticate);
         }
       }
-/*    } else if (event is Subscribe) {
-      yield AuthLoading();
-      await repos.signUp(
-        companyName: event.companyName, partyId: event.partyId,
-        firstName: event.firstName, lastName: event.lastName,
-        currency: event.currency, email: event.email);
-      yield AuthUnauthenticated();
-*/
     } else if (event is LoggedIn) {
       yield AuthLoading();
       await repos.persistAuthenticate(event.authenticate);
       yield AuthAuthenticated(authenticate: event.authenticate);
     } else if (event is LoggedOut) {
       yield AuthLoading();
-      final Authenticate authenticate = await repos.deleteApiKey();
+      await repos.logout();
+      Authenticate authenticate = event.authenticate;
+      if (authenticate == null) {
+        authenticate = await repos.getAuthenticate();
+      }
+      authenticate.apiKey = null;
+      await repos.persistAuthenticate(authenticate);
       yield AuthUnauthenticated(authenticate: authenticate);
     } else if (event is Register) {
-      yield AuthLoading();
       yield AuthRegister();
     }
   }

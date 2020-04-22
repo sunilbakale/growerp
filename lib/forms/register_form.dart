@@ -51,7 +51,8 @@ class _RegisterFormState extends State<RegisterForm> {
               },
               onSuccess: (context, state) {
                 LoadingDialog.hide(context);
-                BlocProvider.of<AuthBloc>(context).add(AppStarted());
+                BlocProvider.of<AuthBloc>(context)
+                  .add(LoggedOut(authenticate: registerBloc.authenticate));
               },
               onFailure: (context, state) {
                 LoadingDialog.hide(context);
@@ -148,6 +149,15 @@ class _RegisterFormState extends State<RegisterForm> {
                               onPressed: registerBloc.submit,
                               child: Text('REGISTER'),
                             ),
+                            SizedBox(height: 30),
+                            GestureDetector(
+                              child: Text(
+                                ' back to Login'
+                              ),
+                              onTap: () {
+                                BlocProvider.of<AuthBloc>(context).add(AppStarted());
+                              }
+                            )
                           ],
                         ),
                       );

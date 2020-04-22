@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:growerp/models/authenticate.dart';
 import 'auth/auth.dart';
 import '../services/repos.dart';
 
 class RegisterBloc extends FormBloc<String, String> {
   final Repos repos;
   final AuthBloc authBloc;
+  Authenticate authenticate;
 
   final company = TextFieldBloc(
       initialValue: kReleaseMode == false ? "Test Company" : "",
@@ -54,10 +56,10 @@ class RegisterBloc extends FormBloc<String, String> {
 
   @override
   void onSubmitting() async {
-    print(company.value);
-    print(currency.value);
-    print(fullName.value);
-    print(email.value);
+    // print(company.value);
+    // print(currency.value);
+    // print(fullName.value);
+    // print(email.value);
 
     List names = fullName.value.split(" ");
     String lastName = "";
@@ -70,7 +72,7 @@ class RegisterBloc extends FormBloc<String, String> {
         currency.value.substring(currency.value.indexOf('[') + 1);
     currencyAbr = currencyAbr.substring(0, currencyAbr.indexOf(']'));
     try {
-      await repos.signUp(
+      authenticate = await repos.register(
           companyName: company.value,
           currency: currencyAbr,
           firstName: names[0],

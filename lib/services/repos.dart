@@ -9,7 +9,6 @@ import '../models/models.dart';
 
 class Repos {
   Dio _client;
-  Response response;
   String sessionToken;
 
   Repos() {
@@ -76,28 +75,21 @@ class Repos {
     return currencyList.currencyList;
   }
 
-  Future<dynamic> authenticate(
+  Future<dynamic> login(
       {@required String username, @required String password}) async {
-    response = await _client.post('s1/growerp/LoginUser', data: {
+    Response response = await _client.post('s1/growerp/LoginUser', data: {
       'username': username,
       'password': password,
       'moquiSessionToken': sessionToken
     });
-    Authenticate authenticate = authenticateFromJson(response.toString());
-    persistAuthenticate(authenticate);
     return authenticateFromJson(response.toString());
   }
 
-  Future<Authenticate> deleteApiKey() async {
-    print("repository delete token");
-    Authenticate authenticate = await getAuthenticate();
-    authenticate.apiKey = null;
-    await persistAuthenticate(authenticate);
-    return authenticate;
+  Future<void> logout() async {
+    await _client.post('s1/growerp/LogoutUser');
   }
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
-    print("repository persist authenticate: ${authenticate?.user?.name}");
     await FlutterKeychain.put(
         key: "authenticate", value: authenticateToJson(authenticate));
     return;
@@ -105,13 +97,10 @@ class Repos {
 
   Future<Authenticate> getAuthenticate() async {
     String jsonString = await FlutterKeychain.get(key: "authenticate");
-    if (jsonString != null) {
-      return authenticateFromJson(jsonString);
-    } else
-      return null;
+    return authenticateFromJson(jsonString.toString());
   }
 
-  Future<void> signUp(
+  Future<Authenticate> register(
       {@required String companyName,
       String companyPartyId, // if empty will create new company too!
       @required String firstName,
@@ -120,7 +109,8 @@ class Repos {
       @required String email,
       List data}) async {
     // create some category and product when company empty
-    response = await _client.post('s1/growerp/RegisterUserAndCompany', data: {
+    Response response =
+        await _client.post('s1/growerp/RegisterUserAndCompany', data: {
       'username': email, 'emailAddress': email,
       'newPassword': 'qqqqqq9!', 'firstName': firstName,
       'lastName': lastName, 'locale': await Devicelocale.currentLocale,
@@ -132,12 +122,6 @@ class Repos {
       'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
       'moquiSessionToken': sessionToken
     });
-    Authenticate auth = new Authenticate.fromJson({
-      // save for login
-      'moquiSessionToken': sessionToken,
-      'company': {'name': companyName},
-      'user': {'name': email}
-    });
-    await persistAuthenticate(auth);
+    return authenticateFromJson(response.toString());
   }
 }
