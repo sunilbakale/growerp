@@ -56,10 +56,7 @@ class LoginBloc extends FormBloc<String, String> {
     // print(password.value);
 
     try {
-      await repos.login(
-        username: email.value,
-        password: password.value,
-      );
+      await repos.login(username: email.value, password: password.value);
       emitSuccess();
     } on DioError catch (e) {
       emitFailure(failureResponse: e.response.data['errors']);
