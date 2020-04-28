@@ -46,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield AuthRegister();
     } else if (event is ResetPassword) {
       await repos.resetPassword(username: event.username);
-      yield AuthUnauthenticated(authenticate: event.authenticate);
+      yield AuthUnauthenticated();
     }
   }
 }

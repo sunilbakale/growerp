@@ -39,7 +39,8 @@ class LoginBloc extends FormBloc<String, String> {
     try {
       authSubscription = await authBloc.listen((state) {
         if (state is AuthUnauthenticated) {
-          authenticate = (authBloc.state as AuthUnauthenticated).authenticate;
+          Authenticate result = (authBloc.state as AuthUnauthenticated).authenticate;
+          if (result != null) authenticate = result;
           email.updateInitialValue(authenticate?.user?.name);
         }
       });

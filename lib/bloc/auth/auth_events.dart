@@ -16,10 +16,9 @@ class Register extends AuthEvent {}
 
 class ResetPassword extends AuthEvent {
   final String username;
-  final Authenticate authenticate;
-  const ResetPassword({@required this.authenticate,@required this.username});
+  const ResetPassword({@required this.username});
   @override
-  List<Object> get props => [authenticate];
+  List<Object> get props => [username];
   @override
   String toString() => 'loggedIn userName: ${username}';
 }

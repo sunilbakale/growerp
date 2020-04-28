@@ -57,6 +57,7 @@ class _LoginState extends State<LoginForm> {
                 },
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
+                  print("===success response: ${state.successResponse}");
                     BlocProvider.of<AuthBloc>(context)
                       .add(LoggedIn(authenticate: loginBloc.authenticate));
                 },
@@ -123,7 +124,6 @@ class _LoginState extends State<LoginForm> {
                             if (username != null) {
                               BlocProvider.of<AuthBloc>(context).add(
                                   ResetPassword(
-                                      authenticate: loginBloc.authenticate,
                                       username: username));
                             }
                           })
@@ -146,7 +146,8 @@ _newPasswordDialog(BuildContext context, String username) async {
         false, // dialog is dismissible with a tap on the barrier
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Email you registered with?'),
+        title: Text('Email you registered with?\nWe will send you a reset password',
+          textAlign: TextAlign.center),
         content: new Row(children: <Widget>[
           new Expanded(
               child: TextFormField(
