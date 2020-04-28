@@ -1,41 +1,86 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:growerp/bloc/bloc.dart';
 import 'package:growerp/models/models.dart';
 import 'package:growerp/services/repos.dart';
 
-class MockRepository extends Mock implements Repos {}
+class MockRepos extends Mock implements Repos {}
+class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class AuthUnauthenticated extends AuthState {
+  final Authenticate authenticate = authenticateFromJson('''
+           {  "company": {"partyId": "000000",
+                          "name": "dummyCompany",
+                          "currency": "dummyCurrency"},
+              "user": {"firstName": "dummyFirstName",
+                       "lastName": "dummyLastName",
+                       "email": "dummyEmail",
+                       "name": "dummyEmail"},
+              "apiKey": "dummyKey"}
+      ''');
+}
 
 void main() {
   LoginBloc loginBloc;
-  MockRepository mockRepository;
+  MockRepos repos;
+  AuthBloc authBloc;
+  final Authenticate authenticate = authenticateFromJson('''
+           {  "company": {"partyId": "000000",
+                          "name": "dummyCompany",
+                          "currency": "dummyCurrency"},
+              "user": {"firstName": "dummyFirstName",
+                       "lastName": "dummyLastName",
+                       "email": "dummyEmail",
+                       "name": "dummyEmail"},
+              "apiKey": "dummyKey"}
+      ''');
 
   setUp(() {
-    mockRepository = MockRepository();
-    loginBloc = LoginBloc(
-      repos: mockRepository, 
-      authBloc: 
-      AuthBloc(repos: mockRepository));
+    repos = MockRepos();
+    authBloc = MockAuthBloc();
+    loginBloc = LoginBloc(repos: repos, authBloc: AuthBloc(repos: repos));
   });
 
   tearDown(() {
     loginBloc?.close();
+    authBloc?.close();
   });
 
-  test('should assert if authBloc null', () {
-    expect(
-      () => LoginBloc(repos: mockRepository, 
-      authBloc: null),
-      throwsA(isAssertionError),
-    );
+  /*
+  https://pub.dev/packages/bloc_test
+  https://github.com/felangel/bloc/issues/721
+
+  */
+/*
+  test('Login initial state should be FormBlocLoading', () {
+    // whenListen(authBloc, Stream.fromIterable([AuthUnauthenticated(authenticate: authenticate)]));
+    expect(loginBloc.initialState, FormBlocLoading(progress: 0.0));
   });
-  test('should assert if repository null', () {
-    expect(
-      () => LoginBloc(repos: null, 
-      authBloc: AuthBloc(repos: mockRepository)),
-      throwsA(isAssertionError),
+
+  test('Login close does not emit new states', () {
+    expectLater(loginBloc, emitsInOrder([FormBlocLoading(progress: 1.0), emitsDone]),
     );
+    loginBloc.close();
+  });
+*/
+
+  group('login', () {
+    test('emits [Loading, Loaded]', () {
+      final expectedResponse = [FormBlocLoading,FormBlocLoading, FormBlocLoaded];
+      whenListen( authBloc,
+        Stream.fromIterable([
+          AuthUninitialized(),
+          AuthUnauthenticated()
+        ])
+      );
+      when (repos.login(username: 'dummmy', password: 'dummy'))
+        .thenAnswer((_) => Future.value(authenticate));
+
+      expectLater(loginBloc, emitsInOrder(expectedResponse));
+
+      loginBloc.add(LoadFormBloc());
+    });
   });
 }

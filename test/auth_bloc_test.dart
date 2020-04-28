@@ -39,17 +39,15 @@ void main() {
     );
   });
 
-  test('Auth initial state is correct', () {
+  test('Auth initial state should be AuthUninitialized', () {
     expect(authBloc.initialState, AuthUninitialized());
   });
 
   test('Auth close does not emit new states', () {
-    expectLater(
-      authBloc,
-      emitsInOrder([AuthUninitialized(), emitsDone]),
-    );
+    expectLater(authBloc, emitsInOrder([AuthUninitialized(), emitsDone]));
     authBloc.close();
   });
+  
   group('AppStarted', () {
     test('emits [uninitialized, connectionProblem] for exception getting token',
         () {
@@ -57,10 +55,7 @@ void main() {
 
       when(repos.connected()).thenAnswer((_) => Future.value(false));
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(AppStarted());
     });
@@ -73,10 +68,7 @@ void main() {
       when(repos.connected()).thenAnswer((_) => Future.value(true));
       when(repos.getAuthenticate()).thenAnswer((_) => Future.value(null));
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(AppStarted());
     });
@@ -93,19 +85,14 @@ void main() {
       when(repos.getAuthenticate())
           .thenAnswer((_) => Future.value(authenticate));
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(AppStarted());
     });
   });
 
   group('LoggedIn', () {
-    test(
-        'emits [uninitialized, loading, authenticated]',
-        () {
+    test('emits [uninitialized, loading, authenticated]', () {
       final expectedResponse = [
         AuthUninitialized(),
         AuthLoading(),
@@ -115,36 +102,27 @@ void main() {
       when(repos.persistAuthenticate(authenticate))
           .thenAnswer((_) => Future.value(Void));
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(LoggedIn(authenticate: authenticate));
     });
   });
 
   group('LoggedOut', () {
-    test(
-        'emits [uninitialized, loading, unauthenticated]',
-        () {
+    test('emits [uninitialized, loading, unauthenticated]', () {
       final expectedResponse = [
         AuthUninitialized(),
         AuthLoading(),
         AuthUnauthenticated(authenticate: authenticate),
       ];
 
-      when(repos.logout())
-          .thenAnswer((_) => Future.value(Void));
+      when(repos.logout()).thenAnswer((_) => Future.value(Void));
       when(repos.getAuthenticate())
           .thenAnswer((_) => Future.value(authenticate));
       when(repos.persistAuthenticate(authenticate))
           .thenAnswer((_) => Future.value(Void));
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(LoggedOut());
     });
@@ -152,18 +130,11 @@ void main() {
 
   group('Register', () {
     test('emits [uninitialized, register]', () {
-      final expectedResponse = [
-        AuthUninitialized(),
-        AuthRegister(),
-      ];
+      final expectedResponse = [AuthUninitialized(), AuthRegister()];
 
-      expectLater(
-        authBloc,
-        emitsInOrder(expectedResponse),
-      );
+      expectLater(authBloc, emitsInOrder(expectedResponse));
 
       authBloc.add(Register());
     });
   });
-
 }

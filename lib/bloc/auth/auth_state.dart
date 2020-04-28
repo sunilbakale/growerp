@@ -23,14 +23,17 @@ class AuthAuthenticated extends AuthState {
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => 'Authenticated: userName: ${authenticate.user.name}';
+  String toString() => '''Authenticated: 
+    username: ${authenticate.user.name}, email: ${authenticate.user.email}''';
 }
 
 class AuthUnauthenticated extends AuthState {
+  final String passwordChange;
   final Authenticate authenticate;
-  const AuthUnauthenticated({this.authenticate});
+  const AuthUnauthenticated({this.authenticate, this.passwordChange});
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => 'Unauthenticated: userName: ${authenticate?.user?.name}';
+  String toString() => '''Unauthenticated: 
+    username: ${authenticate?.user?.name}, email: ${authenticate?.user?.email}''';
 }

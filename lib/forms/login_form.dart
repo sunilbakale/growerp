@@ -57,8 +57,8 @@ class _LoginState extends State<LoginForm> {
                 },
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
-                  BlocProvider.of<AuthBloc>(context)
-                  .add(LoggedIn(authenticate: loginBloc.authenticate));
+                    BlocProvider.of<AuthBloc>(context)
+                      .add(LoggedIn(authenticate: loginBloc.authenticate));
                 },
                 onFailure: (context, state) {
                   LoadingDialog.hide(context);
@@ -106,13 +106,27 @@ class _LoginState extends State<LoginForm> {
                       ),
                       SizedBox(height: 30),
                       GestureDetector(
-                        child: Text(
-                          'register new account',
-                        ),
-                        onTap: () {
-                          BlocProvider.of<AuthBloc>(context).add(Register());
-                        }
-                      )
+                          child: Text(
+                            'register new account',
+                          ),
+                          onTap: () {
+                            BlocProvider.of<AuthBloc>(context).add(Register());
+                          }),
+                      SizedBox(height: 30),
+                      GestureDetector(
+                          child: Text(
+                            'forgot password?',
+                          ),
+                          onTap: () async {
+                            final String username = await _newPasswordDialog(
+                                context, loginBloc.authenticate?.user?.name);
+                            if (username != null) {
+                              BlocProvider.of<AuthBloc>(context).add(
+                                  ResetPassword(
+                                      authenticate: loginBloc.authenticate,
+                                      username: username));
+                            }
+                          })
                     ],
                   ),
                 ),
@@ -123,4 +137,41 @@ class _LoginState extends State<LoginForm> {
       ),
     );
   }
+}
+
+_newPasswordDialog(BuildContext context, String username) async {
+  return showDialog<String>(
+    context: context,
+    barrierDismissible:
+        false, // dialog is dismissible with a tap on the barrier
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Email you registered with?'),
+        content: new Row(children: <Widget>[
+          new Expanded(
+              child: TextFormField(
+                  initialValue: username,
+                  autofocus: true,
+                  decoration: new InputDecoration(labelText: 'Email:'),
+                  onChanged: (value) {
+                    username = value;
+                  }))
+        ]),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(null);
+            },
+          ),
+          FlatButton(
+            child: Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop(username);
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

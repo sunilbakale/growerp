@@ -14,7 +14,6 @@ class LoginBloc extends FormBloc<String, String> {
   StreamSubscription authSubscription;
 
   final email = TextFieldBloc(
-    initialValue: kReleaseMode == false ? "info@growerp.com" : null,
     validators: [
       FieldBlocValidators.required,
       FieldBlocValidators.email,
@@ -56,8 +55,14 @@ class LoginBloc extends FormBloc<String, String> {
     // print(password.value);
 
     try {
-      await repos.login(username: email.value, password: password.value);
-      emitSuccess();
+      dynamic result = await repos.login(username: email.value, password: password.value);
+      if(result is String) {
+        print("=====result from login: ${result}");
+        emitSuccess(successResponse: result);
+      } else {
+        authenticate = result;
+        emitSuccess();
+      }
     } on DioError catch (e) {
       emitFailure(failureResponse: e.response.data['errors']);
     }
