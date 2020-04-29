@@ -71,7 +71,8 @@ class App extends StatelessWidget {
       home: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthConnectionProblem) {
-            return NoConnectionForm();
+            return LoginForm(repos: repos,
+              authBloc: authBloc, noConnection: true);
           } else if (state is AuthAuthenticated) {
             return HomeForm(repos: repos,
               authBloc: authBloc);

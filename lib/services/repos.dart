@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 import 'dart:async';
 import '../models/models.dart';
 import 'dart:convert';
+
 class Repos {
   Dio _client;
   String sessionToken;
@@ -77,35 +78,32 @@ class Repos {
 
   Future<dynamic> login(
       {@required String username, @required String password}) async {
-        print("==logging in password: $password user: $username");
+    print("==logging in password: $password user: $username");
     Response response = await _client.post('s1/growerp/LoginUser', data: {
       'username': username,
       'password': password,
       'moquiSessionToken': sessionToken
     });
     dynamic result = jsonDecode(response.toString());
-    if (result["passwordChange"] == "true") return "passwordChange";
-    else return authenticateFromJson(response.toString());
+    if (result["passwordChange"] == "true")
+      return "passwordChange";
+    else
+      return authenticateFromJson(response.toString());
   }
 
-  Future<dynamic> resetPassword(
-      {@required String username}) async {
+  Future<dynamic> resetPassword({@required String username}) async {
     print("===request password for: $username");
     Response response = await _client.post('s1/growerp/ResetPassword',
-    data: {
-      'username': username,
-      'moquiSessionToken': sessionToken
-    });
+        data: {'username': username, 'moquiSessionToken': sessionToken});
     print("==reset password=service ==== ${response}");
     return json.decode(response.toString());
   }
 
-  Future<dynamic> updatePassword({
-      @required String username,
+  Future<dynamic> updatePassword(
+      {@required String username,
       @required String oldPassword,
-      @required String newPassword }) async {
-    Response response = await _client.post('s1/growerp/UpdatePassword',
-    data: {
+      @required String newPassword}) async {
+    Response response = await _client.post('s1/growerp/UpdatePassword', data: {
       'username': username,
       'oldPassword': oldPassword,
       'newPassword': newPassword,
