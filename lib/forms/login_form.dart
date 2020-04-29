@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:after_layout/after_layout.dart';
 import '../services/repos.dart';
 import '../bloc/bloc.dart';
 import '../widgets/widgets.dart';
@@ -15,7 +16,7 @@ class LoginForm extends StatefulWidget {
   _LoginState createState() => _LoginState(repos, authBloc);
 }
 
-class _LoginState extends State<LoginForm> {
+class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
   final Repos repos;
   final AuthBloc authBloc;
 
@@ -58,8 +59,13 @@ class _LoginState extends State<LoginForm> {
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
                   print("===success response: ${state.successResponse}");
+                  if (state.successResponse == "passwordChange") {
+                    showHelloWorld(
+                        loginBloc.email.value, loginBloc.password.value);
+                  } else {
                     BlocProvider.of<AuthBloc>(context)
-                      .add(LoggedIn(authenticate: loginBloc.authenticate));
+                        .add(LoggedIn(authenticate: loginBloc.authenticate));
+                  }
                 },
                 onFailure: (context, state) {
                   LoadingDialog.hide(context);
@@ -122,9 +128,8 @@ class _LoginState extends State<LoginForm> {
                             final String username = await _newPasswordDialog(
                                 context, loginBloc.authenticate?.user?.name);
                             if (username != null) {
-                              BlocProvider.of<AuthBloc>(context).add(
-                                  ResetPassword(
-                                      username: username));
+                              BlocProvider.of<AuthBloc>(context)
+                                  .add(ResetPassword(username: username));
                             }
                           })
                     ],
@@ -137,6 +142,59 @@ class _LoginState extends State<LoginForm> {
       ),
     );
   }
+
+  void afterFirstLayout(BuildContext context) {}
+  void showHelloWorld(String username, String password) {
+    String password1;
+    String password2;
+    showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: Text(
+            'Enter a new password',
+            textAlign: TextAlign.center),
+        content: new Column(children: <Widget>[
+          new Expanded(
+              child: TextFormField(
+                  autofocus: true,
+                  decoration: new InputDecoration(labelText: 'New Password:'),
+                  onChanged: (value) {
+                    password1 = value;
+                  })),
+          new Expanded(
+              child: TextFormField(
+                  decoration:
+                      new InputDecoration(labelText: 'Confirm New Password:'),
+                  onChanged: (value) {
+                    password2 = value;
+                  }))
+        ]),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              authBloc.add(LoggedOut());
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('Ok'),
+            onPressed: () {
+              if (password1 != password2) {
+                Text('passsword not match!');
+              } else {
+                authBloc.add(UpdatePassword(
+                    username: username,
+                    password: password,
+                    newPassword: password1));
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 _newPasswordDialog(BuildContext context, String username) async {
@@ -146,8 +204,9 @@ _newPasswordDialog(BuildContext context, String username) async {
         false, // dialog is dismissible with a tap on the barrier
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Email you registered with?\nWe will send you a reset password',
-          textAlign: TextAlign.center),
+        title: Text(
+            'Email you registered with?\nWe will send you a reset password',
+            textAlign: TextAlign.center),
         content: new Row(children: <Widget>[
           new Expanded(
               child: TextFormField(

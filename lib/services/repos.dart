@@ -91,7 +91,8 @@ class Repos {
   Future<dynamic> resetPassword(
       {@required String username}) async {
     print("===request password for: $username");
-    Response response = await _client.post('s1/growerp/ResetPassword', data: {
+    Response response = await _client.post('s1/growerp/ResetPassword',
+    data: {
       'username': username,
       'moquiSessionToken': sessionToken
     });
@@ -103,7 +104,8 @@ class Repos {
       @required String username,
       @required String oldPassword,
       @required String newPassword }) async {
-    Response response = await _client.post('s1/growerp/UpdatePassword', data: {
+    Response response = await _client.post('s1/growerp/UpdatePassword',
+    data: {
       'username': username,
       'oldPassword': oldPassword,
       'newPassword': newPassword,

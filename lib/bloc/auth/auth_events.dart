@@ -23,6 +23,21 @@ class ResetPassword extends AuthEvent {
   String toString() => 'loggedIn userName: ${username}';
 }
 
+class UpdatePassword extends AuthEvent {
+  final String username;
+  final String password;
+  final String newPassword;
+  const UpdatePassword({
+    @required this.username,
+    @required this.password,
+    @required this.newPassword,
+    });
+  @override
+  List<Object> get props => [username];
+  @override
+  String toString() => 'update password userName: ${username}';
+}
+
 class LoggedIn extends AuthEvent {
   final Authenticate authenticate;
   const LoggedIn({@required this.authenticate});
