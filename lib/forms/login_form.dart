@@ -147,7 +147,6 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
   }
 
   void afterFirstLayout(BuildContext context) {
-    print("====conn: $noConnection");
     if (noConnection) _noConnection();
   }
 
@@ -165,8 +164,10 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
             ),
             SizedBox(height: 80),
             RaisedButton.icon(
-              onPressed: () => 
+              onPressed: () => {
                 BlocProvider.of<AuthBloc>(context).add(AppStarted()),
+                Navigator.of(context).pop() 
+              },
               icon: Icon(Icons.replay),
               label: Text('Retry'),
             ),
