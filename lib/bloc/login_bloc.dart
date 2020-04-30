@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:form_bloc/form_bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../services/repos.dart';
 import 'auth/auth.dart';
@@ -36,15 +35,19 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
+    authBloc.add(AppStarted());
     try {
       authSubscription = await authBloc.listen((state) {
+        if (state is AuthConnectionProblem) {
+          String errorMessage = (authBloc.state as AuthConnectionProblem).errorMessage;
+          emitLoadFailed(failureResponse: errorMessage);
+        }
         if (state is AuthUnauthenticated) {
-          Authenticate result = (authBloc.state as AuthUnauthenticated).authenticate;
-          if (result != null) authenticate = result;
+          authenticate = (authBloc.state as AuthUnauthenticated).authenticate;
           email.updateInitialValue(authenticate?.user?.name);
+          emitLoaded();
         }
       });
-      emitLoaded();
     } catch (e) {
       emitLoadFailed(failureResponse: "catch, error: $e");
     }
@@ -52,20 +55,17 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onSubmitting() async {
-    // print(email.value);
-    // print(password.value);
-
-    try {
-      dynamic result = await repos.login(username: email.value, password: password.value);
-      if(result is String) {
-        print("=====result from login: ${result}");
+    dynamic result =
+        await repos.login(username: email.value, password: password.value);
+    if (result is String) {
+      if (result == "passwordChange") {
         emitSuccess(successResponse: result);
       } else {
-        authenticate = result;
-        emitSuccess();
+        emitFailure(failureResponse: result);
       }
-    } on DioError catch (e) {
-      emitFailure(failureResponse: e.response.data['errors']);
+    } else {
+      authenticate = result;
+      emitSuccess();
     }
   }
 

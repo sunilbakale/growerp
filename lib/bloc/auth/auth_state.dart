@@ -12,9 +12,17 @@ class AuthLoading extends AuthState {}
 
 class AuthUninitialized extends AuthState {}
 
-class AuthConnectionProblem extends AuthState {}
-
 class AuthRegister extends AuthState {}
+
+class AuthConnectionProblem extends AuthState {
+  final String errorMessage;
+  const AuthConnectionProblem({@required this.errorMessage})
+      : assert(errorMessage != null);
+  @override
+  List<Object> get props => [errorMessage];
+  @override
+  String toString() => 'AuthConnectionProblem: errorMessage: $errorMessage';
+}
 
 class AuthAuthenticated extends AuthState {
   final Authenticate authenticate;
@@ -23,8 +31,7 @@ class AuthAuthenticated extends AuthState {
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => '''Authenticated: 
-    username: ${authenticate.user.name}, email: ${authenticate.user.email}''';
+  String toString() => 'Authenticated: username: ${authenticate.user.name}';
 }
 
 class AuthUnauthenticated extends AuthState {
@@ -34,6 +41,5 @@ class AuthUnauthenticated extends AuthState {
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => '''Unauthenticated: 
-    username: ${authenticate?.user?.name}, email: ${authenticate?.user?.email}''';
+  String toString() => 'Unauthenticated: username: ${authenticate?.user?.name}';
 }

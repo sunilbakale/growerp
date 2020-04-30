@@ -8,24 +8,22 @@ import '../widgets/widgets.dart';
 class LoginForm extends StatefulWidget {
   final Repos repos;
   final AuthBloc authBloc;
-  final bool noConnection;
 
-  LoginForm({Key key, @required this.repos, 
-      @required this.authBloc, this.noConnection = false})
+  LoginForm({Key key, @required this.repos, @required this.authBloc})
       : assert(repos != null, authBloc != null);
 
   @override
-  _LoginState createState() => _LoginState(repos, authBloc, noConnection);
+  _LoginState createState() => _LoginState(repos, authBloc);
 }
 
 class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
   final Repos repos;
   final AuthBloc authBloc;
-  bool noConnection;
-
+  String errorMessage;
+  
   List<FocusNode> _focusNodes;
 
-  _LoginState(this.repos, this.authBloc, this.noConnection);
+  _LoginState(this.repos, this.authBloc);
 
   @override
   void initState() {
@@ -49,10 +47,17 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
             previous.runtimeType != current.runtimeType ||
             previous is FormBlocLoading && current is FormBlocLoading,
         builder: (context, state) {
+           final loginBloc = context.bloc<LoginBloc>();
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
+          } else if (state is FormBlocLoadFailed) {
+            return Center(
+              child: RaisedButton(
+                onPressed: loginBloc.reload,
+                child: Text('Connection error,Retry?'),
+              ),
+            );
           } else {
-            final loginBloc = context.bloc<LoginBloc>();
             return Scaffold(
               resizeToAvoidBottomInset: false,
               body: FormBlocListener<LoginBloc, String, String>(
@@ -146,37 +151,7 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
     );
   }
 
-  void afterFirstLayout(BuildContext context) {
-    if (noConnection) _noConnection();
-  }
-
-  void _noConnection() {
-    showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        content: new Column(children: <Widget>[
-            Icon(Icons.sentiment_dissatisfied, size: 100),
-            SizedBox(height: 10),
-            Text(
-              'No Connection, Please check internet',
-              style: TextStyle(fontSize: 20, color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 80),
-            RaisedButton.icon(
-              onPressed: () => {
-                BlocProvider.of<AuthBloc>(context).add(AppStarted()),
-                Navigator.of(context).pop() 
-              },
-              icon: Icon(Icons.replay),
-              label: Text('Retry'),
-            ),
-        ])
-      )
-    );
-  }
-
-
+  void afterFirstLayout(BuildContext context) {}
 
   void _changePassword(String username, String password) {
     String password1;

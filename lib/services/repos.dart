@@ -27,10 +27,10 @@ class Repos {
     _client.options.headers = {"Content-Type": "application/json"};
   }
 
-  String responseCode(error) {
-    String errorDescription = "";
-    if (error is DioError) {
-      DioError dioError = error;
+  String responseMessage(e) {
+    String errorDescription = "Unexpected DioError";
+    if (e is DioError) {
+      DioError dioError = e;
       switch (dioError.type) {
         case DioErrorType.CANCEL:
           errorDescription = "Request to API server was cancelled";
@@ -53,68 +53,100 @@ class Repos {
           errorDescription = "Send timeout in connection with API server";
           break;
       }
+    } 
+    if (e.response != null) {
+      print("dio error data: ${e.response.data}");
+      // print("dio error headers: ${e.response.headers}");
+      // print("dio error request: ${e.response.request}");
     } else {
-      errorDescription = "Unexpected error occured";
+      // Something happened in setting up or sending the request that triggered an Error
+      // print("dio no response, request: ${e.request}");
+      // print("dio no response, message: ${e.message}");
+    } 
+    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
+      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
+            errors: ${e.response.data['errors']}''');
+      errorDescription = e.response.data['errors'];
     }
+    print("====returning error message: $errorDescription");
     return errorDescription;
   }
 
-  Future<bool> connected() async {
+  Future<dynamic> connected() async {
     try {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;
-    } catch (e) {
-      sessionToken = null;
-      print("Exception occured: $e ");
+      return sessionToken != null;
+    } catch(e) {
+      return responseMessage(e);
     }
-    return sessionToken != null;
   }
 
   Future<dynamic> getCurrencies() async {
-    Response response = await _client.get('s1/growerp/CurrencyList');
-    CurrencyList currencyList = currencyListFromJson(response.toString());
-    return currencyList.currencyList;
+    try {
+      Response response = await _client.get('s1/growerp/CurrencyList');
+      CurrencyList currencyList = currencyListFromJson(response.toString());
+      return currencyList.currencyList;
+    } catch(e) {
+      return responseMessage(e);
+    }
   }
 
   Future<dynamic> login(
       {@required String username, @required String password}) async {
-    print("==logging in password: $password user: $username");
-    Response response = await _client.post('s1/growerp/LoginUser', data: {
-      'username': username,
-      'password': password,
-      'moquiSessionToken': sessionToken
-    });
-    dynamic result = jsonDecode(response.toString());
-    if (result["passwordChange"] == "true")
-      return "passwordChange";
-    else
-      return authenticateFromJson(response.toString());
+    try {
+      print("==logging in password: $password user: $username");
+      Response response = await _client.post('s1/growerp/LoginUser', data: {
+        'username': username,
+        'password': password,
+        'moquiSessionToken': sessionToken
+      });
+      dynamic result = jsonDecode(response.toString());
+      if (result["passwordChange"] == "true")
+        return "passwordChange";
+      else
+        return authenticateFromJson(response.toString());
+    } catch(e) {
+      return(responseMessage(e));
+    }
   }
 
   Future<dynamic> resetPassword({@required String username}) async {
-    print("===request password for: $username");
-    Response response = await _client.post('s1/growerp/ResetPassword',
+    try {
+      Response result = await _client.post('s1/growerp/ResetPassword',
         data: {'username': username, 'moquiSessionToken': sessionToken});
-    print("==reset password=service ==== ${response}");
-    return json.decode(response.toString());
+      print("==reset password=service ==== ${result}");
+      return json.decode(result.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
   }
 
   Future<dynamic> updatePassword(
       {@required String username,
       @required String oldPassword,
       @required String newPassword}) async {
-    Response response = await _client.post('s1/growerp/UpdatePassword', data: {
-      'username': username,
-      'oldPassword': oldPassword,
-      'newPassword': newPassword,
-      'moquiSessionToken': sessionToken
-    });
-    print("==update password=service ==== ${response}");
-    return json.decode(response.toString());
+    try {  
+      Response response = await _client.post('s1/growerp/UpdatePassword', data: {
+        'username': username,
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+        'moquiSessionToken': sessionToken
+      });
+      print("==update password=service ==== ${response}");
+      return json.decode(response.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
   }
 
-  Future<void> logout() async {
-    await _client.post('s1/growerp/LogoutUser');
+  Future<dynamic> logout() async {
+    try {
+      await _client.post('s1/growerp/LogoutUser');
+      return getAuthenticate();
+    } catch(e) {
+      return responseMessage(e);
+    }
   }
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
@@ -128,7 +160,7 @@ class Repos {
     return authenticateFromJson(jsonString.toString());
   }
 
-  Future<Authenticate> register(
+  Future<dynamic> register(
       {@required String companyName,
       String companyPartyId, // if empty will create new company too!
       @required String firstName,
@@ -136,20 +168,24 @@ class Repos {
       @required String currency,
       @required String email,
       List data}) async {
-    // create some category and product when company empty
-    Response response =
-        await _client.post('s1/growerp/RegisterUserAndCompany', data: {
-      'username': email, 'emailAddress': email,
-      'newPassword': 'qqqqqq9!', 'firstName': firstName,
-      'lastName': lastName, 'locale': await Devicelocale.currentLocale,
-      'companyPartyId': companyPartyId, // for existing companies
-      'companyName': companyName, 'currencyUomId': currency,
-      'companyEmail': email,
-      'partyClassificationId': 'AppHotel',
-      'environment': kReleaseMode,
-      'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
-      'moquiSessionToken': sessionToken
-    });
-    return authenticateFromJson(response.toString());
+    try {
+      // create some category and product when company empty
+      Response response =
+          await _client.post('s1/growerp/RegisterUserAndCompany', data: {
+        'username': email, 'emailAddress': email,
+        'newPassword': 'qqqqqq9!', 'firstName': firstName,
+        'lastName': lastName, 'locale': await Devicelocale.currentLocale,
+        'companyPartyId': companyPartyId, // for existing companies
+        'companyName': companyName, 'currencyUomId': currency,
+        'companyEmail': email,
+        'partyClassificationId': 'AppHotel',
+        'environment': kReleaseMode,
+        'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
+        'moquiSessionToken': sessionToken
+      });
+      return authenticateFromJson(response.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
   }
 }

@@ -18,8 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is AppStarted) {
       final connected = await repos.connected();
-      if (!connected) {
-        yield AuthConnectionProblem();
+      if (connected is String) { // contains error message or true for connected
+        yield AuthConnectionProblem(errorMessage: connected);
       } else {
         final Authenticate authenticate = await repos.getAuthenticate();
         if (authenticate?.apiKey != null) {
@@ -45,14 +45,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else if (event is Register) {
       yield AuthRegister();
     } else if (event is ResetPassword) {
-      await repos.resetPassword(username: event.username);
-      yield AuthUnauthenticated();
+      dynamic result = await repos.resetPassword(username: event.username);
+      if (result is String)
+        yield AuthConnectionProblem(errorMessage: result);
+      else {
+        Authenticate authenticate = await repos.getAuthenticate();
+        yield AuthUnauthenticated(authenticate: authenticate);
+      }
     } else if (event is UpdatePassword) {
-      await repos.updatePassword(
+      dynamic result = await repos.updatePassword(
           username: event.username,
           oldPassword: event.password,
           newPassword: event.newPassword);
-      yield AuthUnauthenticated();
+      if (result is String)
+        yield AuthConnectionProblem(errorMessage: result);
+      else
+        yield AuthUnauthenticated();
     }
   }
 }

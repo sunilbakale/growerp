@@ -42,15 +42,15 @@ class RegisterBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
-    try {
-      final currencies = await repos.getCurrencies();
+    dynamic result = await repos.getCurrencies();
+    if (result is String) {
+      emitLoadFailed(failureResponse: result);
+    } else {
+      final currencies = result; 
       List<String> temp = [];
       currencies.forEach((r) => temp.add(r.display));
       currency..updateItems(temp);
       emitLoaded();
-    } catch (e) {
-      print("currency loading problem: $e ");
-      emitLoadFailed();
     }
   }
 
