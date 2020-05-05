@@ -18,11 +18,15 @@ class UpdatePasswordBloc extends FormBloc<String, String> {
   Validator<String> _confirmPassword(
     TextFieldBloc passwordTextFieldBloc,
   ) {
+    final regExpRequire = RegExp(r'^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).{8,}');
     return (String confirmPassword) {
-      if (confirmPassword == passwordTextFieldBloc.value) {
+      if (confirmPassword == passwordTextFieldBloc.value &&
+          regExpRequire.hasMatch(confirmPassword)) {
         return null;
       }
-      return 'Must be equal to New Password';
+      return '''Both passwords should be the same, \n
+        not the same as a previous one, \n
+         8 long, an alpha-numeric, a number and a special character''';
     };
   }
 
@@ -47,9 +51,10 @@ class UpdatePasswordBloc extends FormBloc<String, String> {
         username: username,
         oldPassword: password,
         newPassword: newPassword.value);
+    print("====updpassword result: $result=====");
     if (result is String) {
+      print("===updpassw is a String!");
       emitFailure(failureResponse: result);
-    }
-    emitSuccess();
+    } else emitSuccess(successResponse: 'Password from $username updated');
   }
 }

@@ -63,8 +63,9 @@ class _UpdatePasswordState extends State<UpdatePasswordForm> {
             },
             onFailure: (context, state) {
               LoadingDialog.hide(context);
-              Scaffold.of(context)
-                .showSnackBar(SnackBar(content: Text(state.failureResponse)));
+              print("==upd form failure: ${state.failureResponse}");
+              Scaffold.of(context).showSnackBar(
+                SnackBar(content: Text(state.failureResponse)));
             },
             child: Center(
               child: Column(
@@ -89,7 +90,7 @@ class _UpdatePasswordState extends State<UpdatePasswordForm> {
                     textFieldBloc: updatePasswordBloc.confirmPassword,
                     suffixButton: SuffixButton.obscureText,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: 'Confirm New Password',
                       prefixIcon: Icon(Icons.lock),
                     ),
                     focusNode: _focusNodes[0],
