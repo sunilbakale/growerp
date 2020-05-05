@@ -6,29 +6,27 @@ import '../widgets/widgets.dart';
 
 class UpdatePasswordForm extends StatefulWidget {
   final Repos repos;
-  final AuthBloc authBloc;
   final String username, password;
 
   UpdatePasswordForm(
       {Key key,
-      @required this.repos, @required this.authBloc,
+      @required this.repos,
       @required this.username, @required this.password})
-      : assert(repos != null, authBloc != null),
+      : assert(repos != null),
         assert(password != null, username != null);
 
   @override
   _UpdatePasswordState createState() =>
-      _UpdatePasswordState(repos, authBloc, username, password);
+      _UpdatePasswordState(repos, username, password);
 }
 
 class _UpdatePasswordState extends State<UpdatePasswordForm> {
   final Repos repos;
-  final AuthBloc authBloc;
   String username, password;
 
   List<FocusNode> _focusNodes;
 
-  _UpdatePasswordState(this.repos, this.authBloc, this.username, this.password);
+  _UpdatePasswordState(this.repos, this.username, this.password);
 
   @override
   void initState() {
@@ -46,8 +44,7 @@ class _UpdatePasswordState extends State<UpdatePasswordForm> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UpdatePasswordBloc(
-          repos: repos, authBloc: BlocProvider.of<AuthBloc>(context),
-          username: username, password: password),
+          repos: repos, username: username, password: password),
       child: BlocBuilder<UpdatePasswordBloc, FormBlocState>(
           builder: (context, state) {
         final updatePasswordBloc = context.bloc<UpdatePasswordBloc>();
@@ -63,7 +60,6 @@ class _UpdatePasswordState extends State<UpdatePasswordForm> {
             },
             onFailure: (context, state) {
               LoadingDialog.hide(context);
-              print("==upd form failure: ${state.failureResponse}");
               Scaffold.of(context).showSnackBar(
                 SnackBar(content: Text(state.failureResponse)));
             },

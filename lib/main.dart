@@ -78,7 +78,6 @@ class App extends StatelessWidget {
           } else if (state is AuthUpdatePassword) {
             return UpdatePasswordForm(
                 repos: repos,
-                authBloc: authBloc,
                 username: state.username,
                 password: state.password);
           } else

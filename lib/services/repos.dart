@@ -115,7 +115,6 @@ class Repos {
     try {
       Response result = await _client.post('s1/growerp/ResetPassword',
         data: {'username': username, 'moquiSessionToken': sessionToken});
-      print("==reset password=service ==== ${result}");
       return json.decode(result.toString());
     } catch(e) {
       return responseMessage(e);
