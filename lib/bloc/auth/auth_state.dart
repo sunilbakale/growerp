@@ -14,6 +14,16 @@ class AuthUninitialized extends AuthState {}
 
 class AuthRegister extends AuthState {}
 
+class AuthUpdatePassword extends AuthState {
+  final String username, password;
+  const AuthUpdatePassword({@required this.username, this.password})
+      : assert(username != null, password != null);
+  @override
+  List<Object> get props => [username];
+  @override
+  String toString() => 'AuthUpdatePassword: username: $username';
+}
+
 class AuthConnectionProblem extends AuthState {
   final String errorMessage;
   const AuthConnectionProblem({@required this.errorMessage})

@@ -56,11 +56,6 @@ class RegisterBloc extends FormBloc<String, String> {
 
   @override
   void onSubmitting() async {
-    // print(company.value);
-    // print(currency.value);
-    // print(fullName.value);
-    // print(email.value);
-
     List names = fullName.value.split(" ");
     String lastName = "";
     if (names.length > 1)
@@ -71,16 +66,16 @@ class RegisterBloc extends FormBloc<String, String> {
     String currencyAbr =
         currency.value.substring(currency.value.indexOf('[') + 1);
     currencyAbr = currencyAbr.substring(0, currencyAbr.indexOf(']'));
-    try {
-      authenticate = await repos.register(
+    dynamic result = await repos.register(
           companyName: company.value,
           currency: currencyAbr,
           firstName: names[0],
           lastName: lastName,
           email: email.value);
-      emitSuccess();
-    } on DioError catch (e) {
-      emitFailure(failureResponse: e.response.data['errors']);
+    if (result is String) {
+      emitFailure(failureResponse: result);
     }
+    authenticate = result;
+    emitSuccess();
   }
 }

@@ -24,14 +24,8 @@ class ResetPassword extends AuthEvent {
 }
 
 class UpdatePassword extends AuthEvent {
-  final String username;
-  final String password;
-  final String newPassword;
-  const UpdatePassword({
-    @required this.username,
-    @required this.password,
-    @required this.newPassword,
-    });
+  final String username, password;
+  const UpdatePassword({@required this.username, this.password});
   @override
   List<Object> get props => [username];
   @override

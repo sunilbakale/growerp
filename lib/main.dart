@@ -75,6 +75,12 @@ class App extends StatelessWidget {
             return LoadingIndicator();
           } else if (state is AuthRegister) {
             return RegisterForm(repos: repos);
+          } else if (state is AuthUpdatePassword) {
+            return UpdatePasswordForm(
+                repos: repos,
+                authBloc: authBloc,
+                username: state.username,
+                password: state.password);
           } else
             return SplashForm();
         },

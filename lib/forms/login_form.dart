@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
-import 'package:after_layout/after_layout.dart';
 import '../services/repos.dart';
 import '../bloc/bloc.dart';
 import '../widgets/widgets.dart';
@@ -16,7 +15,7 @@ class LoginForm extends StatefulWidget {
   _LoginState createState() => _LoginState(repos, authBloc);
 }
 
-class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
+class _LoginState extends State<LoginForm> {
   final Repos repos;
   final AuthBloc authBloc;
   String errorMessage;
@@ -66,10 +65,10 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
                 },
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
-                  print("===success response: ${state.successResponse}");
                   if (state.successResponse == "passwordChange") {
-                    _changePassword(
-                        loginBloc.email.value, loginBloc.password.value);
+                    BlocProvider.of<AuthBloc>(context)
+                        .add(UpdatePassword(username: loginBloc.email.value,
+                            password: loginBloc.password.value));
                   } else {
                     BlocProvider.of<AuthBloc>(context)
                         .add(LoggedIn(authenticate: loginBloc.authenticate));
@@ -147,60 +146,6 @@ class _LoginState extends State<LoginForm> with AfterLayoutMixin<LoginForm> {
             );
           }
         },
-      ),
-    );
-  }
-
-  void afterFirstLayout(BuildContext context) {}
-
-  void _changePassword(String username, String password) {
-    String password1;
-    String password2;
-    showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: Text(
-            'Enter a new password',
-            textAlign: TextAlign.center),
-        content: new Column(children: <Widget>[
-          new Expanded(
-              child: TextFormField(
-                  autofocus: true,
-                  decoration: new InputDecoration(labelText: 'New Password:'),
-                  onChanged: (value) {
-                    password1 = value;
-                  })),
-          new Expanded(
-              child: TextFormField(
-                  decoration:
-                      new InputDecoration(labelText: 'Confirm New Password:'),
-                  onChanged: (value) {
-                    password2 = value;
-                  }))
-        ]),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              authBloc.add(LoggedOut());
-              Navigator.of(context).pop();
-            },
-          ),
-          FlatButton(
-            child: Text('Ok'),
-            onPressed: () {
-              if (password1 != password2) {
-                Text('passsword not match!');
-              } else {
-                authBloc.add(UpdatePassword(
-                    username: username,
-                    password: password,
-                    newPassword: password1));
-                Navigator.of(context).pop();
-              }
-            },
-          ),
-        ],
       ),
     );
   }
