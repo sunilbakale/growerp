@@ -55,7 +55,7 @@ class Repos {
       }
     } 
     if (e.response != null) {
-      print("dio error data: ${e.response.data}");
+      // print("dio error data: ${e.response.data}");
       // print("dio error headers: ${e.response.headers}");
       // print("dio error request: ${e.response.request}");
     } else {
@@ -64,8 +64,8 @@ class Repos {
       // print("dio no response, message: ${e.message}");
     } 
     if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
-      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
-            errors: ${e.response.data['errors']}''');
+//      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
+//            errors: ${e.response.data['errors']}''');
       errorDescription = e.response.data['errors'];
     }
     print("====returning error message: $errorDescription");
@@ -132,7 +132,7 @@ class Repos {
         'newPassword': newPassword,
         'moquiSessionToken': sessionToken
       });
-      print("==update password=service ==== ${response}");
+      // print("==update password=service ==== ${response}");
       return json.decode(response.toString());
     } catch(e) {
       return responseMessage(e);

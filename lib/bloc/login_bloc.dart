@@ -35,7 +35,6 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
-    authBloc.add(AppStarted());
     try {
       authSubscription = await authBloc.listen((state) {
         if (state is AuthConnectionProblem) {
