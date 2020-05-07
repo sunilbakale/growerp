@@ -35,6 +35,7 @@ class LoginBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
+    authBloc.add(AppStarted());// required for reload on connection problem
     try {
       authSubscription = await authBloc.listen((state) {
         if (state is AuthConnectionProblem) {

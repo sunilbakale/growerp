@@ -3,29 +3,27 @@ class Company {
   String name;
   String email;
   String contactMechId;
-  String currency;
+  String currencyId;
 
   Company({
     this.partyId,
     this.name,
     this.email,
     this.contactMechId,
-    this.currency,
+    this.currencyId,
   });
 
   factory Company.fromJson(Map<String, dynamic> json) => Company(
         partyId: json["partyId"],
         name: json["name"],
         email: json["email"],
-        contactMechId: json["contactMechId"],
-        currency: json["currency"],
+        currencyId: json["currencyId"],
       );
 
   Map<String, dynamic> toJson() => {
         "partyId": partyId,
         "name": name,
         "email": email,
-        "contactMechId": contactMechId,
-        "currency": currency,
+        "currencyId": currencyId,
       };
 }

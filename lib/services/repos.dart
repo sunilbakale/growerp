@@ -11,21 +11,42 @@ import 'dart:convert';
 class Repos {
   Dio _client;
   String sessionToken;
+  String apiKey;
 
   Repos() {
     _client = new Dio();
-    if (kReleaseMode == true) {
+    if (kReleaseMode) {
       // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
-    } else if (Platform.isAndroid == true) {
-      _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
-    } else if (Platform.isIOS == true) {
+    } else if (Platform.isLinux || Platform.isIOS) {
       _client.options.baseUrl = 'http://localhost:8080/rest/';
+    } else if (Platform.isAndroid) {
+      _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
     }
     _client.options.connectTimeout = 5000; //5s
-    _client.options.receiveTimeout = 3000;
+    _client.options.receiveTimeout = 8000;
     _client.options.headers = {"Content-Type": "application/json"};
-  }
+/*
+    _client.interceptors.add(InterceptorsWrapper(
+      onRequest:(RequestOptions options) async {
+        print("===Outgoing dio request options: ${options.toString()}");
+      // Do something before request is sent
+      return options; //continue
+      // If you want to resolve the request with some custom data，
+      // you can return a `Response` object or return `dio.resolve(data)`.
+      // If you want to reject the request with a error message,
+      // you can return a `DioError` object or return `dio.reject(errMsg)`
+      },
+      onResponse:(Response response) async {
+      // Do something with response data
+      return response; // continue
+      },
+      onError: (DioError e) async {
+      // Do something with response error
+      return  e;//continue
+      }
+    ));
+*/}
 
   String responseMessage(e) {
     String errorDescription = "Unexpected DioError";
@@ -84,7 +105,7 @@ class Repos {
 
   Future<dynamic> getCurrencies() async {
     try {
-      Response response = await _client.get('s1/growerp/CurrencyList');
+      Response response = await _client.get('s1/growerp/100/CurrencyList');
       CurrencyList currencyList = currencyListFromJson(response.toString());
       return currencyList.currencyList;
     } catch(e) {
@@ -95,8 +116,7 @@ class Repos {
   Future<dynamic> login(
       {@required String username, @required String password}) async {
     try {
-      print("==logging in password: $password user: $username");
-      Response response = await _client.post('s1/growerp/LoginUser', data: {
+      Response response = await _client.post('s1/growerp/100/LoginUser', data: {
         'username': username,
         'password': password,
         'moquiSessionToken': sessionToken
@@ -105,6 +125,8 @@ class Repos {
       if (result["passwordChange"] == "true")
         return "passwordChange";
       else
+        this.apiKey = result["apiKey"];
+        debugPrint("==login apikey: ${apiKey}");
         return authenticateFromJson(response.toString());
     } catch(e) {
       return(responseMessage(e));
@@ -113,7 +135,7 @@ class Repos {
 
   Future<dynamic> resetPassword({@required String username}) async {
     try {
-      Response result = await _client.post('s1/growerp/ResetPassword',
+      Response result = await _client.post('s1/growerp/100/ResetPassword',
         data: {'username': username, 'moquiSessionToken': sessionToken});
       return json.decode(result.toString());
     } catch(e) {
@@ -126,7 +148,7 @@ class Repos {
       @required String oldPassword,
       @required String newPassword}) async {
     try {  
-      Response response = await _client.post('s1/growerp/UpdatePassword', data: {
+      Response response = await _client.post('s1/growerp/100/UpdatePassword', data: {
         'username': username,
         'oldPassword': oldPassword,
         'newPassword': newPassword,
@@ -140,8 +162,9 @@ class Repos {
   }
 
   Future<dynamic> logout() async {
+    _client.options.headers['api_key'] = apiKey;
     try {
-      await _client.post('s1/growerp/LogoutUser');
+      await _client.post('logout');
       return getAuthenticate();
     } catch(e) {
       return responseMessage(e);
@@ -170,7 +193,7 @@ class Repos {
     try {
       // create some category and product when company empty
       Response response =
-          await _client.post('s1/growerp/RegisterUserAndCompany', data: {
+          await _client.post('s1/growerp/100/RegisterUserAndCompany', data: {
         'username': email, 'emailAddress': email,
         'newPassword': 'qqqqqq9!', 'firstName': firstName,
         'lastName': lastName, 'locale': await Devicelocale.currentLocale,
@@ -187,4 +210,18 @@ class Repos {
       return responseMessage(e);
     }
   }
+
+  Future<dynamic> getAllPartyInfo() async {
+    // Authenticate token = await getAuthenticate();
+    _client.options.headers['api_key'] = apiKey;
+    print("===client: ${_client.options.headers['apiKey']}");
+    try {
+      Response response = await _client.get('s1/growerp/100/GetAllPartyInfo');
+        print("===== Allparty response: $response");
+      return responseMessage(response);
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
+
 }

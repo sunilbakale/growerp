@@ -45,10 +45,17 @@ class _HomeFormState extends State<HomeForm> {
                 previous.runtimeType != current.runtimeType ||
                 previous is FormBlocLoading && current is FormBlocLoading,
             builder: (context, state) {
+              final homeBloc = context.bloc<HomeBloc>();
               if (state is FormBlocLoading) {
                 return Center(child: CircularProgressIndicator());
+              } else if (state is FormBlocLoadFailed) {
+                return Center(
+                  child: RaisedButton(
+                    onPressed: homeBloc.reload,
+                    child: Text('load error, retry?'),
+                  ),
+                );
               } else {
-                final homeBloc = context.bloc<HomeBloc>();
                 return Scaffold(
                     appBar: AppBar(
                       title: Text('Home'),

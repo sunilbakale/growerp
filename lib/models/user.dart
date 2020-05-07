@@ -6,6 +6,7 @@ class User {
   String name;
   String email;
   String groupDescription;
+  List roles;
   String userGroupId;
   String locale;
   dynamic externalId;
@@ -18,6 +19,7 @@ class User {
     this.name,
     this.email,
     this.groupDescription,
+    this.roles,
     this.userGroupId,
     this.locale,
     this.externalId,
@@ -31,6 +33,7 @@ class User {
         name: json["name"],
         email: json["email"],
         groupDescription: json["groupDescription"],
+        roles: json["roles"],
         userGroupId: json["userGroupId"],
         locale: json["locale"],
         externalId: json["externalId"],
@@ -41,9 +44,10 @@ class User {
         "userId": userId,
         "firstName": firstName,
         "lastName": lastName,
-        "name": name,
+        "name": name, // username
         "email": email,
         "groupDescription": groupDescription,
+        "roles": roles,
         "userGroupId": userGroupId,
         "locale": locale,
         "externalId": externalId,

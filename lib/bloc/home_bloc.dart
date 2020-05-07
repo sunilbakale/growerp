@@ -22,16 +22,16 @@ class HomeBloc extends FormBloc<String, String> {
 
   @override
   void onLoading() async {
-    try {
-      authSubscription = await authBloc.listen((state) {
+//    dynamic result = await repos.getAllPartyInfo();
+//    if (result is String) {
+//      emitLoadFailed(failureResponse: result);
+//    }
+    authSubscription = await authBloc.listen((state) {
         if (state is AuthAuthenticated) {
           authenticate = (authBloc.state as AuthAuthenticated).authenticate;
+          emitLoaded();
         }
-      });
-      emitLoaded();
-    } catch (e) {
-      emitLoadFailed(failureResponse: "catch, error: $e");
-    }
+    });
   }
 
   @override
