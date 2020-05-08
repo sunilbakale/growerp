@@ -3,6 +3,7 @@ import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../services/repos.dart';
 import '../bloc/bloc.dart';
 import '../widgets/widgets.dart';
+import 'package:animations/animations.dart';
 
 class LoginForm extends StatefulWidget {
   final Repos repos;
@@ -12,17 +13,16 @@ class LoginForm extends StatefulWidget {
       : assert(repos != null, authBloc != null);
 
   @override
-  _LoginState createState() => _LoginState(repos, authBloc);
+  _LoginState createState() => _LoginState(repos);
 }
 
 class _LoginState extends State<LoginForm> {
   final Repos repos;
-  final AuthBloc authBloc;
   String errorMessage;
   
   List<FocusNode> _focusNodes;
 
-  _LoginState(this.repos, this.authBloc);
+  _LoginState(this.repos);
 
   @override
   void initState() {

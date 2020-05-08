@@ -70,7 +70,7 @@ class App extends StatelessWidget {
           if (state is AuthConnectionProblem || state is AuthUnauthenticated) {
             return LoginForm(repos: repos, authBloc: authBloc);
           } else if (state is AuthAuthenticated) {
-            return HomeForm(repos: repos, authBloc: authBloc);
+            return HomeForm(authBloc: authBloc);
           } else if (state is AuthLoading) {
             return LoadingIndicator();
           } else if (state is AuthRegister) {
@@ -85,7 +85,7 @@ class App extends StatelessWidget {
         },
       ),
       routes: {
-        '/home': (context) => HomeForm(repos: repos, authBloc: authBloc),
+        '/home': (context) => HomeForm(authBloc: authBloc),
       },
     );
   }

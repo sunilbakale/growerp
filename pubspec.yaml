@@ -25,7 +25,7 @@ dependencies:
       url: git://github.com/valterh4ck3r/flushbar.git
   groovin_widgets: ^1.4.5
   flutter_keychain: ^1.0.0
-  after_layout: ^1.0.7+2
+  animations: ^1.0.0+5
 
 dev_dependencies:
   flutter_test:
@@ -36,8 +36,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
+# from https://www.flaticon.com/
   assets:
     - assets/growerp.png
     - assets/growerp.jpg
-
+    - check-in.png
+    - check-out.png
+    - customers.png
+    - myInfo.png
+    - reservation.png
+    - setup.png
+    - single-bed.png
+    - twin-beds.png
+    - users.png
