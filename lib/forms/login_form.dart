@@ -158,18 +158,20 @@ _sendResetPasswordDialog(BuildContext context, String username) async {
         false, // dialog is dismissible with a tap on the barrier
     builder: (BuildContext context) {
       return AlertDialog(
+        shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(32.0))),
         title: Text(
             'Email you registered with?\nWe will send you a reset password',
             textAlign: TextAlign.center),
         content: new Row(children: <Widget>[
           new Expanded(
-              child: TextFormField(
-                  initialValue: username,
-                  autofocus: true,
-                  decoration: new InputDecoration(labelText: 'Email:'),
-                  onChanged: (value) {
-                    username = value;
-                  }))
+            child: TextFormField(
+              initialValue: username,
+              autofocus: true,
+              decoration: new InputDecoration(labelText: 'Email:'),
+              onChanged: (value) {
+                username = value;
+              }))
         ]),
         actions: <Widget>[
           FlatButton(
