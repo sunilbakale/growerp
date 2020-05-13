@@ -173,7 +173,7 @@ class _topCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _InkWellOverlay(
       openContainer: openContainer,
-      height: 200,
+      height: 500,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
