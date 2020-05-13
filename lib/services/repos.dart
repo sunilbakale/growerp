@@ -116,7 +116,7 @@ class Repos {
   Future<dynamic> login(
       {@required String username, @required String password}) async {
     try {
-      Response response = await _client.post('s1/growerp/100/LoginUser', data: {
+      Response response = await _client.post('s1/growerp/100/Login', data: {
         'username': username,
         'password': password,
         'moquiSessionToken': sessionToken
@@ -148,7 +148,7 @@ class Repos {
       @required String oldPassword,
       @required String newPassword}) async {
     try {  
-      Response response = await _client.post('s1/growerp/100/UpdatePassword', data: {
+      Response response = await _client.put('s1/growerp/100/Password', data: {
         'username': username,
         'oldPassword': oldPassword,
         'newPassword': newPassword,
@@ -193,7 +193,7 @@ class Repos {
     try {
       // create some category and product when company empty
       Response response =
-          await _client.post('s1/growerp/100/RegisterUserAndCompany', data: {
+          await _client.post('s1/growerp/100/UserAndCompany', data: {
         'username': email, 'emailAddress': email,
         'newPassword': 'qqqqqq9!', 'firstName': firstName,
         'lastName': lastName, 'locale': await Devicelocale.currentLocale,

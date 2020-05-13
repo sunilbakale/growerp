@@ -6,45 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../bloc/bloc.dart';
-
-const String _loremIpsumParagraph =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod '
-    'tempor incididunt ut labore et dolore magna aliqua. Vulputate dignissim '
-    'suspendisse in est. Ut ornare lectus sit amet. Eget nunc lobortis mattis '
-    'aliquam faucibus purus in. Hendrerit gravida rutrum quisque non tellus '
-    'orci ac auctor. Mattis aliquam faucibus purus in massa. Tellus rutrum '
-    'tellus pellentesque eu tincidunt tortor. Nunc eget lorem dolor sed. Nulla '
-    'at volutpat diam ut venenatis tellus in metus. Tellus cras adipiscing enim '
-    'eu turpis. Pretium fusce id velit ut tortor. Adipiscing enim eu turpis '
-    'egestas pretium. Quis varius quam quisque id. Blandit aliquam etiam erat '
-    'velit scelerisque. In nisl nisi scelerisque eu. Semper risus in hendrerit '
-    'gravida rutrum quisque. Suspendisse in est ante in nibh mauris cursus '
-    'mattis molestie. Adipiscing elit duis tristique sollicitudin nibh sit '
-    'amet commodo nulla. Pretium viverra suspendisse potenti nullam ac tortor '
-    'vitae.\n'
-    '\n'
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod '
-    'tempor incididunt ut labore et dolore magna aliqua. Vulputate dignissim '
-    'suspendisse in est. Ut ornare lectus sit amet. Eget nunc lobortis mattis '
-    'aliquam faucibus purus in. Hendrerit gravida rutrum quisque non tellus '
-    'orci ac auctor. Mattis aliquam faucibus purus in massa. Tellus rutrum '
-    'tellus pellentesque eu tincidunt tortor. Nunc eget lorem dolor sed. Nulla '
-    'at volutpat diam ut venenatis tellus in metus. Tellus cras adipiscing enim '
-    'eu turpis. Pretium fusce id velit ut tortor. Adipiscing enim eu turpis '
-    'egestas pretium. Quis varius quam quisque id. Blandit aliquam etiam erat '
-    'velit scelerisque. In nisl nisi scelerisque eu. Semper risus in hendrerit '
-    'gravida rutrum quisque. Suspendisse in est ante in nibh mauris cursus '
-    'mattis molestie. Adipiscing elit duis tristique sollicitudin nibh sit '
-    'amet commodo nulla. Pretium viverra suspendisse potenti nullam ac tortor '
-    'vitae';
+import 'forms.dart';
 
 const double _fabDimension = 56.0;
 
 class HomeForm extends StatefulWidget {
   final AuthBloc authBloc;
 
-  HomeForm({@required this.authBloc})
-      : assert(authBloc != null);
+  HomeForm({@required this.authBloc}) : assert(authBloc != null);
 
   @override
   _HomeFormState createState() {
@@ -52,8 +21,7 @@ class HomeForm extends StatefulWidget {
   }
 }
 
-class _HomeFormState
-    extends State<HomeForm> {
+class _HomeFormState extends State<HomeForm> {
   ContainerTransitionType _transitionType = ContainerTransitionType.fadeThrough;
 
   @override
@@ -63,9 +31,9 @@ class _HomeFormState
         title: const Text('Home page'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => BlocProvider.of<AuthBloc>(context)
-                .add(LoggedOut()))
+              icon: Icon(Icons.exit_to_app),
+              onPressed: () =>
+                  BlocProvider.of<AuthBloc>(context).add(LoggedOut()))
         ],
       ),
       body: ListView(
@@ -74,7 +42,7 @@ class _HomeFormState
           _OpenContainerWrapper(
             transitionType: _transitionType,
             closedBuilder: (BuildContext _, VoidCallback openContainer) {
-              return _ExampleCard(openContainer: openContainer);
+              return _topCard(openContainer: openContainer);
             },
           ),
           const SizedBox(height: 16.0),
@@ -84,7 +52,7 @@ class _HomeFormState
                 child: _OpenContainerWrapper(
                   transitionType: _transitionType,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _SmallerCard(
+                    return _menuCard(
                       openContainer: openContainer,
                       image: 'assets/reservation.png',
                       subtitle: 'Reservation',
@@ -96,7 +64,7 @@ class _HomeFormState
                 child: _OpenContainerWrapper(
                   transitionType: _transitionType,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _SmallerCard(
+                    return _menuCard(
                       openContainer: openContainer,
                       image: 'assets/single-bed.png',
                       subtitle: 'Rooms',
@@ -108,7 +76,7 @@ class _HomeFormState
                 child: _OpenContainerWrapper(
                   transitionType: _transitionType,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _SmallerCard(
+                    return _menuCard(
                       openContainer: openContainer,
                       image: 'assets/check-in.png',
                       subtitle: 'Check-In',
@@ -120,7 +88,7 @@ class _HomeFormState
                 child: _OpenContainerWrapper(
                   transitionType: _transitionType,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _SmallerCard(
+                    return _menuCard(
                       openContainer: openContainer,
                       image: 'assets/check-out.png',
                       subtitle: 'Check-Out',
@@ -132,7 +100,7 @@ class _HomeFormState
                 child: _OpenContainerWrapper(
                   transitionType: _transitionType,
                   closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _SmallerCard(
+                    return _menuCard(
                       openContainer: openContainer,
                       image: 'assets/myInfo.png',
                       subtitle: 'My Info',
@@ -148,7 +116,7 @@ class _HomeFormState
       floatingActionButton: OpenContainer(
         transitionType: _transitionType,
         openBuilder: (BuildContext context, VoidCallback _) {
-          return _DetailsPage();
+          return DetailForm();
         },
         closedElevation: 6.0,
         closedShape: const RoundedRectangleBorder(
@@ -188,7 +156,7 @@ class _OpenContainerWrapper extends StatelessWidget {
     return OpenContainer(
       transitionType: transitionType,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return _DetailsPage();
+        return DetailForm();
       },
       tappable: false,
       closedBuilder: closedBuilder,
@@ -196,8 +164,8 @@ class _OpenContainerWrapper extends StatelessWidget {
   }
 }
 
-class _ExampleCard extends StatelessWidget {
-  const _ExampleCard({this.openContainer});
+class _topCard extends StatelessWidget {
+  const _topCard({this.openContainer});
 
   final VoidCallback openContainer;
 
@@ -206,28 +174,23 @@ class _ExampleCard extends StatelessWidget {
     return _InkWellOverlay(
       openContainer: openContainer,
       height: 200,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              color: Colors.green,
-              child: Center(
-                child: Image.asset(
-                  'assets/growerp.jpg',
-                  width: 100,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 900,
+              child: GanttForm(),
+            )
+          ]
+        )
+      )
     );
   }
 }
 
-class _SmallerCard extends StatelessWidget {
-  const _SmallerCard({
+class _menuCard extends StatelessWidget {
+  const _menuCard({
     this.openContainer,
     this.image,
     this.subtitle,
@@ -241,19 +204,14 @@ class _SmallerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return _InkWellOverlay(
       openContainer: openContainer,
-      
       height: 80,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(image),
-          Text(subtitle)
-        ],
+        children: <Widget>[Image.asset(image), Text(subtitle)],
       ),
     );
   }
 }
-
 
 class _InkWellOverlay extends StatelessWidget {
   const _InkWellOverlay({
@@ -281,55 +239,3 @@ class _InkWellOverlay extends StatelessWidget {
   }
 }
 
-class _DetailsPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Details page')),
-      body: ListView(
-        children: <Widget>[
-          Container(
-            color: Colors.black38,
-            height: 250,
-            child: Padding(
-              padding: const EdgeInsets.all(70.0),
-              child: Image.asset(
-                'assets/growerp.jpg',
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Title',
-                  // TODO(shihaohong): Remove this once Flutter stable adopts the modern
-                  // Material text style nomenclature.
-                  // ignore: deprecated_member_use
-                  style: Theme.of(context).textTheme.headline.copyWith(
-                        color: Colors.black54,
-                        fontSize: 30.0,
-                      ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _loremIpsumParagraph,
-                  // TODO(shihaohong): Remove this once Flutter stable adopts the modern
-                  // Material text style nomenclature.
-                  // ignore: deprecated_member_use
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                        color: Colors.black54,
-                        height: 1.5,
-                        fontSize: 16.0,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

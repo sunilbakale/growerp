@@ -26,6 +26,7 @@ dependencies:
   groovin_widgets: ^1.4.5
   flutter_keychain: ^1.0.0
   animations: ^1.0.0+5
+  date_utils: ^0.1.0+3
 
 dev_dependencies:
   flutter_test:
