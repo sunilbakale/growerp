@@ -3,6 +3,7 @@ import 'package:date_utils/date_utils.dart';
 import 'dart:math';
 
 class User {
+  // accommodation spot
   int id;
   String name;
 
@@ -10,13 +11,15 @@ class User {
 }
 
 class Project {
+  // orders
   int id;
   String name;
   DateTime startTime;
   DateTime endTime;
   List<int> participants;
 
-  Project({this.id, this.name, this.startTime, this.endTime, this.participants});
+  Project(
+      {this.id, this.name, this.startTime, this.endTime, this.participants});
 }
 
 class GanttForm extends StatefulWidget {
@@ -112,7 +115,7 @@ class GanttChart extends StatelessWidget {
   int calculateRemainingWidth(
       DateTime projectStartedAt, DateTime projectEndedAt) {
     int projectLength =
-    calculateNumberOfMonthsBetween(projectStartedAt, projectEndedAt);
+        calculateNumberOfMonthsBetween(projectStartedAt, projectEndedAt);
     if (projectStartedAt.compareTo(fromDate) >= 0 &&
         projectStartedAt.compareTo(toDate) <= 0) {
       if (projectLength <= viewRange)
@@ -138,9 +141,9 @@ class GanttChart extends StatelessWidget {
       List<Project> data, double chartViewWidth, Color color) {
     List<Widget> chartBars = new List();
 
-    for(int i = 0; i < data.length; i++) {
+    for (int i = 0; i < data.length; i++) {
       var remainingWidth =
-      calculateRemainingWidth(data[i].startTime, data[i].endTime);
+          calculateRemainingWidth(data[i].startTime, data[i].endTime);
       if (remainingWidth > 0) {
         chartBars.add(Container(
           decoration: BoxDecoration(
@@ -153,8 +156,7 @@ class GanttChart extends StatelessWidget {
                   chartViewWidth /
                   viewRangeToFitScreen,
               top: i == 0 ? 4.0 : 2.0,
-              bottom: i == data.length - 1 ? 4.0 : 2.0
-          ),
+              bottom: i == data.length - 1 ? 4.0 : 2.0),
           alignment: Alignment.centerLeft,
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -219,7 +221,7 @@ class GanttChart extends StatelessWidget {
         decoration: BoxDecoration(
             border: Border(
                 right:
-                BorderSide(color: Colors.grey.withAlpha(100), width: 1.0))),
+                    BorderSide(color: Colors.grey.withAlpha(100), width: 1.0))),
         width: chartViewWidth / viewRangeToFitScreen,
         //height: 300.0,
       ));
@@ -257,7 +259,10 @@ class GanttChart extends StatelessWidget {
                                 color: color.withAlpha(100),
                                 child: Center(
                                   child: new RotatedBox(
-                                    quarterTurns: chartBars.length * 29.0 + 4.0 > 50 ? 0 : 0,
+                                    quarterTurns:
+                                        chartBars.length * 29.0 + 4.0 > 50
+                                            ? 0
+                                            : 0,
                                     child: new Text(
                                       user.name,
                                       textAlign: TextAlign.center,
@@ -286,13 +291,15 @@ class GanttChart extends StatelessWidget {
     List<Widget> chartContent = new List();
 
     usersInChart.forEach((user) {
-
       List<Project> projectsOfUser = new List();
 
-      projectsOfUser = projects.where((project) => project.participants.indexOf(user.id) != -1).toList();
+      projectsOfUser = projects
+          .where((project) => project.participants.indexOf(user.id) != -1)
+          .toList();
 
       if (projectsOfUser.length > 0) {
-        chartContent.add(buildChartForEachUser(projectsOfUser, chartViewWidth, user));
+        chartContent
+            .add(buildChartForEachUser(projectsOfUser, chartViewWidth, user));
       }
     });
 
@@ -309,7 +316,11 @@ class GanttChart extends StatelessWidget {
         : viewRangeToFitScreen = 6;
 
     return Container(
-      child: MediaQuery.removePadding(child: ListView(children: buildChartContent(chartViewWidth)), removeTop: true, context: context,),
+      child: MediaQuery.removePadding(
+        child: ListView(children: buildChartContent(chartViewWidth)),
+        removeTop: true,
+        context: context,
+      ),
     );
   }
 }
@@ -322,25 +333,58 @@ var users = [
 ];
 
 var projects = [
-  Project(id: 1, name: 'Basetax', startTime: DateTime(2017, 3, 1), endTime: DateTime(2018, 6, 1),
-      participants: [1, 2, 3]
-  ),
-  Project(id: 2, name: 'CENTTO', startTime: DateTime(2018, 4, 1), endTime: DateTime(2018, 6, 1),
-      participants: [2, 3]
-  ),
-  Project(id: 3, name: 'Uber', startTime: DateTime(2017, 5, 1), endTime: DateTime(2018, 9, 1),
-      participants: [1, 2, 4]
-  ),
-  Project(id: 4, name: 'Grab', startTime: DateTime(2018, 6, 1), endTime: DateTime(2018, 10, 1),
-      participants: [1, 4, 3]
-  ),
-  Project(id: 5, name: 'GO-JEK', startTime: DateTime(2017, 3, 1), endTime: DateTime(2018, 11, 1),
-      participants: [4, 2, 3]
-  ),
-  Project(id: 6, name: 'Lyft', startTime: DateTime(2018, 4, 1), endTime: DateTime(2018, 7, 1),
-      participants: [4, 2, 3]
-  ),
-  Project(id: 7, name: 'San Jose', startTime: DateTime(2018, 5, 1), endTime: DateTime(2018, 12, 1),
-      participants: [1, 2, 4]
-  ),
+  Project(
+      id: 10,
+      name: 'Basetax',
+      startTime: DateTime(2018, 1, 12),
+      endTime: DateTime(2018, 1, 15),
+      participants: [1]),
+  Project(
+      id: 11,
+      name: 'Basetax',
+      startTime: DateTime(2018, 1, 29),
+      endTime: DateTime(2018, 2, 12),
+      participants: [1]),
+  Project(
+      id: 12,
+      name: 'Basetax',
+      startTime: DateTime(2018, 2, 12),
+      endTime: DateTime(2018, 3, 1),
+      participants: [1]),
+  Project(
+      id: 2,
+      name: 'CENTTO',
+      startTime: DateTime(2018, 4, 1),
+      endTime: DateTime(2018, 6, 1),
+      participants: [2, 3]),
+  Project(
+      id: 3,
+      name: 'Uber',
+      startTime: DateTime(2017, 5, 1),
+      endTime: DateTime(2018, 9, 1),
+      participants: [1, 2, 4]),
+  Project(
+      id: 4,
+      name: 'Grab',
+      startTime: DateTime(2018, 6, 1),
+      endTime: DateTime(2018, 10, 1),
+      participants: [1, 4, 3]),
+  Project(
+      id: 5,
+      name: 'GO-JEK',
+      startTime: DateTime(2017, 3, 1),
+      endTime: DateTime(2018, 11, 1),
+      participants: [4, 2, 3]),
+  Project(
+      id: 6,
+      name: 'Lyft',
+      startTime: DateTime(2018, 4, 1),
+      endTime: DateTime(2018, 7, 1),
+      participants: [4, 2, 3]),
+  Project(
+      id: 7,
+      name: 'San Jose',
+      startTime: DateTime(2018, 5, 1),
+      endTime: DateTime(2018, 12, 1),
+      participants: [1, 2, 4]),
 ];

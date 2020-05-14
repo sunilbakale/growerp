@@ -19,7 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event is AppStarted) {
       final connected = await repos.connected();
       if (connected is String) {
-        // contains error message or true for connected
+        // contains string error message or true for connected
         yield AuthConnectionProblem(errorMessage: connected);
       } else {
         final Authenticate authenticate = await repos.getAuthenticate();

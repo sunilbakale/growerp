@@ -15,10 +15,10 @@ class Repos {
 
   Repos() {
     _client = new Dio();
-    if (kReleaseMode) {
+    if (kReleaseMode) { //platform not supported on the web
       // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
-    } else if (Platform.isLinux || Platform.isIOS) {
+    } else if (kIsWeb || Platform.isIOS) {
       _client.options.baseUrl = 'http://localhost:8080/rest/';
     } else if (Platform.isAndroid) {
       _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
@@ -172,14 +172,28 @@ class Repos {
   }
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
+    if (kIsWeb) return; // not supported in web
     await FlutterKeychain.put(
         key: "authenticate", value: authenticateToJson(authenticate));
     return;
   }
 
   Future<Authenticate> getAuthenticate() async {
-    String jsonString = await FlutterKeychain.get(key: "authenticate");
-    return authenticateFromJson(jsonString.toString());
+    if (kIsWeb) {
+      return authenticateFromJson('''
+           {  "company": {"name": "Test Company",
+                          "currency": "USD"},
+              "user": {"firstName": "Hans",
+                       "lastName": "Bakker",
+                       "email": "info@growerp.com",
+                       "name": "info@growerp.com"},
+              "apiKey": null}
+      ''');
+    }
+    var jsonString = await FlutterKeychain.get(key: "authenticate");
+    if (jsonString != null) 
+      return authenticateFromJson(jsonString.toString());
+    return null;
   }
 
   Future<dynamic> register(
