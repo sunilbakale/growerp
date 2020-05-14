@@ -179,7 +179,7 @@ class _topCard extends StatelessWidget {
         child: Row(
           children: <Widget>[
             SizedBox(
-              width: 900,
+              width: MediaQuery.of(context).size.width,
               child: GanttForm(),
             )
           ]
@@ -188,6 +188,7 @@ class _topCard extends StatelessWidget {
     );
   }
 }
+
 
 class _menuCard extends StatelessWidget {
   const _menuCard({

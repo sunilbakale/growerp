@@ -162,6 +162,7 @@ class Repos {
   }
 
   Future<dynamic> logout() async {
+    this.apiKey = null;
     _client.options.headers['api_key'] = apiKey;
     try {
       await _client.post('logout');
@@ -180,7 +181,7 @@ class Repos {
 
   Future<Authenticate> getAuthenticate() async {
     if (kIsWeb) {
-      return authenticateFromJson('''
+      Authenticate auth = authenticateFromJson('''
            {  "company": {"name": "Test Company",
                           "currency": "USD"},
               "user": {"firstName": "Hans",
@@ -189,6 +190,8 @@ class Repos {
                        "name": "info@growerp.com"},
               "apiKey": null}
       ''');
+      auth.apiKey = this.apiKey;
+      return auth;
     }
     var jsonString = await FlutterKeychain.get(key: "authenticate");
     if (jsonString != null) 

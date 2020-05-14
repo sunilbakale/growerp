@@ -1,26 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:date_utils/date_utils.dart';
 import 'dart:math';
-
-class User {
-  // accommodation spot
-  int id;
-  String name;
-
-  User({this.id, this.name});
-}
-
-class Project {
-  // orders
-  int id;
-  String name;
-  DateTime startTime;
-  DateTime endTime;
-  List<int> participants;
-
-  Project(
-      {this.id, this.name, this.startTime, this.endTime, this.participants});
-}
+import 'homeForm_data.dart';
 
 class GanttForm extends StatefulWidget {
   @override
@@ -32,11 +13,11 @@ class GanttForm extends StatefulWidget {
 class GanttFormState extends State<GanttForm> with TickerProviderStateMixin {
   AnimationController animationController;
 
-  DateTime fromDate = DateTime(2018, 1, 1);
-  DateTime toDate = DateTime(2019, 1, 1);
+  DateTime ganttFromDate = DateTime(2018, 1, 1);
+  DateTime ganttThruDate = DateTime(2019, 1, 1);
 
-  List<User> usersInChart;
-  List<Project> projectsInChart;
+  List<Room> roomsInChart;
+  List<Reservation> reservationsInChart;
 
   @override
   void initState() {
@@ -45,8 +26,8 @@ class GanttFormState extends State<GanttForm> with TickerProviderStateMixin {
         duration: Duration(microseconds: 2000), vsync: this);
     animationController.forward();
 
-    projectsInChart = projects;
-    usersInChart = users;
+    reservationsInChart = reservations;
+    roomsInChart = rooms;
   }
 
   @override
@@ -62,10 +43,10 @@ class GanttFormState extends State<GanttForm> with TickerProviderStateMixin {
             Expanded(
               child: GanttChart(
                 animationController: animationController,
-                fromDate: fromDate,
-                toDate: toDate,
-                data: projectsInChart,
-                usersInChart: usersInChart,
+                ganttFromDate: ganttFromDate,
+                ganttThruDate: ganttThruDate,
+                reservationsInChart: reservationsInChart,
+                roomsInChart: roomsInChart,
               ),
             ),
           ],
@@ -77,23 +58,23 @@ class GanttFormState extends State<GanttForm> with TickerProviderStateMixin {
 
 class GanttChart extends StatelessWidget {
   final AnimationController animationController;
-  final DateTime fromDate;
-  final DateTime toDate;
-  final List<Project> data;
-  final List<User> usersInChart;
+  final DateTime ganttFromDate;
+  final DateTime ganttThruDate;
+  final List<Reservation> reservationsInChart;
+  final List<Room> roomsInChart;
 
-  int viewRange;
-  int viewRangeToFitScreen = 6;
+  int chartColumns;
+  int chartColumnsToFitScreen = 12;
   Animation<double> width;
 
   GanttChart({
     this.animationController,
-    this.fromDate,
-    this.toDate,
-    this.data,
-    this.usersInChart,
+    this.ganttFromDate,
+    this.ganttThruDate,
+    this.reservationsInChart,
+    this.roomsInChart,
   }) {
-    viewRange = calculateNumberOfMonthsBetween(fromDate, toDate);
+    chartColumns = calculateNumberOfMonthsBetween(ganttFromDate, ganttThruDate);
   }
 
   Color randomColorGenerator() {
@@ -105,82 +86,120 @@ class GanttChart extends StatelessWidget {
     return to.month - from.month + 12 * (to.year - from.year) + 1;
   }
 
-  int calculateDistanceToLeftBorder(DateTime projectStartedAt) {
-    if (projectStartedAt.compareTo(fromDate) <= 0) {
+  int calculateDistanceToLeftBorder(DateTime reservationStartedAt) {
+    if (reservationStartedAt.compareTo(ganttFromDate) <= 0) {
       return 0;
     } else
-      return calculateNumberOfMonthsBetween(fromDate, projectStartedAt) - 1;
+      return calculateNumberOfMonthsBetween(
+              ganttFromDate, reservationStartedAt) -
+          1;
   }
 
   int calculateRemainingWidth(
-      DateTime projectStartedAt, DateTime projectEndedAt) {
-    int projectLength =
-        calculateNumberOfMonthsBetween(projectStartedAt, projectEndedAt);
-    if (projectStartedAt.compareTo(fromDate) >= 0 &&
-        projectStartedAt.compareTo(toDate) <= 0) {
-      if (projectLength <= viewRange)
-        return projectLength;
+      DateTime reservationStartedAt, DateTime reservationEndedAt) {
+    int reservationLength = calculateNumberOfMonthsBetween(
+        reservationStartedAt, reservationEndedAt);
+    if (reservationStartedAt.compareTo(ganttFromDate) >= 0 &&
+        reservationStartedAt.compareTo(ganttThruDate) <= 0) {
+      if (reservationLength <= chartColumns)
+        return reservationLength;
       else
-        return viewRange -
-            calculateNumberOfMonthsBetween(fromDate, projectStartedAt);
-    } else if (projectStartedAt.isBefore(fromDate) &&
-        projectEndedAt.isBefore(fromDate)) {
+        return chartColumns -
+            calculateNumberOfMonthsBetween(ganttFromDate, reservationStartedAt);
+    } else if (reservationStartedAt.isBefore(ganttFromDate) &&
+        reservationEndedAt.isBefore(ganttFromDate)) {
       return 0;
-    } else if (projectStartedAt.isBefore(fromDate) &&
-        projectEndedAt.isBefore(toDate)) {
-      return projectLength -
-          calculateNumberOfMonthsBetween(projectStartedAt, fromDate);
-    } else if (projectStartedAt.isBefore(fromDate) &&
-        projectEndedAt.isAfter(toDate)) {
-      return viewRange;
+    } else if (reservationStartedAt.isBefore(ganttFromDate) &&
+        reservationEndedAt.isBefore(ganttThruDate)) {
+      return reservationLength -
+          calculateNumberOfMonthsBetween(reservationStartedAt, ganttFromDate);
+    } else if (reservationStartedAt.isBefore(ganttFromDate) &&
+        reservationEndedAt.isAfter(ganttThruDate)) {
+      return chartColumns;
     }
     return 0;
   }
 
   List<Widget> buildChartBars(
-      List<Project> data, double chartViewWidth, Color color) {
+      List<Reservation> reservationsInChart, double chartWidth, Color color) {
     List<Widget> chartBars = new List();
-
-    for (int i = 0; i < data.length; i++) {
-      var remainingWidth =
-          calculateRemainingWidth(data[i].startTime, data[i].endTime);
+    var last;
+    for (int i = 0; i < reservationsInChart.length; i++) {
+      if (last != null && reservationsInChart[i].roomId == last.roomId)
+        continue;
+      last = reservationsInChart[i];
+      var remainingWidth = calculateRemainingWidth(
+          reservationsInChart[i].fromDate, reservationsInChart[i].thruDate);
       if (remainingWidth > 0) {
-        chartBars.add(Container(
-          decoration: BoxDecoration(
-              color: color.withAlpha(100),
-              borderRadius: BorderRadius.circular(10.0)),
-          height: 25.0,
-          width: remainingWidth * chartViewWidth / viewRangeToFitScreen,
-          margin: EdgeInsets.only(
-              left: calculateDistanceToLeftBorder(data[i].startTime) *
-                  chartViewWidth /
-                  viewRangeToFitScreen,
-              top: i == 0 ? 4.0 : 2.0,
-              bottom: i == data.length - 1 ? 4.0 : 2.0),
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+        chartBars.add(Row(children: <Widget>[
+          Container(
+            height: 20,
+            width: chartWidth / 12,
             child: Text(
-              data[i].name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10.0),
+              reservationsInChart[i].roomId.toString(),
+              textAlign: TextAlign.center,
             ),
           ),
-        ));
+          Row(children: buildReservations(reservationsInChart, i, chartWidth)),
+        ]));
       }
     }
 
     return chartBars;
   }
 
-  Widget buildHeader(double chartViewWidth, Color color) {
+  List<Widget> buildReservations(
+      List reservations, int index, double chartWidth) {
+    DateTime lastDate = ganttFromDate;
+    List<Widget> chartContent = new List();
+    int currentRoomId = reservations[index].roomId;
+    while (index < reservations.length &&
+        reservations[index].roomId == currentRoomId) {
+      chartContent.add(
+        Container(
+          decoration: BoxDecoration(
+              color: Colors.green, borderRadius: BorderRadius.circular(10.0)),
+          height: 20.0,
+          width: reservationsInChart[index]
+                  .thruDate
+                  .difference(reservationsInChart[index].fromDate)
+                  .inDays *
+              chartWidth /
+              365,
+          margin: EdgeInsets.only(
+              left: ((reservationsInChart[index]
+                          .fromDate
+                          .difference(lastDate)
+                          .inDays *
+                      chartWidth /
+                      365)),
+              top: 4.0,
+              bottom: 4.0),
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Text(
+              reservationsInChart[index].customerName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 10.0),
+            ),
+          ),
+        ),
+      );
+      lastDate = reservationsInChart[index].thruDate;
+      index++;
+    }
+    return chartContent;
+  }
+
+  Widget buildHeader(double chartWidth, Color color) {
     List<Widget> headerItems = new List();
 
-    DateTime tempDate = fromDate;
+    DateTime tempDate = ganttFromDate;
 
     headerItems.add(Container(
-      width: chartViewWidth / viewRangeToFitScreen,
+      width: chartWidth / chartColumnsToFitScreen,
       child: new Text(
         'NAME',
         textAlign: TextAlign.center,
@@ -190,9 +209,9 @@ class GanttChart extends StatelessWidget {
       ),
     ));
 
-    for (int i = 0; i < viewRange; i++) {
+    for (int i = 0; i < chartColumns; i++) {
       headerItems.add(Container(
-        width: chartViewWidth / viewRangeToFitScreen,
+        width: chartWidth / chartColumnsToFitScreen,
         child: new Text(
           tempDate.month.toString() + '/' + tempDate.year.toString(),
           textAlign: TextAlign.center,
@@ -213,17 +232,17 @@ class GanttChart extends StatelessWidget {
     );
   }
 
-  Widget buildGrid(double chartViewWidth) {
+  Widget buildGrid(double chartWidth) {
     List<Widget> gridColumns = new List();
 
-    for (int i = 0; i <= viewRange; i++) {
+    for (int i = 0; i <= chartColumns; i++) {
       gridColumns.add(Container(
         decoration: BoxDecoration(
             border: Border(
                 right:
                     BorderSide(color: Colors.grey.withAlpha(100), width: 1.0))),
-        width: chartViewWidth / viewRangeToFitScreen,
-        //height: 300.0,
+        width: chartWidth / chartColumnsToFitScreen,
+        // height: 300.0,
       ));
     }
 
@@ -232,10 +251,9 @@ class GanttChart extends StatelessWidget {
     );
   }
 
-  Widget buildChartForEachUser(
-      List<Project> userData, double chartViewWidth, User user) {
+  Widget buildChart(List<Reservation> reservations, double chartWidth) {
     Color color = randomColorGenerator();
-    var chartBars = buildChartBars(userData, chartViewWidth, color);
+    var chartBars = buildChartBars(reservations, chartWidth, color);
     return Container(
       height: chartBars.length * 29.0 + 25.0 + 4.0,
       child: ListView(
@@ -243,39 +261,17 @@ class GanttChart extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         children: <Widget>[
           Stack(fit: StackFit.loose, children: <Widget>[
-            buildGrid(chartViewWidth),
-            buildHeader(chartViewWidth, color),
+            buildGrid(chartWidth),
+            buildHeader(chartWidth, color),
             Container(
                 margin: EdgeInsets.only(top: 25.0),
                 child: Container(
                   child: Column(
                     children: <Widget>[
                       Container(
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                                width: chartViewWidth / viewRangeToFitScreen,
-                                height: chartBars.length * 29.0 + 4.0,
-                                color: color.withAlpha(100),
-                                child: Center(
-                                  child: new RotatedBox(
-                                    quarterTurns:
-                                        chartBars.length * 29.0 + 4.0 > 50
-                                            ? 0
-                                            : 0,
-                                    child: new Text(
-                                      user.name,
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                )),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: chartBars,
-                            ),
-                          ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: chartBars,
                         ),
                       ),
                     ],
@@ -287,104 +283,32 @@ class GanttChart extends StatelessWidget {
     );
   }
 
-  List<Widget> buildChartContent(double chartViewWidth) {
+  List<Widget> buildChartContent(double chartWidth) {
     List<Widget> chartContent = new List();
 
-    usersInChart.forEach((user) {
-      List<Project> projectsOfUser = new List();
-
-      projectsOfUser = projects
-          .where((project) => project.participants.indexOf(user.id) != -1)
-          .toList();
-
-      if (projectsOfUser.length > 0) {
-        chartContent
-            .add(buildChartForEachUser(projectsOfUser, chartViewWidth, user));
-      }
+    reservations.sort((a, b) {
+      // sort by roomId and fromDate
+      var r = a.roomId.compareTo(b.roomId);
+      if (r != 0) return r;
+      return a.fromDate.compareTo(b.fromDate);
     });
+
+    if (reservations.length > 0) {
+      chartContent.add(buildChart(reservations, chartWidth));
+    }
 
     return chartContent;
   }
 
   @override
   Widget build(BuildContext context) {
-    var chartViewWidth = MediaQuery.of(context).size.width;
-    var screenOrientation = MediaQuery.of(context).orientation;
-
-    screenOrientation == Orientation.landscape
-        ? viewRangeToFitScreen = 12
-        : viewRangeToFitScreen = 6;
-
+    var chartWidth = MediaQuery.of(context).size.width;
     return Container(
       child: MediaQuery.removePadding(
-        child: ListView(children: buildChartContent(chartViewWidth)),
+        child: ListView(children: buildChartContent(chartWidth)),
         removeTop: true,
         context: context,
       ),
     );
   }
 }
-
-var users = [
-  User(id: 1, name: 'Steve'),
-  User(id: 2, name: 'Leila'),
-  User(id: 3, name: 'Alex'),
-  User(id: 4, name: 'Ryan'),
-];
-
-var projects = [
-  Project(
-      id: 10,
-      name: 'Basetax',
-      startTime: DateTime(2018, 1, 12),
-      endTime: DateTime(2018, 1, 15),
-      participants: [1]),
-  Project(
-      id: 11,
-      name: 'Basetax',
-      startTime: DateTime(2018, 1, 29),
-      endTime: DateTime(2018, 2, 12),
-      participants: [1]),
-  Project(
-      id: 12,
-      name: 'Basetax',
-      startTime: DateTime(2018, 2, 12),
-      endTime: DateTime(2018, 3, 1),
-      participants: [1]),
-  Project(
-      id: 2,
-      name: 'CENTTO',
-      startTime: DateTime(2018, 4, 1),
-      endTime: DateTime(2018, 6, 1),
-      participants: [2, 3]),
-  Project(
-      id: 3,
-      name: 'Uber',
-      startTime: DateTime(2017, 5, 1),
-      endTime: DateTime(2018, 9, 1),
-      participants: [1, 2, 4]),
-  Project(
-      id: 4,
-      name: 'Grab',
-      startTime: DateTime(2018, 6, 1),
-      endTime: DateTime(2018, 10, 1),
-      participants: [1, 4, 3]),
-  Project(
-      id: 5,
-      name: 'GO-JEK',
-      startTime: DateTime(2017, 3, 1),
-      endTime: DateTime(2018, 11, 1),
-      participants: [4, 2, 3]),
-  Project(
-      id: 6,
-      name: 'Lyft',
-      startTime: DateTime(2018, 4, 1),
-      endTime: DateTime(2018, 7, 1),
-      participants: [4, 2, 3]),
-  Project(
-      id: 7,
-      name: 'San Jose',
-      startTime: DateTime(2018, 5, 1),
-      endTime: DateTime(2018, 12, 1),
-      participants: [1, 2, 4]),
-];
