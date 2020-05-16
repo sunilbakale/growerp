@@ -126,7 +126,6 @@ class Repos {
         return "passwordChange";
       else
         this.apiKey = result["apiKey"];
-        debugPrint("==login apikey: ${apiKey}");
         return authenticateFromJson(response.toString());
     } catch(e) {
       return(responseMessage(e));
