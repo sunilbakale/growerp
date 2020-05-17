@@ -33,25 +33,40 @@ class GanttFormState extends State<GanttForm> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
     switch (columnPeriod) {
       case MONTH:
         {
+          if (screenWidth < 800) {
+            columnsOnScreen = 4;
+          } else {
+            columnsOnScreen = 8;
+          }
           chartColumns = 13;
-          columnsOnScreen = 4;
           chartInDays = 365;
         }
         break;
       case WEEK:
         {
-          chartColumns = 21;
-          columnsOnScreen = 8;
-          chartInDays = (chartColumns-1) * 7;
+          if (screenWidth < 800) {
+            chartColumns = 14;
+            columnsOnScreen = 4;
+          } else {
+            chartColumns = 21;
+            columnsOnScreen = 8;
+          }
+          chartInDays = (chartColumns - 1) * 7;
         }
         break;
       case DAY:
         {
-          chartColumns = 36;
-          columnsOnScreen = 21;
+          if (screenWidth < 800) {
+            chartColumns = 18;
+            columnsOnScreen = 5;
+          } else {
+            chartColumns = 36;
+            columnsOnScreen = 21;
+          }
           chartInDays = chartColumns;
         }
         break;
@@ -59,8 +74,29 @@ class GanttFormState extends State<GanttForm> {
 
     return Scaffold(
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          SizedBox(
+            height: 15,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                RaisedButton(
+                  onPressed: () => setState(() => columnPeriod = DAY),
+                  child: Text('Day'),
+                ),
+                RaisedButton(
+                  onPressed: () => setState(() => columnPeriod = WEEK),
+                  child: Text('Week'),
+                ),
+                RaisedButton(
+                  onPressed: () => setState(() => columnPeriod = MONTH),
+                  child: Text('Month'),
+                ),
+                SizedBox(width: 30),
+              ],
+            ),
+          ),
+          SizedBox(height: 5),
           Expanded(
             child: GanttChart(
               columnPeriod: columnPeriod,
@@ -98,19 +134,7 @@ class GanttChart extends StatelessWidget {
     });
     var screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      child: MediaQuery.removePadding(
-        child:
-            ListView(children: [buildChart(reservationsInChart, screenWidth)]),
-        removeTop: true,
-        context: context,
-      ),
-    );
-  }
-
-  Widget buildChart(List<Reservation> reservations, double screenWidth) {
-    Color color = Colors.lightGreen;
-    var chartBars = buildChartBars(reservations, screenWidth, color);
+    var chartBars = buildChartBars(reservations, screenWidth);
     return Container(
       height: chartBars.length * 29.0 + 25.0 + 4.0,
       child: ListView(
@@ -119,7 +143,7 @@ class GanttChart extends StatelessWidget {
         children: <Widget>[
           Stack(fit: StackFit.loose, children: <Widget>[
             buildGrid(screenWidth),
-            buildHeader(screenWidth, color),
+            buildHeader(screenWidth, Colors.lightGreen),
             Container(
                 margin: EdgeInsets.only(top: 25.0),
                 child: Container(
@@ -188,26 +212,31 @@ class GanttChart extends StatelessWidget {
       "Nov",
       "Dec"
     ];
-    const List<String> days = ["Sun","Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
+    const List<String> days = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
     String headerText;
     int year = ganttFromDate.year;
     for (int i = 0; i < chartColumns; i++) {
       if (columnPeriod == MONTH) {
-        headerText = months[(ganttFromDate.month + i - 1)%11] + ' ' + year.toString();
-        if ((ganttFromDate.month + i) == 11 ) year++;
+        headerText =
+            months[(ganttFromDate.month + i - 1) % 11] + ' ' + year.toString();
+        if ((ganttFromDate.month + i) == 11) year++;
       }
       var formatter = new DateFormat('yyyy-MM-dd');
       if (columnPeriod == WEEK) {
-        headerText = 'Week starting: ' + days[(ganttFromDate.weekday)%6] + '\n' +
-          formatter.format(ganttFromDate.add(new Duration(days:i*7)));
+        headerText = 'Week starting: ' +
+            days[(ganttFromDate.weekday) % 6] +
+            '\n' +
+            formatter.format(ganttFromDate.add(new Duration(days: i * 7)));
       }
       if (columnPeriod == DAY) {
-        headerText = days[(ganttFromDate.weekday + i)%6] + '\n' +
-        formatter.format(ganttFromDate.add(new Duration(days:i)));
+        headerText = days[(ganttFromDate.weekday + i) % 6] +
+            '\n' +
+            formatter.format(ganttFromDate.add(new Duration(days: i)));
       }
       headerItems.add(Container(
         width: screenWidth / columnsOnScreen,
-        child: new Text( headerText,
+        child: new Text(
+          headerText,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 10.0,
@@ -227,7 +256,7 @@ class GanttChart extends StatelessWidget {
   }
 
   List<Widget> buildChartBars(
-      List<Reservation> reservationsInChart, double screenWidth, Color color) {
+      List<Reservation> reservationsInChart, double screenWidth) {
     List<Widget> chartBars = new List();
     var last;
     for (int i = 0; i < reservationsInChart.length; i++) {
@@ -257,12 +286,13 @@ class GanttChart extends StatelessWidget {
     double halfDay;
     while (index < reservations.length &&
         reservations[index].roomId == currentRoomId) {
-          // define the scale of 1 day
-        double dayScale;
-        if (columnPeriod == DAY) dayScale = screenWidth / columnsOnScreen;
-        if (columnPeriod == WEEK) dayScale = screenWidth / (columnsOnScreen*7);
-        if (columnPeriod == MONTH) dayScale = screenWidth / (columnsOnScreen*365/12);
-        if (halfDay == null) halfDay = dayScale/2;
+      // define the scale of 1 day
+      double dayScale;
+      if (columnPeriod == DAY) dayScale = screenWidth / columnsOnScreen;
+      if (columnPeriod == WEEK) dayScale = screenWidth / (columnsOnScreen * 7);
+      if (columnPeriod == MONTH)
+        dayScale = screenWidth / (columnsOnScreen * 365 / 12);
+      if (halfDay == null) halfDay = dayScale / 2;
       chartContent.add(
         Container(
           decoration: BoxDecoration(
@@ -271,12 +301,15 @@ class GanttChart extends StatelessWidget {
           width: reservationsInChart[index]
                   .thruDate
                   .difference(reservationsInChart[index].fromDate)
-                  .inDays * dayScale,
+                  .inDays *
+              dayScale,
           margin: EdgeInsets.only(
               left: reservationsInChart[index]
-                      .fromDate
-                      .difference(lastDate)
-                      .inDays * dayScale + halfDay,
+                          .fromDate
+                          .difference(lastDate)
+                          .inDays *
+                      dayScale +
+                  halfDay,
               top: 4.0,
               bottom: 4.0),
           alignment: Alignment.centerLeft,
@@ -292,7 +325,8 @@ class GanttChart extends StatelessWidget {
         ),
       );
       lastDate = reservationsInChart[index].thruDate;
-      index++; halfDay = 0.00;
+      index++;
+      halfDay = 0.00;
     }
     return chartContent;
   }
