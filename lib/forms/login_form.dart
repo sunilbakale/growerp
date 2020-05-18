@@ -19,7 +19,7 @@ class LoginForm extends StatefulWidget {
 class _LoginState extends State<LoginForm> {
   final Repos repos;
   String errorMessage;
-  
+
   List<FocusNode> _focusNodes;
 
   _LoginState(this.repos);
@@ -46,7 +46,7 @@ class _LoginState extends State<LoginForm> {
             previous.runtimeType != current.runtimeType ||
             previous is FormBlocLoading && current is FormBlocLoading,
         builder: (context, state) {
-           final loginBloc = context.bloc<LoginBloc>();
+          final loginBloc = context.bloc<LoginBloc>();
           if (state is FormBlocLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is FormBlocLoadFailed) {
@@ -66,9 +66,9 @@ class _LoginState extends State<LoginForm> {
                 onSuccess: (context, state) {
                   LoadingDialog.hide(context);
                   if (state.successResponse == "passwordChange") {
-                    BlocProvider.of<AuthBloc>(context)
-                        .add(UpdatePassword(username: loginBloc.email.value,
-                            password: loginBloc.password.value));
+                    BlocProvider.of<AuthBloc>(context).add(UpdatePassword(
+                        username: loginBloc.email.value,
+                        password: loginBloc.password.value));
                   } else {
                     BlocProvider.of<AuthBloc>(context)
                         .add(LoggedIn(authenticate: loginBloc.authenticate));
@@ -80,66 +80,71 @@ class _LoginState extends State<LoginForm> {
                       SnackBar(content: Text(state.failureResponse)));
                 },
                 child: Center(
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 40),
-                      Image.asset('assets/growerp.png', height: 100),
-                      Text(
-                        loginBloc?.authenticate?.company?.name == null
-                            ? 'Hotel'
-                            : loginBloc?.authenticate?.company?.name,
-                        style: TextStyle(
-                            color: Color(0xFFB52727),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 10),
-                      TextFieldBlocBuilder(
-                        textFieldBloc: loginBloc.email,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
+                  child: SizedBox(
+                    width: 350,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 40),
+                        Image.asset('assets/growerp.png', height: 100),
+                        Text(
+                          loginBloc?.authenticate?.company?.name == null
+                              ? 'Hotel'
+                              : loginBloc?.authenticate?.company?.name,
+                          style: TextStyle(
+                              color: Color(0xFFB52727),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
                         ),
-                        nextFocusNode: _focusNodes[0],
-                      ),
-                      TextFieldBlocBuilder(
-                        textFieldBloc: loginBloc.password,
-                        suffixButton: SuffixButton.obscureText,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          prefixIcon: Icon(Icons.lock),
+                        SizedBox(height: 10),
+                        TextFieldBlocBuilder(
+                          textFieldBloc: loginBloc.email,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.email),
+                          ),
+                          nextFocusNode: _focusNodes[0],
                         ),
-                        focusNode: _focusNodes[0],
-                      ),
-                      SizedBox(height: 20),
-                      RaisedButton(
-                        onPressed: loginBloc.submit,
-                        child: Text('LOGIN'),
-                      ),
-                      SizedBox(height: 30),
-                      GestureDetector(
-                          child: Text(
-                            'register new account',
+                        TextFieldBlocBuilder(
+                          textFieldBloc: loginBloc.password,
+                          suffixButton: SuffixButton.obscureText,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock),
                           ),
-                          onTap: () {
-                            BlocProvider.of<AuthBloc>(context).add(Register());
-                          }),
-                      SizedBox(height: 30),
-                      GestureDetector(
-                          child: Text(
-                            'forgot password?',
-                          ),
-                          onTap: () async {
-                            final String username = await _sendResetPasswordDialog(
-                                context, loginBloc.authenticate?.user?.name);
-                            if (username != null) {
+                          focusNode: _focusNodes[0],
+                        ),
+                        SizedBox(height: 20),
+                        RaisedButton(
+                          onPressed: loginBloc.submit,
+                          child: Text('LOGIN'),
+                        ),
+                        SizedBox(height: 30),
+                        GestureDetector(
+                            child: Text(
+                              'register new account',
+                            ),
+                            onTap: () {
                               BlocProvider.of<AuthBloc>(context)
-                                  .add(ResetPassword(username: username));
-                            }
-                          })
-                    ],
+                                  .add(Register());
+                            }),
+                        SizedBox(height: 30),
+                        GestureDetector(
+                            child: Text(
+                              'forgot password?',
+                            ),
+                            onTap: () async {
+                              final String username =
+                                  await _sendResetPasswordDialog(context,
+                                      loginBloc.authenticate?.user?.name);
+                              if (username != null) {
+                                BlocProvider.of<AuthBloc>(context)
+                                    .add(ResetPassword(username: username));
+                              }
+                            })
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -159,19 +164,19 @@ _sendResetPasswordDialog(BuildContext context, String username) async {
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(32.0))),
+            borderRadius: BorderRadius.all(Radius.circular(32.0))),
         title: Text(
             'Email you registered with?\nWe will send you a reset password',
             textAlign: TextAlign.center),
         content: new Row(children: <Widget>[
           new Expanded(
-            child: TextFormField(
-              initialValue: username,
-              autofocus: true,
-              decoration: new InputDecoration(labelText: 'Email:'),
-              onChanged: (value) {
-                username = value;
-              }))
+              child: TextFormField(
+                  initialValue: username,
+                  autofocus: true,
+                  decoration: new InputDecoration(labelText: 'Email:'),
+                  onChanged: (value) {
+                    username = value;
+                  }))
         ]),
         actions: <Widget>[
           FlatButton(
