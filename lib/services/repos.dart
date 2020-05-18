@@ -208,11 +208,13 @@ class Repos {
       List data}) async {
     try {
       // create some category and product when company empty
+      var locale;
+      if (!kIsWeb) locale = await Devicelocale.currentLocale;
       Response response =
           await _client.post('s1/growerp/100/UserAndCompany', data: {
         'username': email, 'emailAddress': email,
         'newPassword': 'qqqqqq9!', 'firstName': firstName,
-        'lastName': lastName, 'locale': await Devicelocale.currentLocale,
+        'lastName': lastName, 'locale': locale,
         'companyPartyId': companyPartyId, // for existing companies
         'companyName': companyName, 'currencyUomId': currency,
         'companyEmail': email,
