@@ -113,7 +113,7 @@ class _HomeFormState extends State<HomeForm> {
           ),
         ],
       ),
-      floatingActionButton: OpenContainer(
+/*      floatingActionButton: OpenContainer(
         transitionType: _transitionType,
         openBuilder: (BuildContext context, VoidCallback _) {
           return DetailForm();
@@ -138,7 +138,7 @@ class _HomeFormState extends State<HomeForm> {
           );
         },
       ),
-    );
+*/    );
   }
 }
 
