@@ -68,7 +68,7 @@ class Repos {
           break;
         case DioErrorType.RESPONSE:
           errorDescription =
-              "Received invalid status code: ${dioError.response.statusCode}";
+              "Received invalid status code: ${dioError?.response?.statusCode}";
           break;
         case DioErrorType.SEND_TIMEOUT:
           errorDescription = "Send timeout in connection with API server";
