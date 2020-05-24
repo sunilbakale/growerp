@@ -15,7 +15,8 @@ class Repos {
 
   Repos() {
     _client = new Dio();
-    if (kReleaseMode) { //platform not supported on the web
+    if (kReleaseMode) {
+      //platform not supported on the web
       // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
     } else if (kIsWeb || Platform.isIOS) {
@@ -46,7 +47,8 @@ class Repos {
       return  e;//continue
       }
     ));
-*/}
+*/
+  }
 
   String responseMessage(e) {
     String errorDescription = "Unexpected DioError";
@@ -74,7 +76,7 @@ class Repos {
           errorDescription = "Send timeout in connection with API server";
           break;
       }
-    } 
+    }
     if (e.response != null) {
       // print("dio error data: ${e.response.data}");
       // print("dio error headers: ${e.response.headers}");
@@ -83,7 +85,7 @@ class Repos {
       // Something happened in setting up or sending the request that triggered an Error
       // print("dio no response, request: ${e.request}");
       // print("dio no response, message: ${e.message}");
-    } 
+    }
     if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
 //      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
 //            errors: ${e.response.data['errors']}''');
@@ -98,148 +100,31 @@ class Repos {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;
       return sessionToken != null;
-    } catch(e) {
+    } catch (e) {
       return responseMessage(e);
     }
   }
 
-  Future<dynamic> getCurrencies() async {
+  Future<dynamic> getUserAndCompany({String companyPartyId}) async {
     try {
-      Response response = await _client.get('s1/growerp/100/CurrencyList');
-      CurrencyList currencyList = currencyListFromJson(response.toString());
-      return currencyList.currencyList;
-    } catch(e) {
+      Response response = await _client.get('s1/growerp/100/UserAndCompany',
+          queryParameters: {"companyPartyId": companyPartyId});
+      print("=====!!!!!!!!!======${response.toString()}");
+      dynamic t = userAndCompanyFromJson(response.toString());
+      return t;
+    } catch (e) {
       return responseMessage(e);
     }
   }
 
-  Future<dynamic> login(
-      {@required String username, @required String password}) async {
+  Future<dynamic> getCategoriesAndProducts({String companyPartyId}) async {
     try {
-      Response response = await _client.post('s1/growerp/100/Login', data: {
-        'username': username,
-        'password': password,
-        'moquiSessionToken': sessionToken
-      });
-      dynamic result = jsonDecode(response.toString());
-      if (result["passwordChange"] == "true")
-        return "passwordChange";
-      else
-        this.apiKey = result["apiKey"];
-        return authenticateFromJson(response.toString());
-    } catch(e) {
-      return(responseMessage(e));
-    }
-  }
-
-  Future<dynamic> resetPassword({@required String username}) async {
-    try {
-      Response result = await _client.post('s1/growerp/100/ResetPassword',
-        data: {'username': username, 'moquiSessionToken': sessionToken});
-      return json.decode(result.toString());
-    } catch(e) {
+      Response response = await _client.get(
+          's1/growerp/100/CategoriesAndProducts',
+          queryParameters: {"companyPartyId": companyPartyId});
+      return productsAndCategoriesFromJson(response.toString());
+    } catch (e) {
       return responseMessage(e);
     }
   }
-
-  Future<dynamic> updatePassword(
-      {@required String username,
-      @required String oldPassword,
-      @required String newPassword}) async {
-    try {  
-      Response response = await _client.put('s1/growerp/100/Password', data: {
-        'username': username,
-        'oldPassword': oldPassword,
-        'newPassword': newPassword,
-        'moquiSessionToken': sessionToken
-      });
-      // print("==update password=service ==== ${response}");
-      return json.decode(response.toString());
-    } catch(e) {
-      return responseMessage(e);
-    }
-  }
-
-  Future<dynamic> logout() async {
-    this.apiKey = null;
-    _client.options.headers['api_key'] = apiKey;
-    try {
-      await _client.post('logout');
-      return getAuthenticate();
-    } catch(e) {
-      return responseMessage(e);
-    }
-  }
-
-  Future<void> persistAuthenticate(Authenticate authenticate) async {
-    if (kIsWeb) return; // not supported in web
-    await FlutterKeychain.put(
-        key: "authenticate", value: authenticateToJson(authenticate));
-    return;
-  }
-
-  Future<Authenticate> getAuthenticate() async {
-    if (kIsWeb) {
-      Authenticate auth = authenticateFromJson('''
-           {  "company": {"name": "Test Company",
-                          "currency": "USD"},
-              "user": {"firstName": "Hans",
-                       "lastName": "Bakker",
-                       "email": "info@growerp.com",
-                       "name": "info@growerp.com"},
-              "apiKey": null}
-      ''');
-      auth.apiKey = this.apiKey;
-      return auth;
-    }
-    var jsonString = await FlutterKeychain.get(key: "authenticate");
-    if (jsonString != null) 
-      return authenticateFromJson(jsonString.toString());
-    return null;
-  }
-
-  Future<dynamic> register(
-      {@required String companyName,
-      String companyPartyId, // if empty will create new company too!
-      @required String firstName,
-      @required String lastName,
-      @required String currency,
-      @required String email,
-      List data}) async {
-    try {
-      // create some category and product when company empty
-      var locale;
-      if (!kIsWeb) locale = await Devicelocale.currentLocale;
-      Response response =
-          await _client.post('s1/growerp/100/UserAndCompany', data: {
-        'username': email, 'emailAddress': email,
-        'newPassword': 'qqqqqq9!', 'firstName': firstName,
-        'lastName': lastName, 'locale': locale,
-        'companyPartyId': companyPartyId, // for existing companies
-        'companyName': companyName, 'currencyUomId': currency,
-        'companyEmail': email,
-        'partyClassificationId': 'AppHotel',
-        'environment': kReleaseMode,
-        'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
-        'moquiSessionToken': sessionToken
-      });
-      return authenticateFromJson(response.toString());
-    } catch(e) {
-      return responseMessage(e);
-    }
-  }
-
-  Future<dynamic> getAllPartyInfo() async {
-    // Authenticate token = await getAuthenticate();
-    _client.options.headers['api_key'] = apiKey;
-    print("===client: ${_client.options.headers['apiKey']}");
-    try {
-      Response response = await _client.get('s1/growerp/100/GetAllPartyInfo');
-        print("===== Allparty response: $response");
-      return responseMessage(response);
-    } catch(e) {
-      return responseMessage(e);
-    }
-  }
-
 }

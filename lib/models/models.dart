@@ -4,3 +4,7 @@ export 'user.dart';
 export 'company.dart';
 export 'currencyList.dart';
 export 'currency.dart';
+export 'product.dart';
+export 'category.dart';
+export 'productsAndCategories.dart';
+export 'userAndCompany.dart';

@@ -1,92 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:growerp/styles/themes.dart';
-import 'package:bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'forms/forms.dart';
 import 'services/repos.dart';
 
-import 'bloc/auth/auth.dart';
-import 'forms/forms.dart';
-import 'widgets/widgets.dart';
-
-class SimpleBlocDelegate extends BlocDelegate {
-  @override
-  void onEvent(Bloc bloc, Object event) {
-    super.onEvent(bloc, event);
-    print("===event: $event");
-  }
-
-  @override
-  void onTransition(Bloc bloc, Transition transition) {
-    super.onTransition(bloc, transition);
-    print("===Transition: $transition");
-  }
-
-  @override
-  void onError(Bloc bloc, Object error, StackTrace stacktrace) {
-    super.onError(bloc, error, stacktrace);
-    print("===error: $error");
-  }
-}
 
 void main() {
-  BlocSupervisor.delegate = SimpleBlocDelegate();
   final repos = Repos();
-  final authBloc = AuthBloc(repos: repos);
-
   runApp(
-    BlocProvider<AuthBloc>(
-      create: (context) {
-        return AuthBloc(repos: repos)..add(AppStarted());
-      },
-      child: App(repos: repos, authBloc: authBloc),
-    ),
-  );
-}
-
-Widget buildError(BuildContext context, FlutterErrorDetails error) {
-  return Scaffold(
-      body: Center(
-    child: Text(
-      "Error appeared.",
-      style: Theme.of(context).textTheme.headline6,
-    ),
-  ));
+    App(repos: repos));
 }
 
 class App extends StatelessWidget {
   final Repos repos;
-  final AuthBloc authBloc;
 
-  App({Key key, @required this.repos, @required this.authBloc})
-      : assert(repos != null, authBloc != null),
-        super(key: key);
+  App({Key key, @required this.repos})
+    : assert(repos != null), 
+      super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: Themes.formTheme,
-      home: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is AuthConnectionProblem || state is AuthUnauthenticated) {
-            return LoginForm(repos: repos, authBloc: authBloc);
-          } else if (state is AuthAuthenticated) {
-            return HomeForm(authBloc: authBloc);
-          } else if (state is AuthLoading) {
-            return LoadingIndicator();
-          } else if (state is AuthRegister) {
-            return RegisterForm(repos: repos);
-          } else if (state is AuthUpdatePassword) {
-            return UpdatePasswordForm(
-                repos: repos,
-                username: state.username,
-                password: state.password);
-          } else
-            return SplashForm();
-        },
-      ),
-      routes: {
-        '/home': (context) => HomeForm(authBloc: authBloc),
-      },
+      debugShowCheckedModeBanner: false,
+      home: HomeForm(repos: repos),
     );
   }
 }
+
+
+

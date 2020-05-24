@@ -41,12 +41,3 @@ flutter:
   assets:
     - assets/growerp.png
     - assets/growerp.jpg
-    - check-in.png
-    - check-out.png
-    - customers.png
-    - myInfo.png
-    - reservation.png
-    - setup.png
-    - single-bed.png
-    - twin-beds.png
-    - users.png

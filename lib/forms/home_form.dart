@@ -1,242 +1,334 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
-import 'package:animations/animations.dart';
+import 'package:form_bloc/form_bloc.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 import '../bloc/bloc.dart';
-import 'forms.dart';
-
-const double _fabDimension = 56.0;
+import '../services/repos.dart';
+import 'dart:convert';
 
 class HomeForm extends StatefulWidget {
-  final AuthBloc authBloc;
+  final Repos repos;
 
-  HomeForm({@required this.authBloc}) : assert(authBloc != null);
+  HomeForm({Key key, @required this.repos}) : assert(repos != null);
 
   @override
-  _HomeFormState createState() {
-    return _HomeFormState();
+  _HomeState createState() => _HomeState(repos);
+}
+
+class _HomeState extends State<HomeForm> {
+  final Repos repos;
+  String selectedCategoryId;
+
+  _HomeState(this.repos);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    selectedCategoryId;
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HomeBloc(repos: repos),
+      child: BlocBuilder<HomeBloc, FormBlocState>(
+        condition: (previous, current) =>
+            previous.runtimeType != current.runtimeType ||
+            previous is FormBlocLoading && current is FormBlocLoading,
+        builder: (context, state) {
+          final homeBloc = context.bloc<HomeBloc>();
+          if (state is FormBlocLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is FormBlocLoadFailed) {
+            return Center(
+              child: RaisedButton(
+                onPressed: homeBloc.reload,
+                child: Text('Connection error,Retry?'),
+              ),
+            );
+          } else {
+            selectedCategoryId ??= homeBloc.categories[0].productCategoryId;
+            return Theme(
+              data: Theme.of(context).copyWith(
+                inputDecorationTheme: InputDecorationTheme(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              child: Scaffold(
+                  appBar: AppBar(title: Text(homeBloc?.company?.name)),
+                  body: FormBlocListener<HomeBloc, String, String>(
+                      onSubmitting: (context, state) {
+                        LoadingDialog.show(context);
+                      },
+                      onSuccess: (context, state) {
+                        LoadingDialog.hide(context);
+
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => SuccessScreen()));
+                      },
+                      onFailure: (context, state) {
+                        LoadingDialog.hide(context);
+
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(content: Text(state.failureResponse)));
+                      },
+                      child: SingleChildScrollView(
+                        physics: ClampingScrollPhysics(),
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 4),
+                                  child: Text(
+                                    'Categories',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 4),
+                                  child: FlatButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'View All',
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            _categoryList(homeBloc.categories),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 4),
+                                  child: Text(
+                                    'Products: ' +
+                                        homeBloc.categories
+                                            .firstWhere((i) =>
+                                                i.productCategoryId ==
+                                                selectedCategoryId)
+                                            .categoryName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 16, top: 4),
+                                  child: FlatButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'View All',
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            _productList(homeBloc.products)
+                          ],
+                        ),
+                      ))),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _categoryList(items) {
+    return Container(
+      height: 150,
+      alignment: Alignment.centerLeft,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          var data = items[index];
+          return Column(children: <Widget>[
+            GestureDetector(
+              onTap: () =>
+                  setState(() => selectedCategoryId = data.productCategoryId),
+              child: Container(
+                margin: EdgeInsets.all(10),
+                width: 95,
+                height: 95,
+                alignment: Alignment.center,
+                child: Image(
+                  image: MemoryImage(base64.decode(data.image.substring(22))),
+                  height: 40,
+                  width: 40,
+                ),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 5),
+                      blurRadius: 30,
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Text(data.categoryName),
+                Icon(
+                  Icons.keyboard_arrow_right,
+                  size: 14,
+                )
+              ],
+            )
+          ]);
+        },
+      ),
+    );
+  }
+
+  Widget _productList(List items) {
+    items =
+        items.where((i) => i.productCategoryId == selectedCategoryId).toList();
+    return Container(
+      height: 200,
+      alignment: Alignment.centerLeft,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: ClampingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          var data = items[index];
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(10),
+                  width: 130,
+                  height: 140,
+                  alignment: Alignment.center,
+                  child: Image(
+                    image: MemoryImage(base64.decode(data.image.substring(22))),
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: Offset(0, 5),
+                        blurRadius: 15,
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 130,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    data.name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 4, left: 4),
+                  width: 130,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    data.price.toString(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              ]);
+        },
+      ),
+    );
   }
 }
 
-class _HomeFormState extends State<HomeForm> {
-  ContainerTransitionType _transitionType = ContainerTransitionType.fadeThrough;
+class LoadingDialog extends StatelessWidget {
+  static void show(BuildContext context, {Key key}) => showDialog<void>(
+        context: context,
+        useRootNavigator: false,
+        barrierDismissible: false,
+        builder: (_) => LoadingDialog(key: key),
+      ).then((_) => FocusScope.of(context).requestFocus(FocusNode()));
+
+  static void hide(BuildContext context) => Navigator.pop(context);
+
+  LoadingDialog({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Center(
+        child: Card(
+          child: Container(
+            width: 80,
+            height: 80,
+            padding: EdgeInsets.all(12.0),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SuccessScreen extends StatelessWidget {
+  SuccessScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home page'),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.exit_to_app),
-              onPressed: () =>
-                  BlocProvider.of<AuthBloc>(context).add(LoggedOut()))
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(8.0),
-        children: <Widget>[
-          _OpenContainerWrapper(
-            transitionType: _transitionType,
-            closedBuilder: (BuildContext _, VoidCallback openContainer) {
-              return _topCard(openContainer: openContainer);
-            },
-          ),
-          const SizedBox(height: 16.0),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: _OpenContainerWrapper(
-                  transitionType: _transitionType,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _menuCard(
-                      openContainer: openContainer,
-                      image: 'assets/reservation.png',
-                      subtitle: 'Reservation',
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: _OpenContainerWrapper(
-                  transitionType: _transitionType,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _menuCard(
-                      openContainer: openContainer,
-                      image: 'assets/single-bed.png',
-                      subtitle: 'Rooms',
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: _OpenContainerWrapper(
-                  transitionType: _transitionType,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _menuCard(
-                      openContainer: openContainer,
-                      image: 'assets/check-in.png',
-                      subtitle: 'Check-In',
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: _OpenContainerWrapper(
-                  transitionType: _transitionType,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _menuCard(
-                      openContainer: openContainer,
-                      image: 'assets/check-out.png',
-                      subtitle: 'Check-Out',
-                    );
-                  },
-                ),
-              ),
-              Expanded(
-                child: _OpenContainerWrapper(
-                  transitionType: _transitionType,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return _menuCard(
-                      openContainer: openContainer,
-                      image: 'assets/myInfo.png',
-                      subtitle: 'My Info',
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 8.0),
-            ],
-          ),
-        ],
-      ),
-/*      floatingActionButton: OpenContainer(
-        transitionType: _transitionType,
-        openBuilder: (BuildContext context, VoidCallback _) {
-          return DetailForm();
-        },
-        closedElevation: 6.0,
-        closedShape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(_fabDimension / 2),
-          ),
-        ),
-        closedColor: Theme.of(context).colorScheme.secondary,
-        closedBuilder: (BuildContext context, VoidCallback openContainer) {
-          return SizedBox(
-            height: _fabDimension,
-            width: _fabDimension,
-            child: Center(
-              child: Icon(
-                Icons.add,
-                color: Theme.of(context).colorScheme.onSecondary,
-              ),
-            ),
-          );
-        },
-      ),
-*/    );
-  }
-}
-
-class _OpenContainerWrapper extends StatelessWidget {
-  const _OpenContainerWrapper({
-    this.closedBuilder,
-    this.transitionType,
-  });
-
-  final OpenContainerBuilder closedBuilder;
-  final ContainerTransitionType transitionType;
-
-  @override
-  Widget build(BuildContext context) {
-    return OpenContainer(
-      transitionType: transitionType,
-      openBuilder: (BuildContext context, VoidCallback _) {
-        return DetailForm();
-      },
-      tappable: false,
-      closedBuilder: closedBuilder,
-    );
-  }
-}
-
-class _topCard extends StatelessWidget {
-  const _topCard({this.openContainer});
-
-  final VoidCallback openContainer;
-
-  @override
-  Widget build(BuildContext context) {
-    return _InkWellOverlay(
-      openContainer: openContainer,
-      height: 500,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: GanttForm(),
-            )
-          ]
-        )
-      )
-    );
-  }
-}
-
-
-class _menuCard extends StatelessWidget {
-  const _menuCard({
-    this.openContainer,
-    this.image,
-    this.subtitle,
-  });
-
-  final VoidCallback openContainer;
-  final String image;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return _InkWellOverlay(
-      openContainer: openContainer,
-      height: 80,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[Image.asset(image), Text(subtitle)],
+            Icon(Icons.tag_faces, size: 100),
+            SizedBox(height: 10),
+            Text(
+              'Success',
+              style: TextStyle(fontSize: 54, color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            RaisedButton.icon(
+              onPressed: () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => HomeForm())),
+              icon: Icon(Icons.replay),
+              label: Text('AGAIN'),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-class _InkWellOverlay extends StatelessWidget {
-  const _InkWellOverlay({
-    this.openContainer,
-    this.width,
-    this.height,
-    this.child,
-  });
-
-  final VoidCallback openContainer;
-  final double width;
-  final double height;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: InkWell(
-        onTap: openContainer,
-        child: child,
-      ),
-    );
-  }
-}
-
