@@ -20,19 +20,20 @@ class HomeBloc extends FormBloc<String, String> {
     dynamic userComp =
         await repos.getUserAndCompany(companyPartyId: "100001");
     if (userComp is String) {
-      emitFailure(failureResponse: userComp);
+      emitLoadFailed(failureResponse: userComp);
+      return;
     }
     dynamic catProd =
         await repos.getCategoriesAndProducts(companyPartyId: "100001");
     if (catProd is String) {
-      emitFailure(failureResponse: catProd);
+      emitLoadFailed(failureResponse: catProd);
+      return;
     }
+
     company = userComp.company;
     user = userComp.user;
     products = catProd.products;
     categories = catProd.categories;
-    print("===??===${company?.name}");
-    print("===??===${user?.name}");
     emitLoaded();
   }
 

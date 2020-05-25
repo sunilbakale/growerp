@@ -3,7 +3,7 @@
 //     final product = productFromJson(jsonString);
 
 import 'dart:convert';
-
+import 'package:money/money.dart';
 import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 
 Product productFromJson(String str) => Product.fromJson(json.decode(str));
@@ -11,37 +11,38 @@ Product productFromJson(String str) => Product.fromJson(json.decode(str));
 String productToJson(Product data) => json.encode(data.toJson());
 
 class Product {
-    String productId;
-    String name;
-    double price;
-    String productCategoryId;
-    String categoryName;
-    String image;
+  String productId;
+  String name;
+  Money price;
+  String productCategoryId;
+  String categoryName;
+  String image;
 
-    Product({
-        this.productId,
-        this.name,
-        this.price,
-        this.productCategoryId,
-        this.categoryName,
-        this.image,
-    });
+  Product({
+    this.productId,
+    this.name,
+    this.price,
+    this.productCategoryId,
+    this.categoryName,
+    this.image,
+  });
 
-    factory Product.fromJson(Map<String, dynamic> json) => Product(
+  factory Product.fromJson(Map<String, dynamic> json) => Product(
         productId: json["productId"],
         name: json["name"],
-        price: json["price"],
+        price: Money.fromString(json["price"].toString(), Currency(json["currencyId"])),
         productCategoryId: json["productCategoryId"],
         categoryName: json["categoryName"],
         image: json["image"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "productId": productId,
         "name": name,
-        "price": price,
+        "price": price.amount,
+        "currencyId": price.currency,
         "productCategoryId": productCategoryId,
         "categoryName": categoryName,
         "image": image,
-    };
+      };
 }

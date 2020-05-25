@@ -77,20 +77,20 @@ class Repos {
           break;
       }
     }
-    if (e.response != null) {
+//    if (e.response != null) {
       // print("dio error data: ${e.response.data}");
       // print("dio error headers: ${e.response.headers}");
       // print("dio error request: ${e.response.request}");
-    } else {
+//    } else {
       // Something happened in setting up or sending the request that triggered an Error
       // print("dio no response, request: ${e.request}");
       // print("dio no response, message: ${e.message}");
-    }
-    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
+//    }
+//    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
 //      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
 //            errors: ${e.response.data['errors']}''');
-      errorDescription = e.response.data['errors'];
-    }
+//      errorDescription = e.response.data['errors'];
+//    }
     print("====returning error message: $errorDescription");
     return errorDescription;
   }
@@ -109,10 +109,9 @@ class Repos {
     try {
       Response response = await _client.get('s1/growerp/100/UserAndCompany',
           queryParameters: {"companyPartyId": companyPartyId});
-      print("=====!!!!!!!!!======${response.toString()}");
-      dynamic t = userAndCompanyFromJson(response.toString());
-      return t;
+      return userAndCompanyFromJson(response.toString());
     } catch (e) {
+      debugPrint("=1=repos: $e");
       return responseMessage(e);
     }
   }
@@ -124,6 +123,7 @@ class Repos {
           queryParameters: {"companyPartyId": companyPartyId});
       return productsAndCategoriesFromJson(response.toString());
     } catch (e) {
+      debugPrint("=2=repos: $e");
       return responseMessage(e);
     }
   }

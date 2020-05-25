@@ -47,7 +47,8 @@ class _HomeState extends State<HomeForm> {
             return Center(
               child: RaisedButton(
                 onPressed: homeBloc.reload,
-                child: Text('Connection error,Retry?'),
+                child: Text(state.failureResponse +
+                  '\nRetry?'),
               ),
             );
           } else {
