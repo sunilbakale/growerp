@@ -1,1 +1,2 @@
-export 'home_bloc.dart';
+export 'cart_bloc.dart';
+export 'catalog_bloc.dart';

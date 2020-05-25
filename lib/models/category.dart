@@ -3,17 +3,18 @@
 //     final category = categoryFromJson(jsonString);
 
 import 'dart:convert';
+import 'package:equatable/equatable.dart';
 
 Category categoryFromJson(String str) => Category.fromJson(json.decode(str));
 
 String categoryToJson(Category data) => json.encode(data.toJson());
 
-class Category {
-    String productCategoryId;
-    String categoryName;
-    String preparationAreaId;
-    String description;
-    String image;
+class Category extends Equatable{
+    final String productCategoryId;
+    final String categoryName;
+    final String preparationAreaId;
+    final String description;
+    final String image;
 
     Category({
         this.productCategoryId,
@@ -38,4 +39,8 @@ class Category {
         "description": description,
         "image": image,
     };
+
+    @override
+    List get props => [productCategoryId, categoryName,
+         preparationAreaId, description, image];
 }

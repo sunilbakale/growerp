@@ -7,6 +7,7 @@ import 'dart:io' show Platform;
 import 'dart:async';
 import '../models/models.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Repos {
   Dio _client;
@@ -107,8 +108,12 @@ class Repos {
 
   Future<dynamic> getUserAndCompany({String companyPartyId}) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String userCompJson = prefs.getString('userAndCompany');
+      if (userCompJson != null) return userAndCompanyFromJson(userCompJson);
       Response response = await _client.get('s1/growerp/100/UserAndCompany',
           queryParameters: {"companyPartyId": companyPartyId});
+      await prefs.setString('userAndCompany', response.toString());    
       return userAndCompanyFromJson(response.toString());
     } catch (e) {
       debugPrint("=1=repos: $e");
@@ -116,12 +121,16 @@ class Repos {
     }
   }
 
-  Future<dynamic> getCategoriesAndProducts({String companyPartyId}) async {
+  Future<dynamic> getCatalog({String companyPartyId}) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String catProdJson = prefs.getString('categoriesAndProducts');
+      if (catProdJson != null) return catalogFromJson(catProdJson);
       Response response = await _client.get(
           's1/growerp/100/CategoriesAndProducts',
           queryParameters: {"companyPartyId": companyPartyId});
-      return productsAndCategoriesFromJson(response.toString());
+      await prefs.setString('categoriesAndProducts', response.toString());    
+      return catalogFromJson(response.toString());
     } catch (e) {
       debugPrint("=2=repos: $e");
       return responseMessage(e);

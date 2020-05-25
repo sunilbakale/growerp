@@ -3,27 +3,25 @@
 //     final product = productFromJson(jsonString);
 
 import 'dart:convert';
+import 'package:equatable/equatable.dart';
 import 'package:money/money.dart';
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
 
 Product productFromJson(String str) => Product.fromJson(json.decode(str));
 
 String productToJson(Product data) => json.encode(data.toJson());
 
-class Product {
-  String productId;
-  String name;
-  Money price;
-  String productCategoryId;
-  String categoryName;
-  String image;
+class Product extends Equatable{
+  final String productId;
+  final String name;
+  final Money price;
+  final String productCategoryId;
+  final String image;
 
   Product({
     this.productId,
     this.name,
     this.price,
     this.productCategoryId,
-    this.categoryName,
     this.image,
   });
 
@@ -32,7 +30,6 @@ class Product {
         name: json["name"],
         price: Money.fromString(json["price"].toString(), Currency(json["currencyId"])),
         productCategoryId: json["productCategoryId"],
-        categoryName: json["categoryName"],
         image: json["image"],
       );
 
@@ -42,7 +39,10 @@ class Product {
         "price": price.amount,
         "currencyId": price.currency,
         "productCategoryId": productCategoryId,
-        "categoryName": categoryName,
         "image": image,
       };
+
+  @override
+  List get props => [productId, name, price.amount, price.currency,
+    productCategoryId, image];  
 }
