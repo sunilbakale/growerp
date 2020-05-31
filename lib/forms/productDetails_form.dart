@@ -21,25 +21,27 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
     product = args['product'];
     product.quantity ??= 1;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Product detail'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () => Navigator.pushNamed(context, '/cart'),
+        appBar: AppBar(
+          title: Text('Product detail'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () => Navigator.pushNamed(context, '/cart'),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: EdgeInsets.only(bottom: 50),
+          child: Stack(
+            children: <Widget>[
+              buildBodyColumn(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: buildActionsContainer(),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: Stack(
-        children: <Widget>[
-          buildBodyColumn(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: buildActionsContainer(),
-          )
-        ],
-      ),
-    );
+        ));
   }
 
   Widget buildBodyColumn() {
@@ -209,8 +211,13 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
                           })),
                 ),
                 MaterialButton(
-                  onPressed: () => BlocProvider.of<CartBloc>(context)
-                      .add(AddProduct(product)),
+                  onPressed: () => {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            'Added ${product.quantity} x ${product.name}',
+                            textAlign: TextAlign.center))),
+                    BlocProvider.of<CartBloc>(context).add(AddProduct(product)),
+                  },
                   splashColor: Theme.of(context).primaryColor,
                   color: Colors.amber[600],
                   elevation: 0,

@@ -10,9 +10,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   CartState get initialState => CartLoading();
 
   @override
-  Stream<CartState> mapEventToState(
-    CartEvent event,
-  ) async* {
+  Stream<CartState> mapEventToState(CartEvent event) async* {
     if (event is LoadCart) {
       yield* _mapLoadCartToState();
     } else if (event is AddProduct) {
@@ -37,8 +35,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         yield CartLoaded(
           products: List.from(currentState.products)..add(event.product),
         );
+//        yield CartLoaded(
+//          products: List.from(currentState.products)..add(event.product),
+//        );
       } catch (_e) {
-      yield CartError(errorMsg: _e);
+        yield CartError(errorMsg: _e);
       }
     }
   }
@@ -81,14 +82,14 @@ class CartLoaded extends CartState {
   const CartLoaded({this.products});
 
   Money get totalPrice {
-    if (products.length == 0) return null;     
+    if (products.length == 0) return null;
     Money total = Money.fromString("0.00", products[0].price.currency);
-    for (Product i in products) total += (i.price * i.quantity) ;
+    for (Product i in products) total += (i.price * i.quantity);
     return total;
   }
+
   @override
   List<Object> get props => [products];
-
 }
 
 class CartError extends CartState {
@@ -97,4 +98,3 @@ class CartError extends CartState {
   @override
   List<Object> get props => [];
 }
-
