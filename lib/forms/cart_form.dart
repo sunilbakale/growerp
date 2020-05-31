@@ -16,7 +16,7 @@ class CartForm extends StatelessWidget {
         ],
       ),
       body: Container(
-        color: Colors.yellow,
+//        color: Colors.yellow,
         child: Column(
           children: [
             Expanded(
@@ -37,26 +37,34 @@ class CartForm extends StatelessWidget {
 class _CartList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final itemNameStyle = Theme.of(context).textTheme.headline6;
-
     return BlocBuilder<CartBloc, CartState>(
       builder: (context, state) {
         if (state is CartLoading) {
           return CircularProgressIndicator();
-        }
-        if (state is CartLoaded) {
-          return ListView.builder(
-            itemCount: state.products.length,
-            itemBuilder: (context, index) => ListTile(
-              leading: Icon(Icons.done),
-              title: Text(
-                state.products[index].name,
-                style: itemNameStyle,
-              ),
-            ),
+        } else if (state is CartLoaded) {
+          return DataTable(
+            columns: [
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Quantity')),
+              DataColumn(label: Text('Price')),
+              DataColumn(label: Text('Total')),
+            ],
+            rows: state.products
+                .map((product) => DataRow(cells: [
+                      DataCell(Text(product.name)),
+                      DataCell(Text(product.quantity.toString())),
+                      DataCell(Text(product.price.toString())),
+                      DataCell(
+                          Text((product.price * product.quantity).toString())),
+                    ]))
+                .toList(),
           );
-        }
-        return Text('Something went wrong!');
+        } else if (state is CartError) {
+          return Center(
+            child: Text(state.errorMsg),
+          );
+        } else
+          return Container();
       },
     );
   }
@@ -79,7 +87,7 @@ class _CartTotal extends StatelessWidget {
                 return CircularProgressIndicator();
               }
               if (state is CartLoaded) {
-                return Text(state.totalPrice.toString(), style: hugeStyle);
+                return Text((state.totalPrice??0.00).toString(), style: hugeStyle);
               }
               return Text('Something went wrong!');
             }),

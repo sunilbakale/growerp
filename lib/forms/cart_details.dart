@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 
 class CartDetails extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -10,7 +9,6 @@ class CartDetails extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(20),
-
       width: screenWidth,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -55,41 +53,44 @@ class CartDetails extends StatelessWidget {
                 ),
                 Text('\$30',
                     style: TextStyle(color: Colors.black, fontSize: 16)),
-
               ],
             ),
-
           ),
           SizedBox(height: 50),
           Container(
             width: screenWidth,
-            padding: EdgeInsets.only(left: 10,right: 15),
+            padding: EdgeInsets.only(left: 10, right: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Text('Total',style: TextStyle(color: Colors.grey.withOpacity(0.6),fontWeight: FontWeight.bold,fontSize: 25),),
-     /*           Text('\$${(_provider.getTotalPrice()+30).toStringAsFixed(2)}',style:TextStyle(
+                Text(
+                  'Total',
+                  style: TextStyle(
+                      color: Colors.grey.withOpacity(0.6),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25),
+                ),
+                /*           Text('\$${(_provider.getTotalPrice()+30).toStringAsFixed(2)}',style:TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 35)
                     )
-    */          ],
+    */
+              ],
             ),
           ),
           SizedBox(height: 50),
           Center(
             child: MaterialButton(
-              onPressed: () {
-
-              },
+              onPressed: () {},
               color: Colors.amber[600],
               elevation: 0,
               child: Text(
                 'Next',
                 style:
-                TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               height: 50,
               minWidth: screenWidth - 100,
@@ -104,7 +105,6 @@ class CartDetails extends StatelessWidget {
   }
 }
 
-
 class CartItem extends StatelessWidget {
   final Product product;
 
@@ -114,7 +114,7 @@ class CartItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double screenWidth = size.width;
-    double amount;
+    double quantity;
 
     return Container(
       width: screenWidth,
@@ -130,22 +130,20 @@ class CartItem extends StatelessWidget {
             backgroundColor: Colors.black,
             backgroundImage: AssetImage(product.image),
           ),
-          Text('${amount}',
+          Text(quantity.toString(),
               style: TextStyle(color: Colors.black, fontSize: 16)),
           Text('x', style: TextStyle(color: Colors.black, fontSize: 16)),
           Container(
             width: screenWidth * 0.5,
-            child: Text('${product.name}',
+            child: Text(product.name,
                 maxLines: 2,
                 overflow: TextOverflow.fade,
                 style: TextStyle(color: Colors.black, fontSize: 16)),
           ),
-          Text('\$${(amount * product.price.amount).toStringAsFixed(2)}',
+          Text((quantity * product.price.amount).toStringAsFixed(2),
               style: TextStyle(color: Colors.black, fontSize: 16)),
-
         ],
       ),
     );
   }
 }
-

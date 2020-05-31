@@ -30,7 +30,10 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         await repos.getCatalog(companyPartyId: "100001");
     if (catalog is Catalog && userAndCompany is UserAndCompany)
       yield CatalogLoaded(catalog,userAndCompany);
-    else yield CatalogError(catalog + userAndCompany);
+    else {
+      if (catalog == userAndCompany) yield CatalogError(catalog);
+      else yield CatalogError(catalog + userAndCompany);
+    }
   }
 }
 

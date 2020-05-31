@@ -31,8 +31,7 @@ class _HomeState extends State<HomeForm> {
           return Center(
             child: CircularProgressIndicator(),
           );
-        }
-        if (state is CatalogLoaded) {
+        } else if (state is CatalogLoaded) {
           selectedCategoryId ??= state.catalog.categories[0].productCategoryId;
           categories = state.catalog.categories;
           products = state.catalog.products;
@@ -65,14 +64,16 @@ class _HomeState extends State<HomeForm> {
                   ),
                 ),
               ));
-        }
-        return Center(
-          child: RaisedButton(
-              child: Text('Network error..' + '\nRetry?'),
-              onPressed: () {
-                BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-              }),
-        );
+        } else if (state is CatalogError) {
+          return Center(
+            child: RaisedButton(
+                child: Text(state.errorMessage + '\nRetry?'),
+                onPressed: () {
+                  BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                }),
+          );
+        } else
+          return null;
       },
     );
   }

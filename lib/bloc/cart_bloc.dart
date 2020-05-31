@@ -25,8 +25,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     try {
       //await Future.delayed(Duration(seconds: 1));
       yield CartLoaded(products: []);
-    } catch (_) {
-      yield CartError();
+    } catch (_e) {
+      yield CartError(errorMsg: _e);
     }
   }
 
@@ -37,8 +37,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         yield CartLoaded(
           products: List.from(currentState.products)..add(event.product),
         );
-      } catch (_) {
-        yield CartError();
+      } catch (_e) {
+      yield CartError(errorMsg: _e);
       }
     }
   }
@@ -81,15 +81,19 @@ class CartLoaded extends CartState {
   const CartLoaded({this.products});
 
   Money get totalPrice {
-    Money total = Money.fromString("0.00", Currency("THB"));
-    for (Product i in products) total += i.price ;
+    if (products.length == 0) return null;     
+    Money total = Money.fromString("0.00", products[0].price.currency);
+    for (Product i in products) total += (i.price * i.quantity) ;
     return total;
   }
   @override
   List<Object> get props => [products];
+
 }
 
 class CartError extends CartState {
+  final errorMsg;
+  const CartError({this.errorMsg});
   @override
   List<Object> get props => [];
 }

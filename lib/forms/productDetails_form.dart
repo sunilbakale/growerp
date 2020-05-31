@@ -14,12 +14,12 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
   Product product;
   Map<String, dynamic> args;
   bool isFavorite = false;
-  int quantity = 1;
 
   @override
   Widget build(BuildContext context) {
     final Map args = ModalRoute.of(context).settings.arguments as Map;
     product = args['product'];
+    product.quantity ??= 1;
     return Scaffold(
       appBar: AppBar(
         title: Text('Product detail'),
@@ -56,7 +56,7 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
           Padding(
             padding: EdgeInsets.only(left: screenWidth * 0.25),
             child: Hero(
-              tag: '${product.productId}',
+              tag: product.productId,
               child: Image(
                 image: MemoryImage(base64.decode(product.image.substring(22))),
                 height: 200,
@@ -93,7 +93,7 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
               children: <Widget>[
                 buildAmountButton(),
                 Text(
-                  (product.price * quantity).toString(),
+                  (product.price * product.quantity).toString(),
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -142,26 +142,26 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
             child: Icon(Icons.remove),
             onTap: () {
               setState(() {
-                if (quantity > 1) --quantity;
+                if (product.quantity > 1) --product.quantity;
               });
             },
             onLongPressStart: (_) {
               setState(() {
-                quantity = 1;
+                product.quantity = 1;
               });
             },
           ),
-          Text('$quantity'),
+          Text(product.quantity.toString()),
           GestureDetector(
             child: Icon(Icons.add),
             onTap: () {
               setState(() {
-                if (quantity < 25) ++quantity;
+                if (product.quantity < 25) ++product.quantity;
               });
             },
             onLongPressStart: (_) {
               setState(() {
-                quantity = 25;
+                product.quantity = 25;
               });
             },
           ),
