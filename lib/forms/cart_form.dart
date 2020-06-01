@@ -87,15 +87,19 @@ class _CartTotal extends StatelessWidget {
                 return CircularProgressIndicator();
               }
               if (state is CartLoaded) {
-                return Text((state.totalPrice??0.00).toString(), style: hugeStyle);
+                return Text((state.totalPrice ?? 0.00).toString(),
+                    style: hugeStyle);
               }
               return Text('Something went wrong!');
             }),
             SizedBox(width: 24),
             FlatButton(
               onPressed: () {
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Buying not supported yet.')));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Buying not supported yet..',
+                      textAlign: TextAlign.center),
+                  backgroundColor: Colors.redAccent,
+                ));
               },
               color: Colors.white,
               child: Text('BUY'),

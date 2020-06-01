@@ -215,7 +215,9 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
                     Scaffold.of(context).showSnackBar(SnackBar(
                         content: Text(
                             'Added ${product.quantity} x ${product.name}',
-                            textAlign: TextAlign.center))),
+                            textAlign: TextAlign.center),
+                            backgroundColor: Colors.green,
+                    )),
                     BlocProvider.of<CartBloc>(context).add(AddProduct(product)),
                   },
                   splashColor: Theme.of(context).primaryColor,
