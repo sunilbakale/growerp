@@ -31,8 +31,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     if (catalog is Catalog && userAndCompany is UserAndCompany)
       yield CatalogLoaded(catalog,userAndCompany);
     else {
-      if (catalog == userAndCompany) yield CatalogError(catalog);
-      else yield CatalogError(catalog + userAndCompany);
+      if (catalog is String) yield CatalogError(catalog);
+      else if (userAndCompany is String) yield CatalogError(userAndCompany);
+      else yield CatalogError('Unknow error retrieving catalog');
     }
   }
 }

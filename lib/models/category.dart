@@ -3,7 +3,10 @@
 //     final category = categoryFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Category categoryFromJson(String str) => Category.fromJson(json.decode(str));
 
@@ -14,7 +17,7 @@ class Category extends Equatable{
     final String categoryName;
     final String preparationAreaId;
     final String description;
-    final String image;
+    final image;
 
     Category({
         this.productCategoryId,
@@ -29,7 +32,9 @@ class Category extends Equatable{
         categoryName: json["categoryName"],
         preparationAreaId: json["preparationAreaId"],
         description: json["description"],
-        image: json["image"],
+        image: json["image"].indexOf('data:image') == 0?
+          MemoryImage(base64.decode(json["image"].substring(22))):
+          MemoryImage(base64.decode("R0lGODlhAQABAAAAACw="))
     );
 
     Map<String, dynamic> toJson() => {

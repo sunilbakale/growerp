@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:money/money.dart';
 
 Product productFromJson(String str) => Product.fromJson(json.decode(str));
@@ -15,7 +16,7 @@ class Product extends Equatable{
   final String name;
   final Money price;
   final String productCategoryId;
-  final String image;
+  final image;
   int quantity;
 
   Product({
@@ -30,15 +31,19 @@ class Product extends Equatable{
   factory Product.fromJson(Map<String, dynamic> json) => Product(
         productId: json["productId"],
         name: json["name"],
-        price: Money.fromString(json["price"].toString(), Currency(json["currencyId"])),
+        price: json["price"].indexOf('.') != -1 && json["price"].indexOf('.') == json["price"].length - 2?
+          Money.fromString(json["price"]+'0', Currency(json["currencyId"])):
+          Money.fromString(json["price"], Currency(json["currencyId"])),
         productCategoryId: json["productCategoryId"],
-        image: json["image"],
+        image: json["image"].indexOf('data:image') == 0?
+          MemoryImage(base64.decode(json["image"].substring(22))):
+          MemoryImage(base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="))
       );
 
   Map<String, dynamic> toJson() => {
         "productId": productId,
         "name": name,
-        "price": price.amount,
+        "price": price.amount.toString(),
         "currencyId": price.currency,
         "productCategoryId": productCategoryId,
         "image": image,

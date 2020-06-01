@@ -60,7 +60,7 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
             child: Hero(
               tag: product.productId,
               child: Image(
-                image: MemoryImage(base64.decode(product.image.substring(22))),
+                image: product.image,
                 height: 200,
                 width: screenWidth * 0.5,
               ),

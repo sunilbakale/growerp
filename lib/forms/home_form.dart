@@ -99,7 +99,7 @@ class _HomeState extends State<HomeForm> {
                 height: 70,
                 alignment: Alignment.center,
                 child: Image(
-                  image: MemoryImage(base64.decode(data.image.substring(22))),
+                  image: data.image,
                   height: 40,
                   width: 40,
                 ),
@@ -202,7 +202,7 @@ class _HomeState extends State<HomeForm> {
                   tag: '${product.productId}',
                   child: Image(
                     image:
-                        MemoryImage(base64.decode(product.image.substring(22))),
+                        product.image,
                     height: 125,
                     fit: BoxFit.contain,
                   ))),
