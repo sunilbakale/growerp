@@ -4,17 +4,23 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:money/money.dart';
 import '../models/models.dart';
+import '../services/repos.dart';
+
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  @override
+  final Repos repos;
+
+  CartBloc({@required this.repos});
+
+@override
   CartState get initialState => CartLoading();
 
   @override
   Stream<CartState> mapEventToState(CartEvent event) async* {
     if (event is LoadCart) {
       yield* _mapLoadCartToState();
-    } else if (event is AddProduct) {
-      yield* _mapAddProductToState(event);
+    } else if (event is AddOrderItem) {
+      yield* _mapAddOrderItemToState(event);
     }
   }
 
@@ -22,22 +28,19 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     yield CartLoading();
     try {
       //await Future.delayed(Duration(seconds: 1));
-      yield CartLoaded(products: []);
+      yield CartLoaded(orderItems: []);
     } catch (_e) {
       yield CartError(errorMsg: _e);
     }
   }
 
-  Stream<CartState> _mapAddProductToState(AddProduct event) async* {
+  Stream<CartState> _mapAddOrderItemToState(AddOrderItem event) async* {
     final currentState = state;
     if (currentState is CartLoaded) {
       try {
         yield CartLoaded(
-          products: List.from(currentState.products)..add(event.product),
+          orderItems: List.from(currentState.orderItems)..add(event.orderItem),
         );
-//        yield CartLoaded(
-//          products: List.from(currentState.products)..add(event.product),
-//        );
       } catch (_e) {
         yield CartError(errorMsg: _e);
       }
@@ -56,13 +59,18 @@ class LoadCart extends CartEvent {
   List<Object> get props => [];
 }
 
-class AddProduct extends CartEvent {
-  final Product product;
+class AddOrderItem extends CartEvent {
+  final OrderItem orderItem;
 
-  const AddProduct(this.product);
+  const AddOrderItem(this.orderItem);
 
   @override
-  List<Object> get props => [product];
+  List<Object> get props => [orderItem];
+}
+class PayOrderItem extends CartEvent {
+
+  @override
+  List<Object> get props => [];
 }
 
 // ================= state ========================
@@ -77,19 +85,19 @@ class CartLoading extends CartState {
 }
 
 class CartLoaded extends CartState {
-  final List<Product> products;
+  final List<OrderItem> orderItems;
 
-  const CartLoaded({this.products});
+  const CartLoaded({this.orderItems});
 
   Money get totalPrice {
-    if (products.length == 0) return null;
-    Money total = Money.fromString("0.00", products[0].price.currency);
-    for (Product i in products) total += (i.price * i.quantity);
+    if (orderItems.length == 0) return null;
+    Money total = Money.fromString("0.00", orderItems[0].price.currency);
+    for (OrderItem i in orderItems) total += (i.price * i.quantity);
     return total;
   }
 
   @override
-  List<Object> get props => [products];
+  List<Object> get props => [orderItems];
 }
 
 class CartError extends CartState {

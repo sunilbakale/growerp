@@ -49,13 +49,13 @@ class _CartList extends StatelessWidget {
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Total')),
             ],
-            rows: state.products
-                .map((product) => DataRow(cells: [
-                      DataCell(Text(product.name)),
-                      DataCell(Text(product.quantity.toString())),
-                      DataCell(Text(product.price.toString())),
-                      DataCell(
-                          Text((product.price * product.quantity).toString())),
+            rows: state.orderItems
+                .map((orderItem) => DataRow(cells: [
+                      DataCell(Text(orderItem.description)),
+                      DataCell(Text(orderItem.quantity.toString())),
+                      DataCell(Text(orderItem.price.toString())),
+                      DataCell(Text(
+                          (orderItem.price * orderItem.quantity).toString())),
                     ]))
                 .toList(),
           );

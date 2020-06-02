@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/models.dart';
 import '../bloc/bloc.dart';
-import 'dart:convert';
 
 class ProductDetailsForm extends StatefulWidget {
   @override
@@ -12,6 +11,8 @@ class ProductDetailsForm extends StatefulWidget {
 
 class _ProductDetailsFormState extends State<ProductDetailsForm> {
   Product product;
+  int quantity;
+  OrderItem orderItem;
   Map<String, dynamic> args;
   bool isFavorite = false;
 
@@ -19,7 +20,7 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
   Widget build(BuildContext context) {
     final Map args = ModalRoute.of(context).settings.arguments as Map;
     product = args['product'];
-    product.quantity ??= 1;
+    quantity ??= 1;
     return Scaffold(
         appBar: AppBar(
           title: Text('Product detail'),
@@ -95,7 +96,7 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
               children: <Widget>[
                 buildAmountButton(),
                 Text(
-                  (product.price * product.quantity).toString(),
+                  (product.price * quantity).toString(),
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -144,26 +145,26 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
             child: Icon(Icons.remove),
             onTap: () {
               setState(() {
-                if (product.quantity > 1) --product.quantity;
+                if (quantity > 1) --quantity;
               });
             },
             onLongPressStart: (_) {
               setState(() {
-                product.quantity = 1;
+                quantity = 1;
               });
             },
           ),
-          Text(product.quantity.toString()),
+          Text(quantity.toString()),
           GestureDetector(
             child: Icon(Icons.add),
             onTap: () {
               setState(() {
-                if (product.quantity < 25) ++product.quantity;
+                if (quantity < 25) ++quantity;
               });
             },
             onLongPressStart: (_) {
               setState(() {
-                product.quantity = 25;
+                quantity = 25;
               });
             },
           ),
@@ -213,12 +214,17 @@ class _ProductDetailsFormState extends State<ProductDetailsForm> {
                 MaterialButton(
                   onPressed: () => {
                     Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text(
-                            'Added ${product.quantity} x ${product.name}',
-                            textAlign: TextAlign.center),
-                            backgroundColor: Colors.green,
+                      content: Text('Added $quantity x ${product.name}',
+                          textAlign: TextAlign.center),
+                      backgroundColor: Colors.green,
                     )),
-                    BlocProvider.of<CartBloc>(context).add(AddProduct(product)),
+                    orderItem = OrderItem(
+                        productId: product.productId, 
+                        quantity: quantity,
+                        price: product.price,
+                        description: product.name),
+                    BlocProvider.of<CartBloc>(context)
+                        .add(AddOrderItem(orderItem)),
                   },
                   splashColor: Theme.of(context).primaryColor,
                   color: Colors.amber[600],

@@ -17,7 +17,6 @@ class Product extends Equatable{
   final Money price;
   final String productCategoryId;
   final image;
-  int quantity;
 
   Product({
     this.productId,
@@ -25,7 +24,6 @@ class Product extends Equatable{
     this.price,
     this.productCategoryId,
     this.image,
-    this.quantity,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -47,10 +45,9 @@ class Product extends Equatable{
         "currencyId": price.currency,
         "productCategoryId": productCategoryId,
         "image": image,
-        "quantity": quantity,
       };
 
   @override
   List get props => [productId, name, price.amount, price.currency,
-    productCategoryId, image, quantity];  
+    productCategoryId, image];  
 }

@@ -136,4 +136,49 @@ class Repos {
       return responseMessage(e);
     }
   }
+
+  Future<dynamic> getOrder() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String orderJson = prefs.getString('orderAndItems');
+      if (orderJson != null) return orderFromJson(orderJson);
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<void> saveOrder({Order order}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('orderAndItems', orderToJson(order));    
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> getOrders() async {
+    String basicAuth =
+      'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
+    try {
+      _client.options.headers['authorization'] = basicAuth;
+      Response response = await _client.get(
+        's1/growerp/100/Order');
+      return ordersFromJson(response.toString());
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> createOrder({Order order}) async {
+    try {
+      Response response = await _client.get(
+        's1/growerp/100/Paypal',
+          queryParameters: {"order": order});
+//      return paymentFromJson(response.toString());
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
 }

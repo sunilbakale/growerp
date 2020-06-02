@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => HomeForm(repos: repos),
           '/details': (context) => ProductDetailsForm(),
           '/cart': (context) => CartForm(),
+          '/about': (context) => AboutForm(),
         },
       ),
     );
