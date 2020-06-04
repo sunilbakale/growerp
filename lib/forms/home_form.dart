@@ -3,24 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../bloc/bloc.dart';
 import '../models/models.dart';
-import '../services/repos.dart';
 
 class HomeForm extends StatefulWidget {
-  final Repos repos;
-
-  HomeForm({Key key, @required this.repos}) : assert(repos != null);
-
   @override
-  _HomeState createState() => _HomeState(repos);
+  State<HomeForm>createState() => _HomeState();
 }
 
 class _HomeState extends State<HomeForm> {
-  final Repos repos;
   List<Product> products;
   List<Category> categories;
   String selectedCategoryId;
 
-  _HomeState(this.repos);
+  _HomeState();
 
   @override
   Widget build(BuildContext context) {

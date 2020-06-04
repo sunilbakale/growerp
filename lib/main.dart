@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Bloc Shopping Cart',
         routes: {
-          '/': (context) => HomeForm(repos: repos),
+          '/': (context) => HomeForm(),
           '/details': (context) => ProductDetailsForm(),
           '/cart': (context) => CartForm(),
           '/about': (context) => AboutForm(),
