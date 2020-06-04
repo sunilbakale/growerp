@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'forms/forms.dart';
+import 'widgets/wigets.dart';
 import 'bloc/bloc.dart';
 import 'services/repos.dart';
 
@@ -21,17 +22,36 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(repos: repos)..add(AppStarted()),
+        ),
         BlocProvider<CatalogBloc>(
           create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog()),
         ),
         BlocProvider<CartBloc>(
-          create: (context) => CartBloc()..add(LoadCart()),
+          create: (context) => CartBloc(repos: repos)..add(LoadCart()),
         ),
       ],
       child: MaterialApp(
-        title: 'Flutter Bloc Shopping Cart',
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthConnectionProblem ||
+                state is AuthUnauthenticated) {
+              return HomeForm();
+            } else if (state is AuthAuthenticated) {
+              return HomeForm();
+            } else if (state is AuthLoading) {
+              return LoadingIndicator();
+/*            } else if (state is AuthRegister) {
+              return RegisterForm(state.currencyList);
+            } else if (state is AuthUpdatePassword) {
+              return UpdatePasswordForm(
+                  username: state.username);
+*/            } else
+              return SplashForm();
+          },
+        ),
         routes: {
-          '/': (context) => HomeForm(),
           '/details': (context) => ProductDetailsForm(),
           '/cart': (context) => CartForm(),
           '/about': (context) => AboutForm(),

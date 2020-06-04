@@ -8,3 +8,5 @@ export 'catalog.dart';
 export 'userAndCompany.dart';
 export 'order.dart';
 export 'orders.dart';
+export 'currencyId.dart';
+export 'currencyIdList.dart';

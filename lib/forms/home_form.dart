@@ -14,8 +14,6 @@ class _HomeState extends State<HomeForm> {
   List<Category> categories;
   String selectedCategoryId;
 
-  _HomeState();
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CatalogBloc, CatalogState>(

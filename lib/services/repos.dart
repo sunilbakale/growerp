@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:meta/meta.dart';
-import 'package:devicelocale/devicelocale.dart';
-import 'package:flutter_keychain/flutter_keychain.dart';
 import 'package:flutter/foundation.dart';
+import 'package:devicelocale/devicelocale.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
 import '../models/models.dart';
@@ -95,7 +93,7 @@ class Repos {
     print("====returning error message: $errorDescription");
     return errorDescription;
   }
-
+// -----------------------------general ------------------------
   Future<dynamic> connected() async {
     try {
       Response response = await _client.get('moquiSessionToken');
@@ -105,7 +103,118 @@ class Repos {
       return responseMessage(e);
     }
   }
+  Future<dynamic> getCurrencies() async {
+    try {
+      Response response = await _client.get('s1/growerp/100/CurrencyList');
+      CurrencyIdList currencyList = currencyIdListFromJson(response.toString());
+      return currencyList.currencyIdList;
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
 
+  Future<dynamic> login(
+      {@required String username, @required String password}) async {
+    try {
+      Response response = await _client.post('s1/growerp/100/Login', data: {
+        'username': username,
+        'password': password,
+        'moquiSessionToken': sessionToken
+      });
+      dynamic result = jsonDecode(response.toString());
+      if (result["passwordChange"] == "true")
+        return "passwordChange";
+      else
+        this.apiKey = result["apiKey"];
+        return authenticateFromJson(response.toString());
+    } catch(e) {
+      return(responseMessage(e));
+    }
+  }
+
+  Future<dynamic> resetPassword({@required String username}) async {
+    try {
+      Response result = await _client.post('s1/growerp/100/ResetPassword',
+        data: {'username': username, 'moquiSessionToken': sessionToken});
+      return json.decode(result.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> updatePassword(
+      {@required String username,
+      @required String oldPassword,
+      @required String newPassword}) async {
+    try {  
+      Response response = await _client.put('s1/growerp/100/Password', data: {
+        'username': username,
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
+        'moquiSessionToken': sessionToken
+      });
+      // print("==update password=service ==== ${response}");
+      return json.decode(response.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> logout() async {
+    this.apiKey = null;
+    _client.options.headers['api_key'] = apiKey;
+    try {
+      await _client.post('logout');
+      return getAuthenticate();
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<void> persistAuthenticate(Authenticate authenticate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('authenticate', authenticateToJson(authenticate));    
+  }
+
+  Future<Authenticate> getAuthenticate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String result = prefs.getString('authenticate');
+    if (result != null) return authenticateFromJson(result);
+    return null;
+  }
+
+  Future<dynamic> register(
+      {@required String companyName,
+      String companyPartyId, // if empty will create new company too!
+      @required String firstName,
+      @required String lastName,
+      @required String currency,
+      @required String email,
+      List data}) async {
+    try {
+      // create some category and product when company empty
+      var locale;
+      if (!kIsWeb) locale = await Devicelocale.currentLocale;
+      Response response =
+          await _client.post('s1/growerp/100/UserAndCompany', data: {
+        'username': email, 'emailAddress': email,
+        'newPassword': 'qqqqqq9!', 'firstName': firstName,
+        'lastName': lastName, 'locale': locale,
+        'companyPartyId': companyPartyId, // for existing companies
+        'companyName': companyName, 'currencyUomId': currency,
+        'companyEmail': email,
+        'partyClassificationId': 'AppHotel',
+        'environment': kReleaseMode,
+        'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
+        'moquiSessionToken': sessionToken
+      });
+      return authenticateFromJson(response.toString());
+    } catch(e) {
+      return responseMessage(e);
+    }
+  }
+
+// ---------------------------catalog, user and company -----------
   Future<dynamic> getUserAndCompany({String companyPartyId}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
