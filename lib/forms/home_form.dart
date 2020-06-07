@@ -5,14 +5,20 @@ import '../bloc/bloc.dart';
 import '../models/models.dart';
 
 class HomeForm extends StatefulWidget {
+  final Authenticate authenticate;
+
+  const HomeForm({Key key, this.authenticate}) : super(key: key);
   @override
-  State<HomeForm>createState() => _HomeState();
+  State<HomeForm> createState() => _HomeState(authenticate);
 }
 
 class _HomeState extends State<HomeForm> {
   List<Product> products;
   List<Category> categories;
   String selectedCategoryId;
+  final Authenticate authenticate;
+
+  _HomeState(this.authenticate);
 
   @override
   Widget build(BuildContext context) {
@@ -26,35 +32,42 @@ class _HomeState extends State<HomeForm> {
           selectedCategoryId ??= state.catalog.categories[0].productCategoryId;
           categories = state.catalog.categories;
           products = state.catalog.products;
-          return Theme(
-              data: Theme.of(context).copyWith(
-                inputDecorationTheme: InputDecorationTheme(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+          return Scaffold(
+            appBar: AppBar(
+                title: Text(authenticate?.company?.name??'GrowERP E-commerce' ),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.shopping_cart),
+                  tooltip: 'Cart',
+                  onPressed: () => Navigator.pushNamed(context, '/cart'),
                 ),
+                if (BlocProvider.of<AuthBloc>(context).state
+                    is AuthUnauthenticated)
+                  IconButton(
+                      icon: Icon(Icons.exit_to_app),
+                      tooltip: 'Login',
+                      onPressed: () =>
+                          BlocProvider.of<AuthBloc>(context).add(Login())),
+                if (BlocProvider.of<AuthBloc>(context).state
+                    is AuthAuthenticated)
+                  IconButton(
+                      icon: Icon(Icons.do_not_disturb),
+                      tooltip: 'Logout',
+                      onPressed: () =>
+                          BlocProvider.of<AuthBloc>(context).add(Logout())),
+              ],
+            ),
+            body: SingleChildScrollView(
+              physics: ClampingScrollPhysics(),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  _categoryList(),
+                  _productsGrid(),
+                ],
               ),
-              child: Scaffold(
-                appBar: AppBar(
-                  title: Text(state.userAndCompany.company?.name),
-                  actions: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.shopping_cart),
-                      onPressed: () => Navigator.pushNamed(context, '/cart'),
-                    ),
-                  ],
-                ),
-                body: SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      _categoryList(),
-                      _productsGrid(),
-                    ],
-                  ),
-                ),
-              ));
+            ),
+          );
         } else if (state is CatalogError) {
           return Center(
             child: RaisedButton(
@@ -192,8 +205,7 @@ class _HomeState extends State<HomeForm> {
               child: Hero(
                   tag: '${product.productId}',
                   child: Image(
-                    image:
-                        product.image,
+                    image: product.image,
                     height: 125,
                     fit: BoxFit.contain,
                   ))),

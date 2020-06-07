@@ -85,11 +85,11 @@ class Repos {
       // print("dio no response, request: ${e.request}");
       // print("dio no response, message: ${e.message}");
 //    }
-//    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
-//      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
-//            errors: ${e.response.data['errors']}''');
-//      errorDescription = e.response.data['errors'];
-//    }
+    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
+      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
+            errors: ${e.response.data['errors']}''');
+      errorDescription = e.response.data['errors'];
+    }
     print("====returning error message: $errorDescription");
     return errorDescription;
   }
@@ -165,7 +165,10 @@ class Repos {
     _client.options.headers['api_key'] = apiKey;
     try {
       await _client.post('logout');
-      return getAuthenticate();
+      Authenticate authenticate = await getAuthenticate();
+      authenticate.apiKey = null;
+      persistAuthenticate(authenticate);
+      return authenticate;
     } catch(e) {
       return responseMessage(e);
     }
@@ -214,22 +217,6 @@ class Repos {
     }
   }
 
-// ---------------------------catalog, user and company -----------
-  Future<dynamic> getUserAndCompany({String companyPartyId}) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userCompJson = prefs.getString('userAndCompany');
-      if (userCompJson != null) return userAndCompanyFromJson(userCompJson);
-      Response response = await _client.get('s1/growerp/100/UserAndCompany',
-          queryParameters: {"companyPartyId": companyPartyId});
-      await prefs.setString('userAndCompany', response.toString());    
-      return userAndCompanyFromJson(response.toString());
-    } catch (e) {
-      debugPrint("=1=repos: $e");
-      return responseMessage(e);
-    }
-  }
-
   Future<dynamic> getCatalog({String companyPartyId}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -241,7 +228,6 @@ class Repos {
       await prefs.setString('categoriesAndProducts', response.toString());    
       return catalogFromJson(response.toString());
     } catch (e) {
-      debugPrint("=2=repos: $e");
       return responseMessage(e);
     }
   }

@@ -24,16 +24,12 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
   Stream<CatalogState> _mapLoadCatalogToState() async* {
     yield CatalogLoading();
-    dynamic userAndCompany =
-        await repos.getUserAndCompany(companyPartyId: "100001");
     dynamic catalog =
         await repos.getCatalog(companyPartyId: "100001");
-    if (catalog is Catalog && userAndCompany is UserAndCompany)
-      yield CatalogLoaded(catalog,userAndCompany);
+    if (catalog is Catalog)
+      yield CatalogLoaded(catalog);
     else {
-      if (catalog is String) yield CatalogError(catalog);
-      else if (userAndCompany is String) yield CatalogError(userAndCompany);
-      else yield CatalogError('Unknown error retrieving catalog');
+      yield CatalogError(catalog);
     }
   }
 }
@@ -62,9 +58,8 @@ class CatalogLoading extends CatalogState {
 
 class CatalogLoaded extends CatalogState {
   final Catalog catalog;
-  final UserAndCompany userAndCompany;
 
-  const CatalogLoaded(this.catalog, this.userAndCompany);
+  const CatalogLoaded(this.catalog);
 
   @override
   List<Object> get props => [catalog];

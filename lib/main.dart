@@ -5,22 +5,13 @@ import 'forms/forms.dart';
 import 'widgets/wigets.dart';
 import 'bloc/bloc.dart';
 import 'services/repos.dart';
+import 'styles/themes.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final repos = Repos();
-  runApp(MyApp(repos: repos));
-}
-
-class MyApp extends StatelessWidget {
-  final Repos repos;
-
-  MyApp({Key key, @required this.repos})
-      : assert(repos != null),
-        super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
+  runApp(
+    MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc(repos: repos)..add(AppStarted()),
@@ -32,32 +23,49 @@ class MyApp extends StatelessWidget {
           create: (context) => CartBloc(repos: repos)..add(LoadCart()),
         ),
       ],
-      child: MaterialApp(
+      child: App(repos: repos),
+    ),
+  );
+}
+
+class App extends StatelessWidget {
+  final Repos repos;
+
+  App({Key key, @required this.repos})
+      : assert(repos != null),
+        super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        theme: Themes.formTheme,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             if (state is AuthConnectionProblem ||
-                state is AuthUnauthenticated) {
+                state is AuthHome) {
               return HomeForm();
+            } else if (state is AuthUnauthenticated) {
+              return HomeForm(authenticate: state.authenticate);
             } else if (state is AuthAuthenticated) {
-              return HomeForm();
+              return HomeForm(authenticate: state.authenticate);
+            } else if (state is AuthLogin) {
+              return LoginForm(repos: repos,authenticate: state.authenticate);
             } else if (state is AuthLoading) {
               return LoadingIndicator();
 /*            } else if (state is AuthRegister) {
-              return RegisterForm(state.currencyList);
-            } else if (state is AuthUpdatePassword) {
-              return UpdatePasswordForm(
-                  username: state.username);
-*/            } else
-              return SplashForm();
+            return RegisterForm(state.currencyList);
+          } else if (state is AuthUpdatePassword) {
+            return UpdatePasswordForm(
+                username: state.username);
+*/
+            }
+            return SplashForm();
           },
         ),
         routes: {
           '/details': (context) => ProductDetailsForm(),
           '/cart': (context) => CartForm(),
           '/about': (context) => AboutForm(),
-        },
-      ),
-    );
+        });
   }
 }
 
