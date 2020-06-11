@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../bloc/bloc.dart';
+import '../bloc/@bloc.dart';
 import '../models/@models.dart';
 
 class HomeForm extends StatefulWidget {

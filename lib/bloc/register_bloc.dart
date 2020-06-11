@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import '../bloc/@bloc.dart';
 import '../services/repos.dart';
 import '../models/@models.dart';
 
