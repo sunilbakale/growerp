@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'auth_bloc.dart';
 import 'package:meta/meta.dart';
 import '../services/repos.dart';
-import '../models/models.dart';
+import '../models/@models.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final Repos repos;

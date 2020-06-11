@@ -7,5 +7,4 @@ export 'category.dart';
 export 'catalog.dart';
 export 'order.dart';
 export 'orders.dart';
-export 'currencyId.dart';
-export 'currencyIdList.dart';
+export 'currencyList.dart';

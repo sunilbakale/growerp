@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import '../models/models.dart';
+import '../models/@models.dart';
 import '../bloc/bloc.dart';
 import '../services/repos.dart';
-import '../bloc/login_bloc.dart';
 
 class LoginForm extends StatelessWidget {
   final Repos repos;
@@ -127,6 +126,29 @@ class _LoginEntryState extends State<LoginEntry> {
                                   ),
                                 );
                             }),
+                        SizedBox(height: 30),
+                        GestureDetector(
+                            child: Text(
+                              'register new account',
+                            ),
+                            onTap: () {
+                              BlocProvider.of<AuthBloc>(context)
+                                  .add(Register());
+                            }),
+                        SizedBox(height: 30),
+                        GestureDetector(
+                            child: Text(
+                              'forgot password?',
+                            ),
+                            onTap: () async {
+                              final String username =
+                                  await _sendResetPasswordDialog(
+                                      context, authenticate?.user?.name);
+                              if (username != null) {
+                                BlocProvider.of<AuthBloc>(context)
+                                    .add(ResetPassword(username: username));
+                              }
+                            }),
                         Container(
                           child: state is LoginInProgress
                               ? CircularProgressIndicator()
@@ -139,4 +161,45 @@ class _LoginEntryState extends State<LoginEntry> {
       ),
     );
   }
+}
+
+_sendResetPasswordDialog(BuildContext context, String username) async {
+  return showDialog<String>(
+    context: context,
+    barrierDismissible:
+        false, // dialog is dismissible with a tap on the barrier
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(32.0))),
+        title: Text(
+            'Email you registered with?\nWe will send you a reset password',
+            textAlign: TextAlign.center),
+        content: new Row(children: <Widget>[
+          new Expanded(
+              child: TextFormField(
+                  initialValue: username,
+                  autofocus: true,
+                  decoration: new InputDecoration(labelText: 'Email:'),
+                  onChanged: (value) {
+                    username = value;
+                  }))
+        ]),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop(null);
+            },
+          ),
+          FlatButton(
+            child: Text('Ok'),
+            onPressed: () {
+              Navigator.of(context).pop(username);
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

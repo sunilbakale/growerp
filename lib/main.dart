@@ -51,13 +51,12 @@ class App extends StatelessWidget {
               return LoginForm(repos: repos,authenticate: state.authenticate);
             } else if (state is AuthLoading) {
               return LoadingIndicator();
-/*            } else if (state is AuthRegister) {
-            return RegisterForm(state.currencyList);
-          } else if (state is AuthUpdatePassword) {
-            return UpdatePasswordForm(
-                username: state.username);
-*/
-            }
+            } else if (state is AuthRegister) {
+              return RegisterForm(repos: repos);
+/*            } else if (state is AuthUpdatePassword) {
+              return UpdatePasswordForm(
+                  username: state.username);
+*/            }
             return SplashForm();
           },
         ),
@@ -72,19 +71,19 @@ class App extends StatelessWidget {
 class SimpleBlocDelegate extends BlocDelegate {
   @override
   void onEvent(Bloc bloc, Object event) {
-    print('${bloc.runtimeType} $event');
+    print('Bloc: ${bloc.runtimeType} event: $event');
     super.onEvent(bloc, event);
   }
 
   @override
   void onError(Bloc bloc, Object error, StackTrace stackTrace) {
-    print('${bloc.runtimeType} $error');
+    print('Bloc: ${bloc.runtimeType} error: $error');
     super.onError(bloc, error, stackTrace);
   }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
-    print(transition);
+    print("Transition: $transition");
     super.onTransition(bloc, transition);
   }
 }

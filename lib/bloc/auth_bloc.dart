@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../services/repos.dart';
-import '../models/models.dart';
+import '../models/@models.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Repos repos;

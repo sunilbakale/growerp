@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import '../models/models.dart';
+import '../models/@models.dart';
 import '../services/repos.dart';
 
 class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
@@ -14,9 +14,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   CatalogState get initialState => CatalogLoading();
 
   @override
-  Stream<CatalogState> mapEventToState(
-    CatalogEvent event,
-  ) async* {
+  Stream<CatalogState> mapEventToState(CatalogEvent event) async* {
     if (event is LoadCatalog) {
       yield* _mapLoadCatalogToState();
     }
@@ -68,8 +66,11 @@ class CatalogLoaded extends CatalogState {
 class CatalogError extends CatalogState {
   final String errorMessage;
 
-  CatalogError(this.errorMessage);
+  const CatalogError(this.errorMessage);
 
   @override
   List<Object> get props => [];
+
+    @override
+  String toString() => 'CatalogError { error: $errorMessage }';
 }

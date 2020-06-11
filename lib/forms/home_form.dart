@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../bloc/bloc.dart';
-import '../models/models.dart';
+import '../models/@models.dart';
 
 class HomeForm extends StatefulWidget {
   final Authenticate authenticate;
@@ -22,7 +22,18 @@ class _HomeState extends State<HomeForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CatalogBloc, CatalogState>(
+      return BlocListener<CatalogBloc, CatalogState>(
+      listener: (context, state) {
+        if (state is CatalogError) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${state.errorMessage}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<CatalogBloc, CatalogState>(
       builder: (context, state) {
         if (state is CatalogLoading) {
           return Center(
@@ -79,7 +90,7 @@ class _HomeState extends State<HomeForm> {
         } else
           return null;
       },
-    );
+    ));
   }
 
   Widget _categoryList() {

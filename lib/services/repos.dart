@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
-import '../models/models.dart';
+import '../models/@models.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,7 +85,7 @@ class Repos {
       // print("dio no response, request: ${e.request}");
       // print("dio no response, message: ${e.message}");
 //    }
-    if (e.response?.data != null && e.response?.data['errorCode'] == 400) {
+    if (e.response != null && e.response.data != null && e.response?.data['errorCode'] == 400) {
       print('''Moqui data... errorCode: ${e.response.data['errorCode']}
             errors: ${e.response.data['errors']}''');
       errorDescription = e.response.data['errors'];
@@ -106,9 +106,9 @@ class Repos {
   Future<dynamic> getCurrencies() async {
     try {
       Response response = await _client.get('s1/growerp/100/CurrencyList');
-      CurrencyIdList currencyList = currencyIdListFromJson(response.toString());
-      return currencyList.currencyIdList;
+      return currencyListFromJson(response.toString()).currencyList;
     } catch(e) {
+      print("=======$e ");
       return responseMessage(e);
     }
   }
