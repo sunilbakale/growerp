@@ -30,14 +30,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           yield AuthUnauthenticated(authenticate: authenticate);
         }
       }
+    } else if (event is Login) { // to login screen
+      final Authenticate authenticate = await repos.getAuthenticate();
+      yield AuthLogin(authenticate: authenticate);
     } else if (event is LoggedIn) {
       await repos.persistAuthenticate(event.authenticate);
       yield AuthAuthenticated(authenticate: event.authenticate);
     } else if (event is Register) {
       yield AuthRegister();
-    } else if (event is Login) {
-      final Authenticate authenticate = await repos.getAuthenticate();
-      yield AuthLogin(authenticate: authenticate);
+    } else if (event is ChangePassword) {
+      yield AuthChangePassword(
+          username: event.username, oldPassword: event.oldPassword);
     } else if (event is Logout) {
       final Authenticate authenticate = await repos.logout();
       yield AuthUnauthenticated(authenticate: authenticate);
@@ -48,12 +51,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         yield AuthConnectionProblem(errorMessage: result);
       else {
         Authenticate authenticate = await repos.getAuthenticate();
-        yield AuthUnauthenticated(authenticate: authenticate);
+        yield AuthLogin(authenticate: authenticate);
       }
-    } else if (event is UpdatePassword) {
-      yield AuthLoading();
-      yield AuthUpdatePassword(
-          username: event.username, password: event.password);
     } else
       yield AuthUnauthenticated();
   }
@@ -67,10 +66,24 @@ abstract class AuthEvent extends Equatable {
 }
 
 class ConnectionProblem extends AuthEvent {}
+
 class AppStarted extends AuthEvent {}
+
 class Register extends AuthEvent {}
+
 class Login extends AuthEvent {}
+
 class Logout extends AuthEvent {}
+
+class ChangePassword extends AuthEvent {
+  final String username;
+  final String oldPassword;
+  const ChangePassword({@required this.username, @required this.oldPassword});
+  @override
+  List<Object> get props => [username];
+  @override
+  String toString() => 'ChangePassword userName: $username';
+}
 
 class LoggedIn extends AuthEvent {
   final Authenticate authenticate;
@@ -87,16 +100,7 @@ class ResetPassword extends AuthEvent {
   @override
   List<Object> get props => [username];
   @override
-  String toString() => 'LoggingIn userName: $username';
-}
-
-class UpdatePassword extends AuthEvent {
-  final String username, password;
-  const UpdatePassword({@required this.username, this.password});
-  @override
-  List<Object> get props => [username];
-  @override
-  String toString() => 'update password userName: $username';
+  String toString() => 'ResetPassword userName: $username';
 }
 
 class LoggingOut extends AuthEvent {
@@ -111,13 +115,15 @@ class LoggingOut extends AuthEvent {
 //------------------------------state ------------------------------------
 abstract class AuthState extends Equatable {
   const AuthState();
-  
+
   @override
   List<Object> get props => [];
 }
 
 class AuthLoading extends AuthState {}
+
 class AuthUninitialized extends AuthState {}
+
 class AuthLogin extends AuthState {
   final Authenticate authenticate;
   const AuthLogin({this.authenticate});
@@ -126,16 +132,18 @@ class AuthLogin extends AuthState {
   @override
   String toString() => 'AuthLogin: username: ${authenticate?.user?.name}';
 }
+
 class AuthHome extends AuthState {
   final Authenticate authenticate;
   const AuthHome({this.authenticate});
 }
+
 class AuthRegister extends AuthState {}
 
-class AuthUpdatePassword extends AuthState {
-  final String username, password;
-  const AuthUpdatePassword({@required this.username, this.password})
-      : assert(username != null, password != null);
+class AuthChangePassword extends AuthState {
+  final String username, oldPassword;
+  const AuthChangePassword({@required this.username, this.oldPassword})
+      : assert(username != null, oldPassword != null);
   @override
   List<Object> get props => [username];
   @override
@@ -169,5 +177,6 @@ class AuthUnauthenticated extends AuthState {
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => 'AuthUnauthenticated: username: ${authenticate?.user?.name}';
+  String toString() =>
+      'AuthUnauthenticated: username: ${authenticate?.user?.name}';
 }

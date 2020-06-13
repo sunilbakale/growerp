@@ -55,7 +55,9 @@ class _LoginEntryState extends State<LoginEntry> {
   @override
   Widget build(BuildContext context) {
     final _usernameController = TextEditingController()
-      ..text = authenticate?.user?.name;
+      ..text = authenticate?.user?.name == null || kReleaseMode
+          ? 'admin@growerp.com'
+          : authenticate?.user?.name;
     final _passwordController = TextEditingController()
       ..text = kReleaseMode ? '' : 'qqqqqq9!';
 
@@ -73,6 +75,7 @@ class _LoginEntryState extends State<LoginEntry> {
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
           return Center(
+              // login screen
               child: SizedBox(
                   width: 400,
                   child: Form(

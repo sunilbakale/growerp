@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'forms/forms.dart';
+import 'forms/@forms.dart';
 import 'widgets/wigets.dart';
 import 'bloc/@bloc.dart';
 import 'services/repos.dart';
@@ -40,23 +40,25 @@ class App extends StatelessWidget {
         theme: Themes.formTheme,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthConnectionProblem ||
-                state is AuthHome) {
+            if (state is AuthConnectionProblem || state is AuthHome) {
               return HomeForm();
             } else if (state is AuthUnauthenticated) {
               return HomeForm(authenticate: state.authenticate);
             } else if (state is AuthAuthenticated) {
               return HomeForm(authenticate: state.authenticate);
             } else if (state is AuthLogin) {
-              return LoginForm(repos: repos,authenticate: state.authenticate);
-            } else if (state is AuthLoading) {
-              return LoadingIndicator();
+              return LoginForm(repos: repos, authenticate: state.authenticate);
             } else if (state is AuthRegister) {
               return RegisterForm(repos: repos);
-/*            } else if (state is AuthUpdatePassword) {
-              return UpdatePasswordForm(
-                  username: state.username);
-*/            }
+            } else if (state is AuthChangePassword) {
+              return ChangePwForm(
+                username: state.username,
+                oldPassword: state.oldPassword,
+                repos: repos,
+              );
+            } else if (state is AuthLoading) {
+              return LoadingIndicator();
+            }
             return SplashForm();
           },
         ),

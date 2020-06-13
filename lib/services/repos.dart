@@ -154,7 +154,7 @@ class Repos {
         'moquiSessionToken': sessionToken
       });
       // print("==update password=service ==== ${response}");
-      return json.decode(response.toString());
+      return getAuthenticate();
     } catch(e) {
       return responseMessage(e);
     }
