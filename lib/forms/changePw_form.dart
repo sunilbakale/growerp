@@ -68,14 +68,15 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
   final String oldPassword;
   final Authenticate authenticate;
   final _formKey = GlobalKey<FormState>();
-  bool _obscureText = true;
+  bool _obscureText1 = true;
+  bool _obscureText2 = true;
+  final _password1Controller = TextEditingController();
+  final _password2Controller = TextEditingController();
+
   _ChangePwEntryState(this.username, this.oldPassword, this.authenticate);
 
   @override
   Widget build(BuildContext context) {
-    final _password1Controller = TextEditingController();
-    final _password2Controller = TextEditingController();
-
     return BlocListener<ChangePwBloc, ChangePwState>(
       listener: (context, state) {
         if (state is ChangePwFailed) {
@@ -105,7 +106,7 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                           TextFormField(
                             autofocus: true,
                             controller: _password1Controller,
-                            obscureText: _obscureText,
+                            obscureText: _obscureText1,
                             decoration: InputDecoration(
                               labelText: 'Password',
                               helperText:
@@ -113,10 +114,10 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _obscureText = !_obscureText;
+                                    _obscureText1 = !_obscureText1;
                                   });
                                 },
-                                child: Icon(_obscureText
+                                child: Icon(_obscureText1
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
@@ -124,22 +125,26 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                             validator: (value) {
                               if (value.isEmpty)
                                 return 'Please enter first password?';
+                              final regExpRequire = RegExp(
+                                  r'^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&+=]).{8,}');
+                              if (!regExpRequire.hasMatch(value))
+                                return 'At least 8 characters, including alpha, number & special character.';
                               return null;
                             },
                           ),
                           SizedBox(height: 20),
                           TextFormField(
-                            obscureText: _obscureText,
+                            obscureText: _obscureText2,
                             decoration: InputDecoration(
                               labelText: 'Verify Password',
                               helperText: 'Enter the new password again.',
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    _obscureText = !_obscureText;
+                                    _obscureText2 = !_obscureText2;
                                   });
                                 },
-                                child: Icon(_obscureText
+                                child: Icon(_obscureText2
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
@@ -148,6 +153,8 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                             validator: (value) {
                               if (value.isEmpty)
                                 return 'Enter password again to verify?';
+                              if (value != _password1Controller.text)
+                                return 'Password is not matching';
                               return null;
                             },
                           ),

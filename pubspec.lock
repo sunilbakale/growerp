@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.39.8"
-  animations:
-    dependency: "direct main"
-    description:
-      name: animations
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+5"
   archive:
     dependency: transitive
     description:
@@ -120,13 +113,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
-  date_utils:
-    dependency: "direct main"
-    description:
-      name: date_utils
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0+3"
   devicelocale:
     dependency: "direct main"
     description:
@@ -155,15 +141,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  flushbar:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "681425d7e1177dbd714c13af5460ee4e836edac9"
-      url: "git://github.com/valterh4ck3r/flushbar.git"
-    source: git
-    version: "1.9.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -219,6 +196,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      name: fluttertoast
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   glob:
     dependency: transitive
     description:
@@ -226,13 +210,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
-  groovin_widgets:
-    dependency: "direct main"
-    description:
-      name: groovin_widgets
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.5.0+2"
   html:
     dependency: transitive
     description:
@@ -317,13 +294,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.7.0"
-  liquid_progress_indicator:
-    dependency: "direct main"
-    description:
-      name: liquid_progress_indicator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.2"
   logging:
     dependency: transitive
     description:
@@ -478,13 +448,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
-  rxdart:
-    dependency: "direct main"
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.23.1"
   shared_preferences:
     dependency: "direct main"
     description:

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../models/@models.dart';
 import '../bloc/@bloc.dart';
 import '../services/repos.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginForm extends StatelessWidget {
   final Repos repos;
@@ -146,10 +147,18 @@ class _LoginEntryState extends State<LoginEntry> {
                             onTap: () async {
                               final String username =
                                   await _sendResetPasswordDialog(
-                                      context, authenticate?.user?.name);
+                                      context,
+                                      authenticate?.user?.name == null ||
+                                              kReleaseMode
+                                          ? 'admin@growerp.com'
+                                          : authenticate?.user?.name);
                               if (username != null) {
                                 BlocProvider.of<AuthBloc>(context)
                                     .add(ResetPassword(username: username));
+                                Fluttertoast.showToast(
+                                    toastLength: Toast.LENGTH_LONG,
+                                    msg:
+                                        "An email with password has been send to $username");
                               }
                             }),
                         Container(

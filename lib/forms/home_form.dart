@@ -22,75 +22,92 @@ class _HomeState extends State<HomeForm> {
 
   @override
   Widget build(BuildContext context) {
-      return BlocListener<CatalogBloc, CatalogState>(
-      listener: (context, state) {
-        if (state is CatalogError) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${state.errorMessage}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
-      child: BlocBuilder<CatalogBloc, CatalogState>(
-      builder: (context, state) {
-        if (state is CatalogLoading) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is CatalogLoaded) {
-          selectedCategoryId ??= state.catalog.categories[0].productCategoryId;
-          categories = state.catalog.categories;
-          products = state.catalog.products;
-          return Scaffold(
-            appBar: AppBar(
-                title: Text(authenticate?.company?.name??'GrowERP E-commerce' ),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  tooltip: 'Cart',
-                  onPressed: () => Navigator.pushNamed(context, '/cart'),
+    return MultiBlocListener(
+        listeners: [
+          BlocListener<CatalogBloc, CatalogState>(
+            listener: (context, state) {
+              if (state is CatalogError) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${state.errorMessage}'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthConnectionProblem) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${state.errorMessage}'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          )],
+          child: BlocBuilder<CatalogBloc, CatalogState>(
+          builder: (context, state) {
+            if (state is CatalogLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is CatalogError) {
+              return Center(
+                child: RaisedButton(
+                    child: Text(state.errorMessage + '\nRetry?'),
+                    onPressed: () {
+                      BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                    }),
+              );
+            } else if (state is CatalogLoaded) {
+              selectedCategoryId ??=
+                  state.catalog.categories[0].productCategoryId;
+              categories = state.catalog.categories;
+              products = state.catalog.products;
+              return Scaffold(
+                appBar: AppBar(
+                  title:
+                      Text(authenticate?.company?.name ?? 'GrowERP E-commerce'),
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.shopping_cart),
+                      tooltip: 'Cart',
+                      onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    ),
+                    if (BlocProvider.of<AuthBloc>(context).state
+                        is AuthUnauthenticated)
+                      IconButton(
+                          icon: Icon(Icons.exit_to_app),
+                          tooltip: 'Login',
+                          onPressed: () =>
+                              BlocProvider.of<AuthBloc>(context).add(Login())),
+                    if (BlocProvider.of<AuthBloc>(context).state
+                        is AuthAuthenticated)
+                      IconButton(
+                          icon: Icon(Icons.do_not_disturb),
+                          tooltip: 'Logout',
+                          onPressed: () =>
+                              BlocProvider.of<AuthBloc>(context).add(Logout())),
+                  ],
                 ),
-                if (BlocProvider.of<AuthBloc>(context).state
-                    is AuthUnauthenticated)
-                  IconButton(
-                      icon: Icon(Icons.exit_to_app),
-                      tooltip: 'Login',
-                      onPressed: () =>
-                          BlocProvider.of<AuthBloc>(context).add(Login())),
-                if (BlocProvider.of<AuthBloc>(context).state
-                    is AuthAuthenticated)
-                  IconButton(
-                      icon: Icon(Icons.do_not_disturb),
-                      tooltip: 'Logout',
-                      onPressed: () =>
-                          BlocProvider.of<AuthBloc>(context).add(Logout())),
-              ],
-            ),
-            body: SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  _categoryList(),
-                  _productsGrid(),
-                ],
-              ),
-            ),
-          );
-        } else if (state is CatalogError) {
-          return Center(
-            child: RaisedButton(
-                child: Text(state.errorMessage + '\nRetry?'),
-                onPressed: () {
-                  BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-                }),
-          );
-        } else
-          return null;
-      },
-    ));
+                body: SingleChildScrollView(
+                  physics: ClampingScrollPhysics(),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      _categoryList(),
+                      _productsGrid(),
+                    ],
+                  ),
+                ),
+              );
+            } else
+              return null;
+          },
+        ));
   }
 
   Widget _categoryList() {
