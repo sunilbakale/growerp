@@ -1,18 +1,11 @@
-[![build](https://github.com/felangel/bloc/workflows/build/badge.svg)](https://github.com/felangel/bloc/actions)
+# growerp ecommerce
 
-# flutter_shopping_cart
+Growerp flutter frontend ecommerce for external ordering for a restaurant.
+Runs on Android, IOS and the web.
 
-A new Flutter project.
+design ideas used from:
+https://github.com/leoelstin/Flutter-UI-Kits
+https://github.com/wmfadel/Groceries
 
-## Getting Started
+It needs the Moqui.org backend system, more detail to install see the repository at: https://github.com/growerp/growerp-backend-mobile
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
