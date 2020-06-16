@@ -33,7 +33,7 @@ class Product extends Equatable{
           Money.fromString(json["price"]+'0', Currency(json["currencyId"])):
           Money.fromString(json["price"], Currency(json["currencyId"])),
         productCategoryId: json["productCategoryId"],
-        image: json["image"].indexOf('data:image') == 0?
+        image: json["image"]!= null && json["image"].indexOf('data:image') == 0?
           MemoryImage(base64.decode(json["image"].substring(22))):
           MemoryImage(base64.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="))
       );

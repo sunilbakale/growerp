@@ -95,10 +95,11 @@ class _CartTotal extends StatelessWidget {
             SizedBox(width: 24),
             FlatButton(
               onPressed: () {
+//                BlocProvider.of<CartBloc>(context).add(PayOrderItem(state.orderItems));
                 Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Buying not supported yet..',
+                  content: Text('cart mailed your order',
                       textAlign: TextAlign.center),
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: Colors.green,
                 ));
               },
               color: Colors.white,

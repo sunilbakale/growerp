@@ -68,6 +68,9 @@ class AddOrderItem extends CartEvent {
   List<Object> get props => [orderItem];
 }
 class PayOrderItem extends CartEvent {
+  final List<OrderItem> orderItems;
+
+  PayOrderItem(this.orderItems);
 
   @override
   List<Object> get props => [];

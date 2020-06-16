@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'forms/@forms.dart';
-import 'widgets/wigets.dart';
+import 'widgets/widgets.dart';
 import 'bloc/@bloc.dart';
 import 'services/repos.dart';
 import 'styles/themes.dart';

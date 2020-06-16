@@ -17,14 +17,20 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         assert(authBloc != null);
 
   @override
-  RegisterState get initialState => RegisterLoading();
+  RegisterState get initialState => RegisterInitial();
 
   @override
   Stream<RegisterState> mapEventToState(RegisterEvent event) async* {
     if (event is LoadRegister) {
-      yield* _mapLoadRegisterToState();
-    } else if (event is RegisterButtonPressed) {
       yield RegisterLoading();
+      dynamic currencyList = await repos.getCurrencies();
+      if (currencyList is List) {
+        yield RegisterLoaded(currencyList);
+      } else {
+        yield RegisterError(errorMessage: currencyList);
+      }
+    } else if (event is RegisterButtonPressed) {
+      yield RegisterSubmitting();
       final authenticate = await repos.register(
           companyName: event.companyName,
           currency: event.currency,
@@ -32,19 +38,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           lastName: event.lastName,
           email: event.email);
       if (authenticate is Authenticate) {
-        authBloc.add(Login());
+        await repos.persistAuthenticate(authenticate);
+        yield RegisterSuccess();
       } else {
         yield RegisterError(errorMessage: authenticate);
       }
-    }
-  }
-
-  Stream<RegisterState> _mapLoadRegisterToState() async* {
-    dynamic currencyList = await repos.getCurrencies();
-    if (currencyList is List) {
-      yield RegisterLoaded(currencyList);
-    } else {
-      yield RegisterError(errorMessage: currencyList);
     }
   }
 }
@@ -88,7 +86,10 @@ class RegisterButtonPressed extends RegisterEvent {
 abstract class RegisterState extends Equatable {
   const RegisterState();
 }
-
+class RegisterInitial extends RegisterState {
+  @override
+  List<Object> get props => [];
+}
 class RegisterLoading extends RegisterState {
   @override
   List<Object> get props => [];
@@ -101,9 +102,19 @@ class RegisterLoaded extends RegisterState {
   List<Object> get props => [currencies];
 
   @override
-  String toString() =>
-      'RegisterLoaded { currencies size: ${currencies.length},' +
-      ' first:${currencies[0].toString()}  }';
+  String toString() => currencies != null?
+      'RegisterLoaded { currencies size: ${currencies?.length},' +
+      ' first:${currencies[0].toString()}  }' : 'RegisterLoaded { no currencies found }';
+}
+
+class RegisterSubmitting extends RegisterState {
+  @override
+  List<Object> get props => [];
+}
+
+class RegisterSuccess extends RegisterState {
+  @override
+  List<Object> get props => [];
 }
 
 class RegisterError extends RegisterState {

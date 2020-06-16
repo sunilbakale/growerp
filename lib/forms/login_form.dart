@@ -21,6 +21,7 @@ class LoginForm extends StatelessWidget {
         title: Text('Login'),
         actions: <Widget>[
           IconButton(
+              key: Key('goHome'),
               icon: Icon(Icons.home),
               onPressed: () =>
                   BlocProvider.of<AuthBloc>(context).add(AppStarted())),
@@ -85,7 +86,8 @@ class _LoginEntryState extends State<LoginEntry> {
                       children: <Widget>[
                         SizedBox(height: 40),
                         TextFormField(
-                          decoration: InputDecoration(labelText: 'username'),
+                          key: Key('username'),
+                          decoration: InputDecoration(labelText: 'Username'),
                           controller: _usernameController,
                           validator: (value) {
                             if (value.isEmpty)
@@ -95,6 +97,7 @@ class _LoginEntryState extends State<LoginEntry> {
                         ),
                         SizedBox(height: 20),
                         TextFormField(
+                            key: Key('password'),
                             validator: (value) {
                               if (value.isEmpty)
                                 return 'Please enter your password?';
@@ -104,8 +107,6 @@ class _LoginEntryState extends State<LoginEntry> {
                             obscureText: _obscureText,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              helperText:
-                                  'At least 8 characters, including alpha, number & special character.',
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {

@@ -16,18 +16,13 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   @override
   Stream<CatalogState> mapEventToState(CatalogEvent event) async* {
     if (event is LoadCatalog) {
-      yield* _mapLoadCatalogToState();
-    }
-  }
-
-  Stream<CatalogState> _mapLoadCatalogToState() async* {
-    yield CatalogLoading();
-    dynamic catalog =
-        await repos.getCatalog(companyPartyId: "100001");
-    if (catalog is Catalog)
-      yield CatalogLoaded(catalog);
-    else {
-      yield CatalogError(catalog);
+      yield CatalogLoading();
+      dynamic catalog = await repos.getCatalog(companyPartyId: "100001");
+      if (catalog is Catalog)
+        yield CatalogLoaded(catalog);
+      else {
+        yield CatalogError(catalog);
+      }
     }
   }
 }
@@ -71,6 +66,6 @@ class CatalogError extends CatalogState {
   @override
   List<Object> get props => [];
 
-    @override
+  @override
   String toString() => 'CatalogError { error: $errorMessage }';
 }

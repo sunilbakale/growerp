@@ -94,7 +94,7 @@ class Repos {
     return errorDescription;
   }
 // -----------------------------general ------------------------
-  Future<dynamic> connected() async {
+  Future<dynamic> getConnected() async {
     try {
       Response response = await _client.get('moquiSessionToken');
       sessionToken = response.data;

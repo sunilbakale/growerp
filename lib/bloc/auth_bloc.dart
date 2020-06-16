@@ -18,7 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   // actual repos.authentiate done by login bloc
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is AppStarted) {
-      final connected = await repos.connected();
+      yield AuthLoading();
+      final connected = await repos.getConnected();
       if (connected is String) {
         // contains string error message or true for connected
         yield AuthConnectionProblem(errorMessage: connected);
@@ -36,14 +37,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else if (event is LoggedIn) {
       await repos.persistAuthenticate(event.authenticate);
       yield AuthAuthenticated(authenticate: event.authenticate);
+    } else if (event is Logout) {
+      final Authenticate authenticate = await repos.logout();
+      yield AuthUnauthenticated(authenticate: authenticate);
     } else if (event is Register) {
       yield AuthRegister();
     } else if (event is ChangePassword) {
       yield AuthChangePassword(
           username: event.username, oldPassword: event.oldPassword);
-    } else if (event is Logout) {
-      final Authenticate authenticate = await repos.logout();
-      yield AuthUnauthenticated(authenticate: authenticate);
     } else if (event is ResetPassword) {
       yield AuthLoading();
       dynamic result = await repos.resetPassword(username: event.username);
@@ -120,9 +121,9 @@ abstract class AuthState extends Equatable {
   List<Object> get props => [];
 }
 
-class AuthLoading extends AuthState {}
-
 class AuthUninitialized extends AuthState {}
+
+class AuthLoading extends AuthState {}
 
 class AuthLogin extends AuthState {
   final Authenticate authenticate;
@@ -171,9 +172,8 @@ class AuthAuthenticated extends AuthState {
 }
 
 class AuthUnauthenticated extends AuthState {
-  final String passwordChange;
   final Authenticate authenticate;
-  const AuthUnauthenticated({this.authenticate, this.passwordChange});
+  const AuthUnauthenticated({this.authenticate});
   @override
   List<Object> get props => [authenticate];
   @override
