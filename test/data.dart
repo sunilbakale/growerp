@@ -1,21 +1,21 @@
 import 'package:growerp/models/@models.dart';
 
 final Authenticate authenticateNoKey = authenticateFromJson('''
-           {  "company": {"name": "dummyCompany",
+           {  "company": {"name": "Dummy Company Name",
                           "currency": "dummyCurrency"},
-              "user": {"firstName": "dummyFirstName",
-                       "lastName": "dummyLastName",
-                       "email": "dummyEmail",
-                       "name": "dummyEmail"},
+              "user": {"firstName": "First Name",
+                       "lastName": "Last name",
+                       "email": "dummy@example.com",
+                       "name": "dummyUsername"},
               "apiKey": null}
       ''');
 final Authenticate authenticate = authenticateFromJson('''
-           {  "company": {"name": "dummyCompany",
+           {  "company": {"name": "Dummy Company Name",
                           "currency": "dummyCurrency"},
-              "user": {"firstName": "dummyFirstName",
-                       "lastName": "dummyLastName",
-                       "email": "dummyEmail",
-                       "name": "dummyEmail"},
+              "user": {"firstName": "First Name",
+                       "lastName": "Last name",
+                       "email": "dummy@example.com",
+                       "name": "dummyUsername"},
               "apiKey": "dummyKey"}
       ''');
 

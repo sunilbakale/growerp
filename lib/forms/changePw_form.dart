@@ -79,10 +79,10 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
   Widget build(BuildContext context) {
     return BlocListener<ChangePwBloc, ChangePwState>(
       listener: (context, state) {
-        if (state is ChangePwFailed) {
+        if (state is ChangePwFailure) {
           Scaffold.of(context).showSnackBar(
             SnackBar(
-              content: Text('${state.msg}'),
+              content: Text('${state.message}'),
               backgroundColor: Colors.red,
             ),
           );

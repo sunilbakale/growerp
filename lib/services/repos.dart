@@ -147,13 +147,12 @@ class Repos {
       @required String oldPassword,
       @required String newPassword}) async {
     try {  
-      Response response = await _client.put('s1/growerp/100/Password', data: {
+      await _client.put('s1/growerp/100/Password', data: {
         'username': username,
         'oldPassword': oldPassword,
         'newPassword': newPassword,
         'moquiSessionToken': sessionToken
       });
-      // print("==update password=service ==== ${response}");
       return getAuthenticate();
     } catch(e) {
       return responseMessage(e);

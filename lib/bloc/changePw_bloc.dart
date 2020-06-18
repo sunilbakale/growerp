@@ -28,7 +28,7 @@ class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
           oldPassword: event.oldPassword,
           newPassword: event.newPassword);
       if (result is String)
-        yield ChangePwFailed(msg: result);
+        yield ChangePwFailure(message: result);
       else
         authBloc.add(Login());
       Fluttertoast.showToast(
@@ -71,14 +71,14 @@ class ChangePwInitial extends ChangePwState {}
 
 class ChangePwInProgress extends ChangePwState {}
 
-class ChangePwFailed extends ChangePwState {
-  final String msg;
+class ChangePwFailure extends ChangePwState {
+  final String message;
 
-  const ChangePwFailed({@required this.msg});
-
-  @override
-  List<Object> get props => [msg];
+  const ChangePwFailure({@required this.message});
 
   @override
-  String toString() => 'ChangePwFailed { error: $msg }';
+  List<Object> get props => [message];
+
+  @override
+  String toString() => 'ChangePwFailed { error: $message }';
 }
