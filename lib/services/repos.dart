@@ -25,11 +25,11 @@ class Repos {
     }
     _client.options.connectTimeout = 5000; //5s
     _client.options.receiveTimeout = 8000;
-    _client.options.headers = {"Content-Type": "application/json"};
+    _client.options.headers = {'Content-Type': 'application/json'};
 /*
     _client.interceptors.add(InterceptorsWrapper(
       onRequest:(RequestOptions options) async {
-        print("===Outgoing dio request options: ${options.toString()}");
+        print('===Outgoing dio request options: ${options.toString()}');
       // Do something before request is sent
       return options; //continue
       // If you want to resolve the request with some custom data，
@@ -50,49 +50,51 @@ class Repos {
   }
 
   String responseMessage(e) {
-    String errorDescription = "Unexpected DioError";
+    String errorDescription = e.toString();
     if (e is DioError) {
       DioError dioError = e;
       switch (dioError.type) {
         case DioErrorType.CANCEL:
-          errorDescription = "Request to API server was cancelled";
+          errorDescription = 'Request to API server was cancelled';
           break;
         case DioErrorType.CONNECT_TIMEOUT:
-          errorDescription = "Connection timeout with API server";
+          errorDescription = 'Connection timeout with API server';
           break;
         case DioErrorType.DEFAULT:
           errorDescription =
-              "Connection to API server failed due to internet connection";
+              'Connection to API server failed due to internet connection';
           break;
         case DioErrorType.RECEIVE_TIMEOUT:
-          errorDescription = "Receive timeout in connection with API server";
+          errorDescription = 'Receive timeout in connection with API server';
           break;
         case DioErrorType.RESPONSE:
-          errorDescription =
-              "Internet or server problem?";
+          errorDescription = 'Internet or server problem?';
           break;
         case DioErrorType.SEND_TIMEOUT:
-          errorDescription = "Send timeout in connection with API server";
+          errorDescription = 'Send timeout in connection with API server';
           break;
       }
-    }
+      if (e.response is Response &&
+          e.response?.data != null &&
+          e.response?.data['errorCode'] == 400) {
+        print('''Moqui data... errorCode: ${e.response.data['errorCode']}
+            errors: ${e.response.data['errors']}''');
+        errorDescription = e.response.data['errors'];
+      }
 //    if (e.response != null) {
-      // print("dio error data: ${e.response.data}");
-      // print("dio error headers: ${e.response.headers}");
-      // print("dio error request: ${e.response.request}");
+      // print('dio error data: ${e.response.data}');
+      // print('dio error headers: ${e.response.headers}');
+      // print('dio error request: ${e.response.request}');
 //    } else {
       // Something happened in setting up or sending the request that triggered an Error
-      // print("dio no response, request: ${e.request}");
-      // print("dio no response, message: ${e.message}");
+      // print('dio no response, request: ${e.request}');
+      // print('dio no response, message: ${e.message}');
 //    }
-    if (e.response != null && e.response.data != null && e.response?.data['errorCode'] == 400) {
-      print('''Moqui data... errorCode: ${e.response.data['errorCode']}
-            errors: ${e.response.data['errors']}''');
-      errorDescription = e.response.data['errors'];
     }
-    print("====returning error message: $errorDescription");
+    print('====returning error message: $errorDescription');
     return errorDescription;
   }
+
 // -----------------------------general ------------------------
   Future<dynamic> getConnected() async {
     try {
@@ -103,12 +105,13 @@ class Repos {
       return responseMessage(e);
     }
   }
+
   Future<dynamic> getCurrencies() async {
     try {
       Response response = await _client.get('s1/growerp/100/CurrencyList');
       return currencyListFromJson(response.toString()).currencyList;
-    } catch(e) {
-      print("=======$e ");
+    } catch (e) {
+      print('=======$e ');
       return responseMessage(e);
     }
   }
@@ -122,22 +125,22 @@ class Repos {
         'moquiSessionToken': sessionToken
       });
       dynamic result = jsonDecode(response.toString());
-      if (result["passwordChange"] == "true")
-        return "passwordChange";
+      if (result['passwordChange'] == 'true')
+        return 'passwordChange';
       else
-        this.apiKey = result["apiKey"];
-        return authenticateFromJson(response.toString());
-    } catch(e) {
-      return(responseMessage(e));
+        this.apiKey = result['apiKey'];
+      return authenticateFromJson(response.toString());
+    } catch (e) {
+      return (responseMessage(e));
     }
   }
 
   Future<dynamic> resetPassword({@required String username}) async {
     try {
       Response result = await _client.post('s1/growerp/100/ResetPassword',
-        data: {'username': username, 'moquiSessionToken': sessionToken});
+          data: {'username': username, 'moquiSessionToken': sessionToken});
       return json.decode(result.toString());
-    } catch(e) {
+    } catch (e) {
       return responseMessage(e);
     }
   }
@@ -146,7 +149,7 @@ class Repos {
       {@required String username,
       @required String oldPassword,
       @required String newPassword}) async {
-    try {  
+    try {
       await _client.put('s1/growerp/100/Password', data: {
         'username': username,
         'oldPassword': oldPassword,
@@ -154,7 +157,7 @@ class Repos {
         'moquiSessionToken': sessionToken
       });
       return getAuthenticate();
-    } catch(e) {
+    } catch (e) {
       return responseMessage(e);
     }
   }
@@ -168,14 +171,14 @@ class Repos {
       authenticate.apiKey = null;
       persistAuthenticate(authenticate);
       return authenticate;
-    } catch(e) {
+    } catch (e) {
       return responseMessage(e);
     }
   }
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('authenticate', authenticateToJson(authenticate));    
+    await prefs.setString('authenticate', authenticateToJson(authenticate));
   }
 
   Future<Authenticate> getAuthenticate() async {
@@ -211,7 +214,7 @@ class Repos {
         'moquiSessionToken': sessionToken
       });
       return authenticateFromJson(response.toString());
-    } catch(e) {
+    } catch (e) {
       return responseMessage(e);
     }
   }
@@ -223,8 +226,8 @@ class Repos {
       if (catProdJson != null) return catalogFromJson(catProdJson);
       Response response = await _client.get(
           's1/growerp/100/CategoriesAndProducts',
-          queryParameters: {"companyPartyId": companyPartyId});
-      await prefs.setString('categoriesAndProducts', response.toString());    
+          queryParameters: {'companyPartyId': companyPartyId});
+      await prefs.setString('categoriesAndProducts', response.toString());
       return catalogFromJson(response.toString());
     } catch (e) {
       return responseMessage(e);
@@ -242,10 +245,12 @@ class Repos {
     }
   }
 
-  Future<void> saveOrder({Order order}) async {
+  Future<dynamic> saveOrder({Order order}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('orderAndItems', orderToJson(order));    
+      await prefs.setString(
+          'orderAndItems', order == null ? null : orderToJson(order));
+      return null;
     } catch (e) {
       return responseMessage(e);
     }
@@ -253,11 +258,10 @@ class Repos {
 
   Future<dynamic> getOrders() async {
     String basicAuth =
-      'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
+        'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
     try {
       _client.options.headers['authorization'] = basicAuth;
-      Response response = await _client.get(
-        's1/growerp/100/Order');
+      Response response = await _client.get('s1/growerp/100/Order');
       return ordersFromJson(response.toString());
     } catch (e) {
       return responseMessage(e);
@@ -266,11 +270,14 @@ class Repos {
 
   Future<dynamic> createOrder({Order order}) async {
     try {
-      Response response = await _client.get(
-        's1/growerp/100/Paypal',
-          queryParameters: {"order": order});
-//      return paymentFromJson(response.toString());
-      return null;
+      String basicAuth =
+          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
+      _client.options.headers['authorization'] = basicAuth;
+      Response response = await _client.post('s1/growerp/100/Order', data: {
+        'orderJson': orderToJson(order),
+        'moquiSessionToken': sessionToken
+      });
+      return 'orderId' + response.data["orderId"];
     } catch (e) {
       return responseMessage(e);
     }

@@ -9,17 +9,17 @@ Order orderFromJson(String str) => Order.fromJson(json.decode(str));
 
 String orderToJson(Order data) => json.encode(data.toJson());
 
-class Order {
+class Order { 
   Order({
     this.orderId,
-    this.orderStatusId,
+    this.orderStatusId, // 'OrderOpen','OrderPlaced','OrderApproved', 'OrderCompleted', 'OrderCancelled'
     this.currencyUomId,
     this.placedDate,
     this.placedTime,
     this.partyId,
     this.firstName,
     this.lastName,
-    this.statusId,
+    this.statusId, // 'Open' or 'Closed' for easy selection
     this.grandTotal,
     this.table,
     this.accommodationAreaId,
@@ -52,11 +52,11 @@ class Order {
         firstName: json["firstName"],
         lastName: json["lastName"],
         statusId: json["statusId"],
-        grandTotal: json["grandTotal"].toDouble(),
+        grandTotal: json["grandTotal"]?.toDouble(),
         accommodationAreaId: json["accommodationAreaId"],
         accommodationSpotId: json["accommodationSpotId"],
         orderItems: List<OrderItem>.from(
-            json["items"].map((x) => OrderItem.fromJson(x))),
+            json["orderItems"].map((x) => OrderItem.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -73,7 +73,7 @@ class Order {
         "table": table,
         "accommodationAreaId": accommodationAreaId,
         "accommodationSpotId": accommodationSpotId,
-        "items": List<dynamic>.from(orderItems.map((x) => x.toJson())),
+        "orderItems": List<dynamic>.from(orderItems.map((x) => x.toJson())),
       };
 }
 
@@ -107,7 +107,7 @@ class OrderItem {
         "productId": productId,
         "description": description,
         "quantity": quantity,
-        "currencyId": price.currency,
+        "currencyId": price.currency.toString(),
         "price": price.amount.toString(),
       };
 }

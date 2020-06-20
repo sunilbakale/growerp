@@ -5,8 +5,7 @@
 import 'dart:convert';
 import 'order.dart';
 
-Orders ordersFromJson(String str) =>
-    Orders.fromJson(json.decode(str));
+Orders ordersFromJson(String str) => Orders.fromJson(json.decode(str));
 
 String ordersToJson(Orders data) => json.encode(data.toJson());
 

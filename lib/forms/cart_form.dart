@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/@bloc.dart';
+import '../models/@models.dart';
 
 class CartForm extends StatelessWidget {
   @override
@@ -16,7 +17,6 @@ class CartForm extends StatelessWidget {
         ],
       ),
       body: Container(
-//        color: Colors.yellow,
         child: Column(
           children: [
             Expanded(
@@ -49,7 +49,7 @@ class _CartList extends StatelessWidget {
               DataColumn(label: Text('Price')),
               DataColumn(label: Text('Total')),
             ],
-            rows: state.orderItems
+            rows: state.order.orderItems
                 .map((orderItem) => DataRow(cells: [
                       DataCell(Text(orderItem.description)),
                       DataCell(Text(orderItem.quantity.toString())),
@@ -61,7 +61,7 @@ class _CartList extends StatelessWidget {
           );
         } else if (state is CartError) {
           return Center(
-            child: Text(state.errorMsg),
+            child: Text(state.message),
           );
         } else
           return Container();
@@ -75,7 +75,7 @@ class _CartTotal extends StatelessWidget {
   Widget build(BuildContext context) {
     final hugeStyle =
         Theme.of(context).textTheme.headline1.copyWith(fontSize: 48);
-
+    Order order;
     return SizedBox(
       height: 200,
       child: Center(
@@ -86,7 +86,29 @@ class _CartTotal extends StatelessWidget {
               if (state is CartLoading) {
                 return CircularProgressIndicator();
               }
+              if (state is CartPaying) {
+                return CircularProgressIndicator();
+              }
+              if (state is CartPaid) {
+                BlocProvider.of<AuthBloc>(context).add(AppStarted());
+                Scaffold.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('order is paid'),
+            CircularProgressIndicator(),
+          ],
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+;
+              }
               if (state is CartLoaded) {
+                order = state.order;
                 return Text((state.totalPrice ?? 0.00).toString(),
                     style: hugeStyle);
               }
@@ -95,7 +117,7 @@ class _CartTotal extends StatelessWidget {
             SizedBox(width: 24),
             FlatButton(
               onPressed: () {
-//                BlocProvider.of<CartBloc>(context).add(PayOrderItem(state.orderItems));
+                BlocProvider.of<CartBloc>(context).add(PayOrder(order));
                 Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text('cart mailed your order',
                       textAlign: TextAlign.center),

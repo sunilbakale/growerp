@@ -73,19 +73,19 @@ class App extends StatelessWidget {
 class SimpleBlocDelegate extends BlocDelegate {
   @override
   void onEvent(Bloc bloc, Object event) {
-    print('Bloc: ${bloc.runtimeType} event: $event');
+    print('${bloc.runtimeType} event: $event');
     super.onEvent(bloc, event);
   }
 
   @override
   void onError(Bloc bloc, Object error, StackTrace stackTrace) {
-    print('Bloc: ${bloc.runtimeType} error: $error');
+    print('${bloc.runtimeType} error: $error');
     super.onError(bloc, error, stackTrace);
   }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
-    print("Transition: $transition");
+    print('$transition');
     super.onTransition(bloc, transition);
   }
 }

@@ -42,7 +42,7 @@ class Product extends Equatable{
         "productId": productId,
         "name": name,
         "price": price.amount.toString(),
-        "currencyId": price.currency,
+        "currencyId": price.currency.toString(),
         "productCategoryId": productCategoryId,
         "image": image,
       };

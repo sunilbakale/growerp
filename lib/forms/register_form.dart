@@ -180,7 +180,7 @@ class _RegisterEntryState extends State<RegisterEntry> {
                             _currencyAbr = _currencyAbr.substring(
                                 0, _currencyAbr.indexOf(']'));
                             if (_formKey.currentState.validate() &&
-                                state is! RegisterSubmitting)
+                                state is! RegisterSubmitting && state is! RegisterLoading)
                               BlocProvider.of<RegisterBloc>(context).add(
                                 RegisterButtonPressed(
                                   companyName: _companyController.text,
