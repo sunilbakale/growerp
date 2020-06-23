@@ -1,4 +1,4 @@
-package com.example.flutter_shopping_cart;
+package org.growerp.ecommerce;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
