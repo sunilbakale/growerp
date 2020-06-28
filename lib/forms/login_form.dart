@@ -5,77 +5,81 @@ import '../models/@models.dart';
 import '../bloc/@bloc.dart';
 import '../services/repos.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../routing_constants.dart';
+import 'changePw_form.dart';
 
 class LoginForm extends StatelessWidget {
-  final Repos repos;
-  final Authenticate authenticate;
-
-  LoginForm({Key key, @required this.repos, this.authenticate})
-      : assert(repos != null),
-        super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-        actions: <Widget>[
-          IconButton(
-              key: Key('goHome'),
-              icon: Icon(Icons.home),
-              onPressed: () =>
-                  BlocProvider.of<AuthBloc>(context).add(AppStarted())),
-        ],
-      ),
-      body: BlocProvider(
-        create: (context) {
-          return LoginBloc(
-            authBloc: BlocProvider.of<AuthBloc>(context),
-            repos: repos,
-          );
+    return WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context,false);
+          return false;
         },
-        child: LoginEntry(authenticate: authenticate),
-      ),
-    );
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Login'),
+          ),
+          body: BlocProvider(
+            create: (context) => LoginBloc(repos: context.repository<Repos>()),
+            child: LoginHeader(),
+          ),
+        ));
   }
 }
 
-class LoginEntry extends StatefulWidget {
-  final Authenticate authenticate;
-
-  const LoginEntry({Key key, this.authenticate}) : super(key: key);
+class LoginHeader extends StatefulWidget {
   @override
-  State<LoginEntry> createState() => _LoginEntryState(authenticate);
+  State<LoginHeader> createState() => _LoginHeaderState();
 }
 
-class _LoginEntryState extends State<LoginEntry> {
+class _LoginHeaderState extends State<LoginHeader> {
   final _formKey = GlobalKey<FormState>();
-  final Authenticate authenticate;
+  Authenticate authenticate;
   bool _obscureText = true;
-  _LoginEntryState(this.authenticate);
 
   @override
   Widget build(BuildContext context) {
-    final _usernameController = TextEditingController()
-      ..text = authenticate?.user?.name == null || kReleaseMode
-          ? 'admin@growerp.com'
-          : authenticate?.user?.name;
-    final _passwordController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'qqqqqq9!';
-
-    return BlocListener<LoginBloc, LoginState>(
-      listener: (context, state) {
-        if (state is LoginFailure) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+            bloc: context.bloc<AuthBloc>(),
+            listener: (context, state) {
+              if (state is AuthAuthenticated) {
+                Navigator.pop(context,true);
+              }
+              if (state is AuthConnectionProblem) {
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('${state.errorMessage}'),
+                  backgroundColor: Colors.red,
+                ));
+              }
+            }),
+        BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+          if (state is LoginFailure) {
+            Scaffold.of(context).showSnackBar(SnackBar(
               content: Text('${state.error}'),
               backgroundColor: Colors.red,
-            ),
-          );
-        }
-      },
+            ));
+          }
+          if (state is LoginChangePw) {
+            Navigator.pushNamed(context, ChangePwRoute,
+                arguments: ChangePwArgs(state.username, state.password));
+          }
+          if (state is LoginOk) {
+            BlocProvider.of<AuthBloc>(context)
+                .add(LoggedIn(authenticate: state.authenticate));
+          }
+        }),
+      ],
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
+          final _usernameController = TextEditingController()
+            ..text = authenticate?.user?.name == null || kReleaseMode
+                ? 'admin@growerp.com'
+                : authenticate?.user?.name;
+          final _passwordController = TextEditingController()
+            ..text = kReleaseMode ? '' : 'qqqqqq9!';
           return Center(
               // login screen
               child: SizedBox(
@@ -125,26 +129,20 @@ class _LoginEntryState extends State<LoginEntry> {
                               if (_formKey.currentState.validate() &&
                                   state is! LoginInProgress)
                                 BlocProvider.of<LoginBloc>(context).add(
-                                  LoginButtonPressed(
-                                    username: _usernameController.text,
-                                    password: _passwordController.text,
-                                  ),
-                                );
+                                    LoginButtonPressed(
+                                        username: _usernameController.text,
+                                        password: _passwordController.text));
                             }),
                         SizedBox(height: 30),
                         GestureDetector(
-                            child: Text(
-                              'register new account',
-                            ),
-                            onTap: () {
-                              BlocProvider.of<AuthBloc>(context)
-                                  .add(Register());
-                            }),
+                          child: Text('register new account'),
+                          onTap: () => Navigator.pushNamed(
+                              context, RegisterRoute,
+                              arguments: context.repository<Repos>()),
+                        ),
                         SizedBox(height: 30),
                         GestureDetector(
-                            child: Text(
-                              'forgot password?',
-                            ),
+                            child: Text('forgot password?'),
                             onTap: () async {
                               final String username =
                                   await _sendResetPasswordDialog(

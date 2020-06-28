@@ -1,20 +1,14 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'auth_bloc.dart';
 import 'package:meta/meta.dart';
-import '../services/repos.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../services/repos.dart';
 
 class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
   final Repos repos;
-  final AuthBloc authBloc;
 
-  ChangePwBloc({
-    @required this.repos,
-    @required this.authBloc,
-  })  : assert(repos != null),
-        assert(authBloc != null);
+  ChangePwBloc({@required this.repos})  : assert(repos != null);
 
   @override
   ChangePwState get initialState => ChangePwInitial();
@@ -30,7 +24,7 @@ class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
       if (result is String)
         yield ChangePwFailure(message: result);
       else
-        authBloc.add(Login());
+        yield ChangePwOk();
       Fluttertoast.showToast(
           toastLength: Toast.LENGTH_LONG, msg: "Password updated!");
     }
@@ -70,6 +64,7 @@ abstract class ChangePwState extends Equatable {
 class ChangePwInitial extends ChangePwState {}
 
 class ChangePwInProgress extends ChangePwState {}
+class ChangePwOk extends ChangePwState {}
 
 class ChangePwFailure extends ChangePwState {
   final String message;

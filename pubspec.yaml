@@ -10,11 +10,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   equatable: ^1.1.1
-  flutter_bloc: ^4.0.0
+  flutter_bloc: ^4.0.1
   dio: ^3.0.9
   money: ^0.2.1
   meta: ^1.1.6
-  devicelocale: ^0.2.2
   shared_preferences: ^0.5.6
   image_picker: ^0.6.2+3
   fluttertoast: ^4.0.0

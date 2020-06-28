@@ -43,12 +43,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       if (order == null) {
         // no order yet to create
         order = Order(
-            orderStatusId: "OrderOpen",
-            partyId: authenticate?.user?.partyId,
-            firstName: authenticate?.user?.firstName,
-            lastName: authenticate?.user?.lastName,
-            statusId: "Open",
-            orderItems: [],
+          orderStatusId: "OrderOpen",
+          partyId: authenticate?.user?.partyId,
+          firstName: authenticate?.user?.firstName,
+          lastName: authenticate?.user?.lastName,
+          statusId: "Open",
+          orderItems: [],
         );
       }
       yield CartLoaded(order: order);
@@ -72,29 +72,24 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 @immutable
 abstract class CartEvent extends Equatable {
   const CartEvent();
-}
-
-class LoadCart extends CartEvent {
   @override
   List<Object> get props => [];
 }
 
+class LoadCart extends CartEvent {}
+
 class AddOrderItem extends CartEvent {
   final OrderItem orderItem;
-
   const AddOrderItem(this.orderItem);
-
   @override
   List<Object> get props => [orderItem];
 }
 
 class PayOrder extends CartEvent {
   final Order order;
-
   PayOrder(this.order);
-
   @override
-  List<Object> get props => [];
+  List<Object> get props => [order.lastName];
 }
 
 // ================= state ========================
@@ -105,10 +100,7 @@ abstract class CartState extends Equatable {
   List<Object> get props => [];
 }
 
-class CartLoading extends CartState {
-  @override
-  List<Object> get props => [];
-}
+class CartLoading extends CartState {}
 
 class CartLoaded extends CartState {
   final Order order;
@@ -119,8 +111,13 @@ class CartLoaded extends CartState {
     for (OrderItem i in order.orderItems) total += (i.price * i.quantity);
     return total;
   }
+
   @override
   List<Object> get props => [order.orderItems];
+  @override
+  String toString() =>
+      'Cart loaded, products: ' +
+      '${order.orderItems?.length} value: $totalPrice';
 }
 
 class CartPaying extends CartState {

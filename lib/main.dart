@@ -1,72 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'forms/@forms.dart';
-import 'widgets/widgets.dart';
 import 'bloc/@bloc.dart';
 import 'services/repos.dart';
 import 'styles/themes.dart';
+import 'router.dart' as router;
+import 'forms/@forms.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final repos = Repos();
-  runApp(
-    MultiBlocProvider(
+  runApp(RepositoryProvider(
+    create: (context) => Repos(),
+    child: MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(repos: repos)..add(AppStarted()),
-        ),
+            create: (context) => AuthBloc(repos: repos)..add(AppStarted())),
         BlocProvider<CatalogBloc>(
-          create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog()),
-        ),
+            create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog())),
         BlocProvider<CartBloc>(
-          create: (context) => CartBloc(repos: repos)..add(LoadCart()),
-        ),
+            create: (context) => CartBloc(repos: repos)..add(LoadCart())),
       ],
-      child: App(repos: repos),
+      child: MyApp(),
     ),
-  );
+  ));
 }
 
-class App extends StatelessWidget {
-  final Repos repos;
-
-  App({Key key, @required this.repos})
-      : assert(repos != null),
-        super(key: key);
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         theme: Themes.formTheme,
+        onGenerateRoute: router.generateRoute,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthConnectionProblem || state is AuthHome) {
+            if (state is AuthLoading || state is AppStarted) {
+              return SplashForm();
+            } else
               return HomeForm();
-            } else if (state is AuthUnauthenticated) {
-              return HomeForm(authenticate: state.authenticate);
-            } else if (state is AuthAuthenticated) {
-              return HomeForm(authenticate: state.authenticate);
-            } else if (state is AuthLogin) {
-              return LoginForm(repos: repos, authenticate: state.authenticate);
-            } else if (state is AuthRegister) {
-              return RegisterForm(repos: repos);
-            } else if (state is AuthChangePassword) {
-              return ChangePwForm(
-                username: state.username,
-                oldPassword: state.oldPassword,
-                repos: repos,
-              );
-            } else if (state is AuthLoading) {
-              return LoadingIndicator();
-            }
-            return SplashForm();
           },
-        ),
-        routes: {
-          '/details': (context) => ProductDetailsForm(),
-          '/cart': (context) => CartForm(),
-          '/about': (context) => AboutForm(),
-        });
+        ));
   }
 }
 

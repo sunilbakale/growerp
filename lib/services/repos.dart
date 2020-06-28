@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:devicelocale/devicelocale.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
 import '../models/@models.dart';
@@ -26,10 +25,12 @@ class Repos {
     _client.options.connectTimeout = 5000; //5s
     _client.options.receiveTimeout = 8000;
     _client.options.headers = {'Content-Type': 'application/json'};
-/*
+
+/*  logging in/out going backend requests
     _client.interceptors.add(InterceptorsWrapper(
       onRequest:(RequestOptions options) async {
-        print('===Outgoing dio request options: ${options.toString()}');
+        print('===Outgoing dio request headers: ${options.headers}');
+        print('===Outgoing dio request data: ${options.data}');
       // Do something before request is sent
       return options; //continue
       // If you want to resolve the request with some custom data，
@@ -76,7 +77,7 @@ class Repos {
       }
       if (e.response is Response &&
           e.response?.data != null &&
-          e.response?.data['errorCode'] == 400) {
+          (e.response?.data['errorCode'] == 400 || e.response?.data['errorCode'] == 403)) {
         print('''Moqui data... errorCode: ${e.response.data['errorCode']}
             errors: ${e.response.data['errors']}''');
         errorDescription = e.response.data['errors'];
@@ -98,8 +99,10 @@ class Repos {
 // -----------------------------general ------------------------
   Future<dynamic> getConnected() async {
     try {
+      Authenticate authenticate = await getAuthenticate();
+      this.apiKey = authenticate?.apiKey;
       Response response = await _client.get('moquiSessionToken');
-      sessionToken = response.data;
+      this.sessionToken = response.data;
       return sessionToken != null;
     } catch (e) {
       return responseMessage(e);
@@ -111,7 +114,6 @@ class Repos {
       Response response = await _client.get('s1/growerp/100/CurrencyList');
       return currencyListFromJson(response.toString()).currencyList;
     } catch (e) {
-      print('=======$e ');
       return responseMessage(e);
     }
   }
@@ -122,13 +124,13 @@ class Repos {
       Response response = await _client.post('s1/growerp/100/Login', data: {
         'username': username,
         'password': password,
-        'moquiSessionToken': sessionToken
+        'moquiSessionToken': this.sessionToken
       });
       dynamic result = jsonDecode(response.toString());
       if (result['passwordChange'] == 'true')
         return 'passwordChange';
-      else
-        this.apiKey = result['apiKey'];
+      this.apiKey = result['apiKey'];
+      this.sessionToken = result['moquiSessionToken'];
       return authenticateFromJson(response.toString());
     } catch (e) {
       return (responseMessage(e));
@@ -138,7 +140,7 @@ class Repos {
   Future<dynamic> resetPassword({@required String username}) async {
     try {
       Response result = await _client.post('s1/growerp/100/ResetPassword',
-          data: {'username': username, 'moquiSessionToken': sessionToken});
+          data: {'username': username, 'moquiSessionToken': this.sessionToken});
       return json.decode(result.toString());
     } catch (e) {
       return responseMessage(e);
@@ -154,7 +156,7 @@ class Repos {
         'username': username,
         'oldPassword': oldPassword,
         'newPassword': newPassword,
-        'moquiSessionToken': sessionToken
+        'moquiSessionToken': this.sessionToken
       });
       return getAuthenticate();
     } catch (e) {
@@ -164,7 +166,7 @@ class Repos {
 
   Future<dynamic> logout() async {
     this.apiKey = null;
-    _client.options.headers['api_key'] = apiKey;
+   _client.options.headers['api_key'] = this.apiKey;
     try {
       await _client.post('logout');
       Authenticate authenticate = await getAuthenticate();
@@ -199,7 +201,7 @@ class Repos {
     try {
       // create some category and product when company empty
       var locale;
-      if (!kIsWeb) locale = await Devicelocale.currentLocale;
+      // if (!kIsWeb) locale = await Devicelocale.currentLocale;
       Response response =
           await _client.post('s1/growerp/100/UserAndCompany', data: {
         'username': email, 'emailAddress': email,
@@ -208,9 +210,8 @@ class Repos {
         'companyPartyId': companyPartyId, // for existing companies
         'companyName': companyName, 'currencyUomId': currency,
         'companyEmail': email,
-        'partyClassificationId': 'AppHotel',
+        'partyClassificationId': 'AppEcommerceShop',
         'environment': kReleaseMode,
-        'transData': ['', '', '', '', 'Standard', 'Luxury', '', '', ''],
         'moquiSessionToken': sessionToken
       });
       return authenticateFromJson(response.toString());
@@ -270,9 +271,13 @@ class Repos {
 
   Future<dynamic> createOrder({Order order}) async {
     try {
-      String basicAuth =
-          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
-      _client.options.headers['authorization'] = basicAuth;
+//      String basicAuth =
+//          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
+//      _client.options.headers['authorization'] = basicAuth;
+      print("=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
+      Authenticate authenticate = await getAuthenticate();
+      _client.options.headers['api_key'] = authenticate.apiKey;
+      _client.options.headers['api_key'] = this.apiKey;
       Response response = await _client.post('s1/growerp/100/Order', data: {
         'orderJson': orderToJson(order),
         'moquiSessionToken': sessionToken

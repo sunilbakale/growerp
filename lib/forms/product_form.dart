@@ -4,22 +4,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/@models.dart';
 import '../bloc/@bloc.dart';
 
-class ProductDetailsForm extends StatefulWidget {
+class ProductForm extends StatefulWidget {
+  final Product product;
+
+  const ProductForm({Key key, this.product}) : super(key: key);
   @override
-  _ProductDetailsFormState createState() => _ProductDetailsFormState();
+  _ProductFormState createState() => _ProductFormState(product);
 }
 
-class _ProductDetailsFormState extends State<ProductDetailsForm> {
-  Product product;
+class _ProductFormState extends State<ProductForm> {
+  final Product product;
   int quantity;
   OrderItem orderItem;
   Map<String, dynamic> args;
   bool isFavorite = false;
 
+  _ProductFormState(this.product);
+
   @override
   Widget build(BuildContext context) {
-    final Map args = ModalRoute.of(context).settings.arguments as Map;
-    product = args['product'];
     quantity ??= 1;
     return Scaffold(
         appBar: AppBar(

@@ -1,20 +1,16 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'auth_bloc.dart';
 import 'package:meta/meta.dart';
 import '../services/repos.dart';
 import '../models/@models.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final Repos repos;
-  final AuthBloc authBloc;
 
   LoginBloc({
     @required this.repos,
-    @required this.authBloc,
-  })  : assert(repos != null),
-        assert(authBloc != null);
+  })  : assert(repos != null);
 
   @override
   LoginState get initialState => LoginInitial();
@@ -28,10 +24,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: event.password,
       );
       if (result is Authenticate) {
-        authBloc.add(LoggedIn(authenticate: result));
+        yield LoginOk(authenticate: result);
       } else if (result == "passwordChange") {
-        authBloc.add(ChangePassword(
-          username: event.username, oldPassword: event.password));
+        yield LoginChangePw(
+          username: event.username, password: event.password);
       } else {
         yield LoginFailure(error: result);
       }
@@ -62,7 +58,6 @@ class LoginButtonPressed extends LoginEvent {
 // -------------------------------state ------------------------------
 abstract class LoginState extends Equatable {
   const LoginState();
-
   @override
   List<Object> get props => [];
 }
@@ -71,14 +66,30 @@ class LoginInitial extends LoginState {}
 
 class LoginInProgress extends LoginState {}
 
+class LoginChangePw extends LoginState {
+  final String username;
+  final String password;
+  const LoginChangePw({@required this.username, @required this.password});
+  @override
+  List<Object> get props => [username];
+  @override
+  String toString() => 'LoginChangePw { username: $username }';
+}
+
+class LoginOk extends LoginState {
+  final Authenticate authenticate;
+  const LoginOk({@required this.authenticate});
+  @override
+  List<Object> get props => [authenticate];
+  @override
+  String toString() => 'LoginOk { username: ${authenticate.user.name} }';
+}
+
 class LoginFailure extends LoginState {
   final String error;
-
   const LoginFailure({@required this.error});
-
   @override
   List<Object> get props => [error];
-
   @override
   String toString() => 'LoginFailure { error: $error }';
 }

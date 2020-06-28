@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 import '../models/@models.dart';
 import '../services/repos.dart';
@@ -56,6 +57,10 @@ class CatalogLoaded extends CatalogState {
 
   @override
   List<Object> get props => [catalog];
+  @override
+  String toString() =>
+      'CatalogLoaded, categories: ${catalog.categories.length}' + 
+      ' products: ${catalog.products.length}';
 }
 
 class CatalogError extends CatalogState {
