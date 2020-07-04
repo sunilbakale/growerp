@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/@bloc.dart';
 import '../models/@models.dart';
 import '../routing_constants.dart';
-import 'login_form.dart';
+import '../helper_functions.dart';
 
 class CartForm extends StatelessWidget {
   @override
@@ -77,14 +77,15 @@ class _CartTotal extends StatelessWidget {
     final hugeStyle =
         Theme.of(context).textTheme.headline1.copyWith(fontSize: 48);
     Order order;
-    bool result = false;
     return SizedBox(
         height: 200,
         child: Center(
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           BlocListener<CartBloc, CartState>(listener: (context, state) {
             if (state is CartPaid) {
-              Navigator.pushNamed(context, HomeRoute);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, HomeRoute, ModalRoute.withName(HomeRoute),
+                  arguments: "Order Accepted, id:${state.orderId}");
             }
           }, child:
               BlocBuilder<CartBloc, CartState>(builder: (context, cartState) {
@@ -93,7 +94,7 @@ class _CartTotal extends StatelessWidget {
             }
             if (cartState is CartError) {
               BlocProvider.of<CartBloc>(context).add(LoadCart());
-              _showMessage(context, 'Cart error?', Colors.red, false);
+              HelperFunctions.showMessage(context, 'Cart error?', Colors.red);
             }
             if (cartState is CartLoaded) {
               return BlocBuilder<AuthBloc, AuthState>(
@@ -110,14 +111,19 @@ class _CartTotal extends StatelessWidget {
                       onPressed: order == null || order.orderItems.length == 0
                           ? null
                           : () async {
+                              dynamic result;
                               if (authState is AuthUnauthenticated)
-                                result = await _loginDialog(context);
-                              if (authState is AuthAuthenticated || result)
+                                result = await Navigator.pushNamed(
+                                    context, LoginRoute);
+                              if (authState is AuthAuthenticated ||
+                                  result == true) {
+                                HelperFunctions.showMessage(
+                                    context, 'Sending order...', Colors.green);
                                 BlocProvider.of<CartBloc>(context)
                                     .add(PayOrder(order));
-                              else
-                                _showMessage(context, 'Should login first?',
-                                    Colors.red, false);
+                              } else
+                                HelperFunctions.showMessage(
+                                    context, 'Should login first?', Colors.red);
                             }),
                 ]);
               });
@@ -126,30 +132,4 @@ class _CartTotal extends StatelessWidget {
           }))
         ])));
   }
-}
-
-_loginDialog(BuildContext context) async {
-  return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return LoginForm();
-      });
-}
-
-void _showMessage(context, message, colors, ind) {
-  Scaffold.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('$message'),
-            if (ind) CircularProgressIndicator(),
-          ],
-        ),
-        backgroundColor: colors,
-      ),
-    );
 }

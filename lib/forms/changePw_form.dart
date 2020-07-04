@@ -76,7 +76,7 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
         );
       }
       if (state is ChangePwOk) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop("Password successfully changed");
       }
     }, child:
             BlocBuilder<ChangePwBloc, ChangePwState>(builder: (context, state) {

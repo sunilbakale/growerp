@@ -7,23 +7,27 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   print("Navigate to ${settings.name}");
   switch (settings.name) {
     case HomeRoute:
-      return MaterialPageRoute(builder: (context) => HomeForm());
+      final String message = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => HomeForm(message: message));
     case ProductRoute:
       return MaterialPageRoute(
           builder: (context) => ProductForm(product: settings.arguments));
     case LoginRoute:
-      return MaterialPageRoute(builder: (context) => LoginForm());
+      final String message = settings.arguments;
+      print("====router message: $message");
+      return MaterialPageRoute(
+          builder: (context) => LoginForm(message: message));
     case RegisterRoute:
       return MaterialPageRoute(builder: (context) => RegisterForm());
     case ChangePwRoute:
+      ChangePwArgs changePwArgs = settings.arguments;
       return MaterialPageRoute(
-          builder: (context) => ChangePwForm(changePwArgs: settings.arguments));
+          builder: (context) => ChangePwForm(changePwArgs: changePwArgs));
     case CartRoute:
       return MaterialPageRoute(builder: (context) => CartForm());
     default:
       return MaterialPageRoute(
-          builder: (context) => UndefinedView(
-                name: settings.name,
-              ));
+          builder: (context) => UndefinedView(name: settings.name));
   }
 }

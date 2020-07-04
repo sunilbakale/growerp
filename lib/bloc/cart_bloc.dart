@@ -26,7 +26,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       yield CartPaying();
       dynamic result = await repos.createOrder(order: event.order);
       if (result is String && result.startsWith('orderId')) {
-        yield CartPaid(orderId: result.substring(8));
+        yield CartPaid(orderId: result.substring(7));
         repos.saveOrder(order: null);
         yield* _mapLoadCartToState();
       } else

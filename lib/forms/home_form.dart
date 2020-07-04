@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:growerp/helper_functions.dart';
 import '../bloc/@bloc.dart';
 import '../models/@models.dart';
-import '../forms/@forms.dart';
+import '../helper_functions.dart';
 import '../routing_constants.dart';
 
 class HomeForm extends StatelessWidget {
+  final String message;
+  const HomeForm({Key key, this.message}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HomeBody(),
+      body: HomeBody(message: message),
     );
   }
 }
 
 class HomeBody extends StatefulWidget {
+  final String message;
+
+  const HomeBody({Key key, this.message}) : super(key: key);
   @override
-  State<HomeBody> createState() => _HomeState();
+  State<HomeBody> createState() => _HomeState(message);
 }
 
 class _HomeState extends State<HomeBody> {
+  final String message;
   Authenticate authenticate;
   List<Product> products;
   List<Category> categories;
   String selectedCategoryId;
+
+  _HomeState(this.message);
+
+  @override
+  void initState() {
+    Future<Null>.delayed(Duration(milliseconds: 0), () {
+      if (message != null)
+        HelperFunctions.showMessage(context, '$message', Colors.green);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +50,8 @@ class _HomeState extends State<HomeBody> {
         listeners: [
           BlocListener<CatalogBloc, CatalogState>(listener: (context, state) {
             if (state is CatalogError)
-              _showMessage(context, state.errorMessage, Colors.red);
+              HelperFunctions.showMessage(
+                  context, state.errorMessage, Colors.red);
           }),
           BlocListener<AuthBloc, AuthState>(
               bloc: context.bloc<AuthBloc>(),
@@ -40,7 +59,8 @@ class _HomeState extends State<HomeBody> {
                 if (state is AuthAuthenticated)
                   authenticate = state.authenticate;
                 if (state is AuthConnectionProblem)
-                  _showMessage(context, 'Connection problem', Colors.red);
+                  HelperFunctions.showMessage(
+                      context, 'Connection problem', Colors.red);
               })
         ],
         child:
@@ -93,11 +113,13 @@ class _HomeState extends State<HomeBody> {
                             icon: Icon(Icons.exit_to_app),
                             tooltip: 'Login',
                             onPressed: () async {
-                              if (await _loginDialog(context))
-                                _showMessage(
+                              if (await Navigator.pushNamed(
+                                      context, LoginRoute) ==
+                                  true)
+                                HelperFunctions.showMessage(
                                     context, 'Login Successful', Colors.green);
                               else
-                                _showMessage(
+                                HelperFunctions.showMessage(
                                     context, 'Login failed', Colors.red);
                             }),
                       if (BlocProvider.of<AuthBloc>(context).state
@@ -108,8 +130,8 @@ class _HomeState extends State<HomeBody> {
                             onPressed: () => {
                                   BlocProvider.of<AuthBloc>(context)
                                       .add(Logout()),
-                                  _showMessage(context, 'Logout Successful',
-                                      Colors.green),
+                                  HelperFunctions.showMessage(context,
+                                      'Logout Successful', Colors.green),
                                 })
                     ]),
                 body: SingleChildScrollView(
@@ -316,29 +338,4 @@ class _HomeState extends State<HomeBody> {
       )),
     );
   }
-}
-
-void _showMessage(context, message, colors) {
-  Scaffold.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('$message', textAlign: TextAlign.center),
-          ],
-        ),
-        backgroundColor: colors,
-      ),
-    );
-}
-
-_loginDialog(BuildContext context) async {
-  return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return LoginForm();
-      });
 }

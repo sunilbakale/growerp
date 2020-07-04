@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../bloc/@bloc.dart';
 import '../services/repos.dart';
+import '../helper_functions.dart';
 import '../routing_constants.dart';
 
 class RegisterForm extends StatelessWidget {
@@ -22,44 +23,38 @@ class RegisterForm extends StatelessWidget {
             repos: context.repository<Repos>(),
             authBloc: BlocProvider.of<AuthBloc>(context))
           ..add(LoadRegister()),
-        child: RegisterEntry(),
+        child: RegisterHeader(),
       ),
     );
   }
 }
 
-class RegisterEntry extends StatefulWidget {
-  const RegisterEntry({Key key}) : super(key: key);
+class RegisterHeader extends StatefulWidget {
   @override
-  State<RegisterEntry> createState() => _RegisterEntryState();
+  State<RegisterHeader> createState() => _RegisterHeaderState();
 }
 
-class _RegisterEntryState extends State<RegisterEntry> {
+class _RegisterHeaderState extends State<RegisterHeader> {
   final _formKey = GlobalKey<FormState>();
   List<String> currencies;
 
   @override
   Widget build(BuildContext context) {
-    final _companyController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'My E-Commerce site';
-    String _currencySelected = kReleaseMode ? '' : 'Thailand Baht [THB]';
-    final _firstNameController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'John';
-    final _lastNameController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'Doe';
-    final _emailController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'admin@growerp.com';
-
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state is RegisterError) {
-          _showMessage(context, state.errorMessage, Colors.red);
+          HelperFunctions.showMessage(context, state.errorMessage, Colors.red);
         }
         if (state is RegisterSubmitting) {
-          _showMessage(context, 'Sending the registration...', Colors.black);
+          HelperFunctions.showMessage(
+              context, 'Sending the registration...', Colors.black);
         }
         if (state is RegisterSuccess) {
-          Navigator.pop(context);
+          print("====register message sending");
+          Navigator.pop(
+              context,
+              'Register successfull,' +
+                  ' you can now login with your email password');
         }
         if (state is RegisterLoaded) {
           setState(() {
@@ -68,12 +63,22 @@ class _RegisterEntryState extends State<RegisterEntry> {
         }
       },
       child: Center(
-          child: BlocBuilder<RegisterBloc, RegisterState>(builder: (context, state) {
+      child:
+          BlocBuilder<RegisterBloc, RegisterState>(builder: (context, state) {
+        final _companyController = TextEditingController()
+          ..text = kReleaseMode ? '' : 'My E-Commerce site';
+        String _currencySelected = kReleaseMode ? '' : 'Thailand Baht [THB]';
+        final _firstNameController = TextEditingController()
+          ..text = kReleaseMode ? '' : 'John';
+        final _lastNameController = TextEditingController()
+          ..text = kReleaseMode ? '' : 'Doe';
+        final _emailController = TextEditingController()
+          ..text = kReleaseMode ? '' : 'admin@growerp.com';
+
         if (state is RegisterLoading)
           return CircularProgressIndicator();
         else
-          return Center(
-              child: SizedBox(
+          return SizedBox(
                   width: 400,
                   child: Form(
                     key: _formKey,
@@ -191,25 +196,8 @@ class _RegisterEntryState extends State<RegisterEntry> {
                             }),
                       ],
                     ),
-                  )));
+                  ));
       }),
     ));
   }
-}
-
-void _showMessage(context, message, colors) {
-  Scaffold.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('$message'),
-            CircularProgressIndicator(),
-          ],
-        ),
-        backgroundColor: colors,
-      ),
-    );
 }

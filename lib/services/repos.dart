@@ -277,7 +277,7 @@ class Repos {
       print("=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
       Authenticate authenticate = await getAuthenticate();
       _client.options.headers['api_key'] = authenticate.apiKey;
-      _client.options.headers['api_key'] = this.apiKey;
+//      _client.options.headers['api_key'] = this.apiKey;
       Response response = await _client.post('s1/growerp/100/Order', data: {
         'orderJson': orderToJson(order),
         'moquiSessionToken': sessionToken

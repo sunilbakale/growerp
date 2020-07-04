@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../services/repos.dart';
 
 class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
@@ -25,8 +24,6 @@ class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
         yield ChangePwFailure(message: result);
       else
         yield ChangePwOk();
-      Fluttertoast.showToast(
-          toastLength: Toast.LENGTH_LONG, msg: "Password updated!");
     }
   }
 }

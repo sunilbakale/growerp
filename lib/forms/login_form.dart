@@ -4,16 +4,19 @@ import 'package:flutter/foundation.dart';
 import '../models/@models.dart';
 import '../bloc/@bloc.dart';
 import '../services/repos.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../routing_constants.dart';
 import 'changePw_form.dart';
+import '../helper_functions.dart';
 
 class LoginForm extends StatelessWidget {
+  final String message;
+  const LoginForm({Key key, this.message}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    print("====login message: $message");
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context,false);
+          Navigator.pop(context, false);
           return false;
         },
         child: Scaffold(
@@ -29,14 +32,29 @@ class LoginForm extends StatelessWidget {
 }
 
 class LoginHeader extends StatefulWidget {
+  final String message;
+
+  const LoginHeader({Key key, this.message}) : super(key: key);
   @override
-  State<LoginHeader> createState() => _LoginHeaderState();
+  State<LoginHeader> createState() => _LoginHeaderState(message);
 }
 
 class _LoginHeaderState extends State<LoginHeader> {
+  final String message;
   final _formKey = GlobalKey<FormState>();
   Authenticate authenticate;
   bool _obscureText = true;
+
+  _LoginHeaderState(this.message);
+
+  @override
+  void initState() {
+    Future<Null>.delayed(Duration(milliseconds: 0), () {
+      if (message != null)
+        HelperFunctions.showMessage(context, '$message', Colors.green);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +64,7 @@ class _LoginHeaderState extends State<LoginHeader> {
             bloc: context.bloc<AuthBloc>(),
             listener: (context, state) {
               if (state is AuthAuthenticated) {
-                Navigator.pop(context,true);
+                Navigator.pop(context, true);
               }
               if (state is AuthConnectionProblem) {
                 Scaffold.of(context).showSnackBar(SnackBar(
@@ -57,10 +75,7 @@ class _LoginHeaderState extends State<LoginHeader> {
             }),
         BlocListener<LoginBloc, LoginState>(listener: (context, state) {
           if (state is LoginFailure) {
-            Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text('${state.error}'),
-              backgroundColor: Colors.red,
-            ));
+            HelperFunctions.showMessage(context, '${state.error}', Colors.red);
           }
           if (state is LoginChangePw) {
             Navigator.pushNamed(context, ChangePwRoute,
@@ -72,8 +87,7 @@ class _LoginHeaderState extends State<LoginHeader> {
           }
         }),
       ],
-      child: BlocBuilder<LoginBloc, LoginState>(
-        builder: (context, state) {
+      child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
           final _usernameController = TextEditingController()
             ..text = authenticate?.user?.name == null || kReleaseMode
                 ? 'admin@growerp.com'
@@ -81,7 +95,6 @@ class _LoginHeaderState extends State<LoginHeader> {
           final _passwordController = TextEditingController()
             ..text = kReleaseMode ? '' : 'qqqqqq9!';
           return Center(
-              // login screen
               child: SizedBox(
                   width: 400,
                   child: Form(
@@ -135,10 +148,13 @@ class _LoginHeaderState extends State<LoginHeader> {
                             }),
                         SizedBox(height: 30),
                         GestureDetector(
-                          child: Text('register new account'),
-                          onTap: () => Navigator.pushNamed(
-                              context, RegisterRoute,
-                              arguments: context.repository<Repos>()),
+                            child: Text('register new account'),
+                            onTap: () async {
+                              final dynamic result = await Navigator.pushNamed(
+                                  context, RegisterRoute);
+                              HelperFunctions.showMessage(
+                                  context, '$result', Colors.green);
+                            },
                         ),
                         SizedBox(height: 30),
                         GestureDetector(
@@ -154,10 +170,10 @@ class _LoginHeaderState extends State<LoginHeader> {
                               if (username != null) {
                                 BlocProvider.of<AuthBloc>(context)
                                     .add(ResetPassword(username: username));
-                                Fluttertoast.showToast(
-                                    toastLength: Toast.LENGTH_LONG,
-                                    msg:
-                                        "An email with password has been send to $username");
+                                HelperFunctions.showMessage(
+                                    context,
+                                    'An email with password has been send to $username',
+                                    Colors.green);
                               }
                             }),
                         Container(
