@@ -11,10 +11,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   final Repos repos;
   Authenticate authenticate;
 
-  CartBloc({@required this.repos});
-
-  @override
-  CartState get initialState => CartLoading();
+  CartBloc({@required this.repos}) : super(CartInitial());
 
   @override
   Stream<CartState> mapEventToState(CartEvent event) async* {
@@ -99,6 +96,8 @@ abstract class CartState extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class CartInitial extends CartState {}
 
 class CartLoading extends CartState {}
 

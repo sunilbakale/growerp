@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 import '../models/@models.dart';
 import '../services/repos.dart';
@@ -9,10 +8,7 @@ import '../services/repos.dart';
 class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   final Repos repos;
 
-  CatalogBloc({@required this.repos});
-
-  @override
-  CatalogState get initialState => CatalogLoading();
+  CatalogBloc({@required this.repos}) : super(CatalogInitial());
 
   @override
   Stream<CatalogState> mapEventToState(CatalogEvent event) async* {
@@ -43,12 +39,13 @@ class LoadCatalog extends CatalogEvent {
 @immutable
 abstract class CatalogState extends Equatable {
   const CatalogState();
-}
-
-class CatalogLoading extends CatalogState {
   @override
   List<Object> get props => [];
 }
+
+class CatalogInitial extends CatalogState {}
+
+class CatalogLoading extends CatalogState {}
 
 class CatalogLoaded extends CatalogState {
   final Catalog catalog;
@@ -59,7 +56,7 @@ class CatalogLoaded extends CatalogState {
   List<Object> get props => [catalog];
   @override
   String toString() =>
-      'CatalogLoaded, categories: ${catalog.categories.length}' + 
+      'CatalogLoaded, categories: ${catalog.categories.length}' +
       ' products: ${catalog.products.length}';
 }
 

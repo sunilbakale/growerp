@@ -8,14 +8,14 @@ import 'router.dart' as router;
 import 'forms/@forms.dart';
 
 void main() {
-  BlocSupervisor.delegate = SimpleBlocDelegate();
+  Bloc.observer = SimpleBlocObserver();
   final repos = Repos();
   runApp(RepositoryProvider(
     create: (context) => Repos(),
     child: MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(repos: repos)..add(AppStarted())),
+            create: (context) => AuthBloc(repos: repos)..add(StartAuth())),
         BlocProvider<CatalogBloc>(
             create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog())),
         BlocProvider<CartBloc>(
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: router.generateRoute,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthLoading || state is AppStarted) {
+            if (state is AuthLoading || state is AuthInitial) {
               return SplashForm();
             } else
               return HomeForm();
@@ -43,22 +43,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SimpleBlocDelegate extends BlocDelegate {
+class SimpleBlocObserver extends BlocObserver {
   @override
   void onEvent(Bloc bloc, Object event) {
-    print('${bloc.runtimeType} event: $event');
+    print(event);
     super.onEvent(bloc, event);
   }
 
   @override
-  void onError(Bloc bloc, Object error, StackTrace stackTrace) {
-    print('${bloc.runtimeType} error: $error');
-    super.onError(bloc, error, stackTrace);
+  void onTransition(Bloc bloc, Transition transition) {
+    print(transition);
+    super.onTransition(bloc, transition);
   }
 
   @override
-  void onTransition(Bloc bloc, Transition transition) {
-    print('$transition');
-    super.onTransition(bloc, transition);
+  void onError(Bloc bloc, Object error, StackTrace stackTrace) {
+    print(error);
+    super.onError(bloc, error, stackTrace);
   }
 }

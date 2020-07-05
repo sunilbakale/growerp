@@ -25,7 +25,7 @@ class ChangePwForm extends StatelessWidget {
           IconButton(
               icon: Icon(Icons.home),
               onPressed: () =>
-                  BlocProvider.of<AuthBloc>(context).add(AppStarted())),
+                  BlocProvider.of<AuthBloc>(context).add(StartAuth())),
         ],
       ),
       body: BlocProvider(

@@ -7,10 +7,9 @@ import '../services/repos.dart';
 class ChangePwBloc extends Bloc<ChangePwEvent, ChangePwState> {
   final Repos repos;
 
-  ChangePwBloc({@required this.repos})  : assert(repos != null);
-
-  @override
-  ChangePwState get initialState => ChangePwInitial();
+  ChangePwBloc({@required this.repos})
+      : assert(repos != null),
+        super(ChangePwInitial());
 
   @override
   Stream<ChangePwState> mapEventToState(ChangePwEvent event) async* {
@@ -61,6 +60,7 @@ abstract class ChangePwState extends Equatable {
 class ChangePwInitial extends ChangePwState {}
 
 class ChangePwInProgress extends ChangePwState {}
+
 class ChangePwOk extends ChangePwState {}
 
 class ChangePwFailure extends ChangePwState {

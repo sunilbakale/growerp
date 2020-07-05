@@ -14,10 +14,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     @required this.repos,
     @required this.authBloc,
   })  : assert(repos != null),
-        assert(authBloc != null);
-
-  @override
-  RegisterState get initialState => RegisterInitial();
+        assert(authBloc != null),
+        super(RegisterInitial());
 
   @override
   Stream<RegisterState> mapEventToState(RegisterEvent event) async* {
@@ -86,10 +84,12 @@ class RegisterButtonPressed extends RegisterEvent {
 abstract class RegisterState extends Equatable {
   const RegisterState();
 }
+
 class RegisterInitial extends RegisterState {
   @override
   List<Object> get props => [];
 }
+
 class RegisterLoading extends RegisterState {
   @override
   List<Object> get props => [];
@@ -102,9 +102,10 @@ class RegisterLoaded extends RegisterState {
   List<Object> get props => [currencies];
 
   @override
-  String toString() => currencies != null?
-      'RegisterLoaded { currencies size: ${currencies?.length},' +
-      ' first:${currencies[0].toString()}  }' : 'RegisterLoaded { no currencies found }';
+  String toString() => currencies != null
+      ? 'RegisterLoaded { currencies size: ${currencies?.length},' +
+          ' first:${currencies[0].toString()}  }'
+      : 'RegisterLoaded { no currencies found }';
 }
 
 class RegisterSubmitting extends RegisterState {

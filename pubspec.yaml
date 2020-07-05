@@ -10,7 +10,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   equatable: ^1.1.1
-  flutter_bloc: ^4.0.1
+  flutter_bloc: ^5.0.0
   dio: ^3.0.9
   money: ^0.2.1
   meta: ^1.1.6
@@ -23,7 +23,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   test_coverage: ^0.4.0
-  bloc_test: ^5.1.0
+  bloc_test: ^6.0.0
   flutter_launcher_icons: ^0.7.5
 # to run icons: flutter pub run flutter_launcher_icons:main 
 flutter_icons:

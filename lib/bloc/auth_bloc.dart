@@ -9,38 +9,38 @@ import '../models/@models.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Repos repos;
 
-  AuthBloc({@required this.repos}) : assert(repos != null);
+  AuthBloc({@required this.repos})
+      : assert(repos != null),
+        super(AuthInitial());
 
   @override
-  AuthState get initialState => AuthUninitialized();
-
-  @override
-  // actual repos.authentiate done by login bloc
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    if (event is AppStarted) {
+    if (event is StartAuth) {
       yield AuthLoading();
       final connected = await repos.getConnected();
       if (connected is String) {
         // contains string error message or true for connected
-        yield AuthConnectionProblem(errorMessage: connected);
+        yield AuthConnectionProblem(connected);
       } else {
         final Authenticate authenticate = await repos.getAuthenticate();
         if (authenticate?.apiKey != null) {
-          yield AuthAuthenticated(authenticate: authenticate);
+          yield AuthAuthenticated(authenticate);
         } else {
-          yield AuthUnauthenticated(authenticate: authenticate);
+          yield AuthUnauthenticated(authenticate);
         }
       }
     } else if (event is LoggedIn) {
       await repos.persistAuthenticate(event.authenticate);
-      yield AuthAuthenticated(authenticate: event.authenticate);
+      yield AuthAuthenticated(event.authenticate);
     } else if (event is Logout) {
       final Authenticate authenticate = await repos.logout();
-      yield AuthUnauthenticated(authenticate: authenticate);
+      yield AuthUnauthenticated(authenticate);
     } else if (event is ResetPassword) {
       await repos.resetPassword(username: event.username);
-    } else
-      yield AuthUnauthenticated();
+    } else {
+      final Authenticate authenticate = await repos.getAuthenticate();
+      yield AuthUnauthenticated(authenticate);
+    }
   }
 }
 
@@ -53,7 +53,7 @@ abstract class AuthEvent extends Equatable {
 
 class ConnectionProblem extends AuthEvent {}
 
-class AppStarted extends AuthEvent {}
+class StartAuth extends AuthEvent {}
 
 class Logout extends AuthEvent {}
 
@@ -86,19 +86,17 @@ class LoggingOut extends AuthEvent {
 
 //------------------------------state ------------------------------------
 abstract class AuthState extends Equatable {
-  const AuthState();
   @override
   List<Object> get props => [];
 }
 
-class AuthUninitialized extends AuthState {}
+class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
 class AuthConnectionProblem extends AuthState {
   final String errorMessage;
-  const AuthConnectionProblem({@required this.errorMessage})
-      : assert(errorMessage != null);
+  AuthConnectionProblem(this.errorMessage);
   @override
   List<Object> get props => [errorMessage];
   @override
@@ -107,8 +105,7 @@ class AuthConnectionProblem extends AuthState {
 
 class AuthAuthenticated extends AuthState {
   final Authenticate authenticate;
-  const AuthAuthenticated({@required this.authenticate})
-      : assert(authenticate != null);
+  AuthAuthenticated(this.authenticate);
   @override
   List<Object> get props => [authenticate];
   @override
@@ -117,7 +114,7 @@ class AuthAuthenticated extends AuthState {
 
 class AuthUnauthenticated extends AuthState {
   final Authenticate authenticate;
-  const AuthUnauthenticated({this.authenticate});
+  AuthUnauthenticated(this.authenticate);
   @override
   List<Object> get props => [authenticate];
   @override

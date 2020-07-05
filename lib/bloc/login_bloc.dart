@@ -10,10 +10,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc({
     @required this.repos,
-  })  : assert(repos != null);
-
-  @override
-  LoginState get initialState => LoginInitial();
+  })  : assert(repos != null),
+        super(LoginInitial());
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
@@ -26,8 +24,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (result is Authenticate) {
         yield LoginOk(authenticate: result);
       } else if (result == "passwordChange") {
-        yield LoginChangePw(
-          username: event.username, password: event.password);
+        yield LoginChangePw(username: event.username, password: event.password);
       } else {
         yield LoginFailure(error: result);
       }
