@@ -115,12 +115,13 @@ class _HomeState extends State<HomeBody> {
                             onPressed: () async {
                               if (await Navigator.pushNamed(
                                       context, LoginRoute) ==
-                                  true)
+                                  true) {
+                                Navigator.popAndPushNamed(context, HomeRoute,
+                                    arguments: 'Login Successful');
+                              } else {
                                 HelperFunctions.showMessage(
-                                    context, 'Login Successful', Colors.green);
-                              else
-                                HelperFunctions.showMessage(
-                                    context, 'Login failed', Colors.red);
+                                    context, 'Not logged in', Colors.green);
+                              }
                             }),
                       if (BlocProvider.of<AuthBloc>(context).state
                           is AuthAuthenticated)
@@ -130,8 +131,12 @@ class _HomeState extends State<HomeBody> {
                             onPressed: () => {
                                   BlocProvider.of<AuthBloc>(context)
                                       .add(Logout()),
-                                  HelperFunctions.showMessage(context,
-                                      'Logout Successful', Colors.green),
+                                  Future<Null>.delayed(
+                                      Duration(milliseconds: 300), () {
+                                    Navigator.popAndPushNamed(
+                                        context, HomeRoute,
+                                        arguments: 'Logout successful');
+                                  })
                                 })
                     ]),
                 body: SingleChildScrollView(

@@ -87,7 +87,8 @@ class _LoginHeaderState extends State<LoginHeader> {
           }
         }),
       ],
-      child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+      child: BlocBuilder<LoginBloc, LoginState>(
+        builder: (context, state) {
           final _usernameController = TextEditingController()
             ..text = authenticate?.user?.name == null || kReleaseMode
                 ? 'admin@growerp.com'
@@ -148,13 +149,13 @@ class _LoginHeaderState extends State<LoginHeader> {
                             }),
                         SizedBox(height: 30),
                         GestureDetector(
-                            child: Text('register new account'),
-                            onTap: () async {
-                              final dynamic result = await Navigator.pushNamed(
-                                  context, RegisterRoute);
-                              HelperFunctions.showMessage(
-                                  context, '$result', Colors.green);
-                            },
+                          child: Text('register new account'),
+                          onTap: () async {
+                            final dynamic result = await Navigator.pushNamed(
+                                context, RegisterRoute);
+                            HelperFunctions.showMessage(
+                                context, '$result', Colors.green);
+                          },
                         ),
                         SizedBox(height: 30),
                         GestureDetector(
