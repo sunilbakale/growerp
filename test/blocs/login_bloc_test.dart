@@ -11,46 +11,47 @@ class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
 
 void main() {
   MockReposRepository mockReposRepository;
-  MockAuthBloc mockAuthBloc;
+  MockAuthBloc authBloc;
 
   setUp(() {
     mockReposRepository = MockReposRepository();
-    mockAuthBloc = MockAuthBloc();
+    authBloc = MockAuthBloc();
   });
 
   tearDown(() {
-    mockAuthBloc?.close();
+    authBloc?.close();
   });
 
   group('Login bloc test', () {
     blocTest(
       'check initial state',
-      build: () async =>
-          LoginBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+      build: () async => LoginBloc(repos: mockReposRepository),
       expect: <AuthState>[],
     );
 
     blocTest('Login success',
-        build: () async =>
-            LoginBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+        build: () async => LoginBloc(repos: mockReposRepository),
         act: (bloc) async {
           when(mockReposRepository.login(username: email, password: password))
               .thenAnswer((_) async => authenticate);
           bloc.add(LoginButtonPressed(username: email, password: password));
-          whenListen(mockAuthBloc, Stream.fromIterable(
+          whenListen(
+              authBloc,
+              Stream.fromIterable(
                   <AuthEvent>[LoggedIn(authenticate: authenticate)]));
         },
-        expect: <LoginState>[LoginInProgress()]);
+        expect: <LoginState>[
+          LoginInProgress(),
+          LoginOk(authenticate: authenticate)
+        ]);
 
     blocTest(
       'Login failure',
-      build: () async =>
-          LoginBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+      build: () async => LoginBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.login(username: email, password: password))
+        when(mockReposRepository.login(username: username, password: password))
             .thenAnswer((_) async => errorMessage);
-        bloc.add(LoginButtonPressed(username: email, password: password));
-        whenListen(mockAuthBloc, Stream.fromIterable(<AuthEvent>[]));
+        bloc.add(LoginButtonPressed(username: username, password: password));
       },
       expect: <LoginState>[
         LoginInProgress(),
@@ -60,20 +61,19 @@ void main() {
 
     blocTest(
       'Login succes and change password',
-      build: () async =>
-          LoginBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+      build: () async => LoginBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.login(username: email, password: password))
+        when(mockReposRepository.login(username: username, password: password))
             .thenAnswer((_) async => "passwordChange");
-        bloc.add(LoginButtonPressed(username: email, password: password));
+        bloc.add(LoginButtonPressed(username: username, password: password));
         whenListen(
-            mockAuthBloc,
-            Stream.fromIterable(<AuthEvent>[
-              ChangePassword(username: email, oldPassword: password)
-            ]));
+            authBloc,
+            Stream.fromIterable(
+                <AuthEvent>[LoggedIn(authenticate: authenticate)]));
       },
       expect: <LoginState>[
         LoginInProgress(),
+        LoginChangePw(username: username, password: password),
       ],
     );
   });

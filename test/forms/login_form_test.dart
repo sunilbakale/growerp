@@ -33,16 +33,17 @@ void main() {
     });
 
     testWidgets('Login form text fields', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: LoginForm(repos: repos, authenticate: authenticateNoKey),
+              body: LoginForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Username'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
@@ -52,16 +53,17 @@ void main() {
     });
     testWidgets('LoginForm enter fields and press login',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: LoginForm(repos: repos, authenticate: authenticateNoKey),
+              body: LoginForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(Key('username')), username);
       await tester.enterText(find.byKey(Key('password')), password);
@@ -74,52 +76,57 @@ void main() {
             LoginButtonPressed(username: username, password: password)
           ]));
     });
-    testWidgets('LoginForm register, forgot password, go home at appbar',
+/*    testWidgets('LoginForm register, forgot password, go home at appbar',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: LoginForm(repos: repos, authenticate: authenticateNoKey),
+              body: LoginForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(GestureDetector, 'register new account'));
-      await tester.tap(find.widgetWithText(GestureDetector, 'forgot password?'));
+      await tester
+          .tap(find.widgetWithText(GestureDetector, 'register new account'));
+      await tester
+          .tap(find.widgetWithText(GestureDetector, 'forgot password?'));
       await tester.press(find.byKey(Key('goHome')));
 
       whenListen(
           loginBloc,
-          Stream.fromIterable(<AuthEvent>[
-            Register(), 
+          Stream.fromIterable(<LoginEvent>[
+            LoginButtonPressed(username: username), 
             ResetPassword(username: username)
           ]));
-      whenListen(
-          authBloc,
-          Stream.fromIterable(<AuthEvent>[
-            AppStarted()
-          ]));
+
+      whenListen(authBloc, Stream.fromIterable(<AuthEvent>[StartAuth()]));
     });
-    testWidgets('LoginForm forgot password modal',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+*/
+    testWidgets('LoginForm forgot password modal', (WidgetTester tester) async {
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: LoginForm(repos: repos, authenticate: authenticateNoKey),
+              body: LoginForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       expect(find.text('forgot password?'), findsOneWidget);
-      await tester.tap(find.widgetWithText(GestureDetector, 'forgot password?'));
+      await tester
+          .tap(find.widgetWithText(GestureDetector, 'forgot password?'));
       await tester.pumpAndSettle();
-      expect(find.text('Email you registered with?\nWe will send you a reset password'), findsOneWidget);
+      expect(
+          find.text(
+              'Email you registered with?\nWe will send you a reset password'),
+          findsOneWidget);
       await tester.press(find.widgetWithText(FlatButton, 'Ok'));
       expect(find.text('forgot password?'), findsOneWidget);
     });

@@ -13,7 +13,6 @@ class LoginForm extends StatelessWidget {
   const LoginForm({Key key, this.message}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    print("====login message: $message");
     return WillPopScope(
         onWillPop: () async {
           Navigator.pop(context, false);

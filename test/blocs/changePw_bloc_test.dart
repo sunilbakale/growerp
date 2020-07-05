@@ -8,43 +8,33 @@ import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
-
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); 
+  WidgetsFlutterBinding.ensureInitialized();
   MockReposRepository mockReposRepository;
-  MockAuthBloc mockAuthBloc;
 
   setUp(() {
     mockReposRepository = MockReposRepository();
-    mockAuthBloc = MockAuthBloc();
-  });
-
-  tearDown(() {
-    mockAuthBloc?.close();
   });
 
   group('ChangePassword bloc test', () {
     blocTest('check initial state',
-        build: () async =>
-            ChangePwBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+        build: () async => ChangePwBloc(repos: mockReposRepository),
         expect: <AuthState>[]);
 
     blocTest('ChangePw success',
-        build: () async =>
-            ChangePwBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
+        build: () async => ChangePwBloc(repos: mockReposRepository),
         act: (bloc) async {
           when(mockReposRepository.updatePassword(
                   username: username,
                   oldPassword: password,
                   newPassword: password))
-              .thenAnswer((_) async => authenticate);
+              .thenAnswer((_) async => authenticateNoKey);
           bloc.add(ChangePwButtonPressed(
-              username: username, oldPassword: password, newPassword: password));
-          whenListen(mockAuthBloc, Stream.fromIterable(<AuthEvent>[Login()]));
+              username: username,
+              oldPassword: password,
+              newPassword: password));
         },
-        expect: <ChangePwState>[ChangePwInProgress()]
-    );
+        expect: <ChangePwState>[ChangePwInProgress(), ChangePwOk()]);
 // cannot run see: https://stackoverflow.com/questions/57689492/flutter-unhandled-exception-servicesbinding-defaultbinarymessenger-was-accesse
 /*    blocTest('ChangePw failure',
         build: () async =>
@@ -64,5 +54,6 @@ void main() {
         ChangePwFailure(message: errorMessage)
       ],
     );
-*/  });
+*/
+  });
 }

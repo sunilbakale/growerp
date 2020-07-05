@@ -7,7 +7,6 @@ import 'package:growerp/services/repos.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
-class MockAuthBloc extends MockBloc<AuthEvent, int> implements AuthBloc {}
 
 void main() {
   MockReposRepository mockReposRepository;
@@ -17,108 +16,89 @@ void main() {
   });
 
   group('Authbloc test', () {
-
-    blocTest( 'check initial state',
+    blocTest(
+      'check initial state',
       build: () async => AuthBloc(repos: mockReposRepository),
-      expect: <AuthState> [],
+      expect: <AuthState>[],
     );
 
     blocTest<AuthBloc, AuthEvent, AuthState>(
       'succesful connection and Unauthenticated',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.getConnected())
-          .thenAnswer((_) async => true);
+        when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
-          .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(AppStarted());
+            .thenAnswer((_) async => authenticateNoKey);
+        bloc.add(StartAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthUnauthenticated(authenticate: authenticateNoKey),
+        AuthUnauthenticated(authenticateNoKey),
       ],
     );
-    blocTest('failed connection with ConnectionProblem',
+    blocTest(
+      'failed connection with ConnectionProblem',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.getConnected()).thenAnswer((_) async => errorMessage);
-        bloc.add(AppStarted());
+        when(mockReposRepository.getConnected())
+            .thenAnswer((_) async => errorMessage);
+        bloc.add(StartAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthConnectionProblem(errorMessage: errorMessage),
+        AuthConnectionProblem(errorMessage),
       ],
     );
-  
-    blocTest('succesfull connection and Authenticated',
+
+    blocTest(
+      'succesfull connection and Authenticated',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
-        when(mockReposRepository.getAuthenticate()).thenAnswer((_) async => authenticate);
+        when(mockReposRepository.getAuthenticate())
+            .thenAnswer((_) async => authenticate);
         authenticate.apiKey = 'dummyKey';
-        bloc.add(AppStarted());
+        bloc.add(StartAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthAuthenticated(authenticate: authenticate),
+        AuthAuthenticated(authenticate),
       ],
     );
-    blocTest('connection and login and logout',
+    blocTest(
+      'connection and login and logout',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.getConnected())
-          .thenAnswer((_) async => true);
+        when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
-          .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(AppStarted());
-        bloc.add(Login());
+            .thenAnswer((_) async => authenticateNoKey);
+        when(mockReposRepository.logout())
+            .thenAnswer((_) async => authenticateNoKey);
+        bloc.add(StartAuth());
         bloc.add(LoggedIn(authenticate: authenticate));
         bloc.add(Logout());
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthUnauthenticated(authenticate: authenticateNoKey),
-        AuthLogin(authenticate: authenticate),
-        AuthAuthenticated(authenticate: authenticate),
-        AuthUnauthenticated(),
+        AuthUnauthenticated(authenticateNoKey),
+        AuthAuthenticated(authenticate),
+        AuthUnauthenticated(authenticateNoKey),
       ],
     );
     blocTest(
       'succesful connection and register',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.getConnected())
-          .thenAnswer((_) async => true);
+        when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
-          .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(AppStarted());
-        bloc.add(Register());
-        bloc.add(Login());
+            .thenAnswer((_) async => authenticateNoKey);
+        bloc.add(StartAuth());
+        bloc.add(LoggedIn(authenticate: authenticate));
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthUnauthenticated(authenticate: authenticateNoKey),
-        AuthRegister(),
-        AuthLogin(authenticate: authenticateNoKey),
-      ],
-    );
-    blocTest(
-      'succesful connection and change password',
-      build: () async => AuthBloc(repos: mockReposRepository),
-      act: (bloc) async {
-        when(mockReposRepository.getConnected())
-          .thenAnswer((_) async => true);
-        when(mockReposRepository.getAuthenticate())
-          .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(AppStarted());
-        bloc.add(ChangePassword(username: 'dummyEmail', oldPassword: 'dummyPassword'));
-        bloc.add(Login());
-      },
-      expect: <AuthState>[
-        AuthLoading(),
-        AuthUnauthenticated(authenticate: authenticateNoKey),
-        AuthChangePassword(username: 'dummyEmail', oldPassword: 'dummyPassword'),
-        AuthLogin(authenticate: authenticateNoKey),
+        AuthUnauthenticated(authenticateNoKey),
+        AuthAuthenticated(authenticate),
       ],
     );
 
@@ -127,27 +107,18 @@ void main() {
       'succesful connection login screen and reset password',
       build: () async => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.getConnected())
-          .thenAnswer((_) async => true);
+        when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
-          .thenAnswer((_) async => authenticateNoKey);
+            .thenAnswer((_) async => authenticateNoKey);
         when(mockReposRepository.resetPassword(username: 'dummyEmail'))
-          .thenAnswer((_) async => result);
-        bloc.add(AppStarted());
-        bloc.add(Login());
+            .thenAnswer((_) async => result);
+        bloc.add(StartAuth());
         await bloc.add(ResetPassword(username: 'dummyEmail'));
-//        result = "error message";
-        bloc.add(Login());
       },
       expect: <AuthState>[
         AuthLoading(),
-        AuthUnauthenticated(authenticate: authenticateNoKey),
-        AuthLogin(authenticate: authenticateNoKey),
-        AuthLoading(),
-        AuthLogin(authenticate: authenticateNoKey),
+        AuthUnauthenticated(authenticateNoKey),
       ],
     );
-
-
   });
 }

@@ -13,12 +13,12 @@ void main() {
   setUp(() {
     mockReposRepository = MockReposRepository();
   });
-  
-  group('First catalog test', () {
 
-    blocTest( 'check initial state',
+  group('First catalog test', () {
+    blocTest(
+      'check initial state',
       build: () async => CatalogBloc(repos: mockReposRepository),
-      expect: <AuthState> [],
+      expect: <AuthState>[],
     );
 
     blocTest(
@@ -26,10 +26,11 @@ void main() {
       build: () async => CatalogBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCatalog(companyPartyId: "100001"))
-          .thenAnswer((_) async => catalog);
+            .thenAnswer((_) async => catalog);
         bloc.add(LoadCatalog());
       },
       expect: <CatalogState>[
+        CatalogLoading(),
         CatalogLoaded(catalog),
       ],
     );
@@ -38,13 +39,13 @@ void main() {
       build: () async => CatalogBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCatalog(companyPartyId: "100001"))
-          .thenAnswer((_) async => errorMessage);
+            .thenAnswer((_) async => errorMessage);
         bloc.add(LoadCatalog());
       },
       expect: <CatalogState>[
+        CatalogLoading(),
         CatalogError(errorMessage),
       ],
     );
-
   });
 }

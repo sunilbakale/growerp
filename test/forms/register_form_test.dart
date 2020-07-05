@@ -34,16 +34,17 @@ void main() {
 
     testWidgets('Register form text fields + Load register event',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: RegisterForm(repos: repos),
+              body: RegisterForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       expect(find.text('A temporary password will be send by email'),
           findsOneWidget);
@@ -54,16 +55,17 @@ void main() {
     testWidgets('RegisterForm enter fields and press register',
         (WidgetTester tester) async {
       when(registerBloc.state).thenReturn(RegisterLoaded(currencies));
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: RegisterForm(repos: repos),
+              body: RegisterForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(Key('companyName')), companyName);
 //      await tester.enterText(find.byType(DropdownButton), currencyId);
@@ -73,7 +75,8 @@ void main() {
       await tester.tap(find.widgetWithText(RaisedButton, 'Register'));
       await tester.pumpAndSettle();
       whenListen(
-          registerBloc, Stream.fromIterable(<RegisterEvent>[
+          registerBloc,
+          Stream.fromIterable(<RegisterEvent>[
             LoadRegister(),
             RegisterButtonPressed(
                 companyName: companyName,
@@ -81,26 +84,25 @@ void main() {
                 firstName: firstName,
                 lastName: lastName,
                 email: email)
-            ]));
+          ]));
     });
     testWidgets('RegisterForm register, forgot password ',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<AuthBloc>.value(
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
             home: Scaffold(
-              body: RegisterForm(repos: repos),
+              body: RegisterForm(),
             ),
           ),
         ),
-      );
+      ));
       await tester.pumpAndSettle();
 
-      whenListen(
-          registerBloc,
-          Stream.fromIterable(
-              <AuthEvent>[Register(), ResetPassword(username: username)]));
+      whenListen(registerBloc,
+          Stream.fromIterable(<AuthEvent>[ResetPassword(username: username)]));
     });
   });
 }
