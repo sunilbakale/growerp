@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
 class SimpleBlocObserver extends BlocObserver {
   @override
   void onEvent(Bloc bloc, Object event) {
-    print(event);
+    print("event: $event: ");
     super.onEvent(bloc, event);
   }
 
@@ -58,7 +58,7 @@ class SimpleBlocObserver extends BlocObserver {
 
   @override
   void onError(Bloc bloc, Object error, StackTrace stackTrace) {
-    print(error);
+    print("error: $error");
     super.onError(bloc, error, stackTrace);
   }
 }

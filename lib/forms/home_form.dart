@@ -295,7 +295,7 @@ class _HomeState extends State<HomeBody> {
                   ))),
           Padding(
             padding: const EdgeInsets.only(left: 10),
-            child: Text(product.price.toString(),
+            child: Text("${product.price.toString()} ",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,

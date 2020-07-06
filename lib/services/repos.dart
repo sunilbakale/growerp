@@ -77,7 +77,8 @@ class Repos {
       }
       if (e.response is Response &&
           e.response?.data != null &&
-          (e.response?.data['errorCode'] == 400 || e.response?.data['errorCode'] == 403)) {
+          (e.response?.data['errorCode'] == 400 ||
+              e.response?.data['errorCode'] == 403)) {
         print('''Moqui data... errorCode: ${e.response.data['errorCode']}
             errors: ${e.response.data['errors']}''');
         errorDescription = e.response.data['errors'];
@@ -127,8 +128,7 @@ class Repos {
         'moquiSessionToken': this.sessionToken
       });
       dynamic result = jsonDecode(response.toString());
-      if (result['passwordChange'] == 'true')
-        return 'passwordChange';
+      if (result['passwordChange'] == 'true') return 'passwordChange';
       this.apiKey = result['apiKey'];
       this.sessionToken = result['moquiSessionToken'];
       return authenticateFromJson(response.toString());
@@ -166,7 +166,7 @@ class Repos {
 
   Future<dynamic> logout() async {
     this.apiKey = null;
-   _client.options.headers['api_key'] = this.apiKey;
+    _client.options.headers['api_key'] = this.apiKey;
     try {
       await _client.post('logout');
       Authenticate authenticate = await getAuthenticate();
@@ -235,18 +235,20 @@ class Repos {
     }
   }
 
-  Future<dynamic> getOrder() async {
+  Future<dynamic> getCart() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String orderJson = prefs.getString('orderAndItems');
       if (orderJson != null) return orderFromJson(orderJson);
-      return null;
+      Authenticate auth = await getAuthenticate();
+      return Order(
+          currencyId: auth?.company?.currencyId ?? 'USD', orderItems: []);
     } catch (e) {
       return responseMessage(e);
     }
   }
 
-  Future<dynamic> saveOrder({Order order}) async {
+  Future<dynamic> saveCart({Order order}) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString(
@@ -274,7 +276,8 @@ class Repos {
 //      String basicAuth =
 //          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
 //      _client.options.headers['authorization'] = basicAuth;
-      print("=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
+      print(
+          "=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
       Authenticate authenticate = await getAuthenticate();
       _client.options.headers['api_key'] = authenticate.apiKey;
 //      _client.options.headers['api_key'] = this.apiKey;

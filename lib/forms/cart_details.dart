@@ -140,7 +140,7 @@ class CartItem extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 style: TextStyle(color: Colors.black, fontSize: 16)),
           ),
-          Text((quantity * product.price.amount).toStringAsFixed(2),
+          Text((quantity * product.price).toStringAsFixed(2),
               style: TextStyle(color: Colors.black, fontSize: 16)),
         ],
       ),

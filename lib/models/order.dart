@@ -3,17 +3,16 @@
 //     final order = orderFromJson(jsonString);
 
 import 'dart:convert';
-import 'package:money/money.dart';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str));
 
 String orderToJson(Order data) => json.encode(data.toJson());
 
-class Order { 
+class Order {
   Order({
     this.orderId,
     this.orderStatusId, // 'OrderOpen','OrderPlaced','OrderApproved', 'OrderCompleted', 'OrderCancelled'
-    this.currencyUomId,
+    this.currencyId,
     this.placedDate,
     this.placedTime,
     this.partyId,
@@ -29,7 +28,7 @@ class Order {
 
   String orderId;
   String orderStatusId;
-  String currencyUomId;
+  String currencyId;
   String placedDate;
   String placedTime;
   String partyId;
@@ -45,14 +44,14 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) => Order(
         orderId: json["orderId"],
         orderStatusId: json["orderStatusId"],
-        currencyUomId: json["currencyUomId"],
+        currencyId: json["currencyUomId"],
         placedDate: json["placedDate"],
         placedTime: json["placedTime"],
         partyId: json["partyId"],
         firstName: json["firstName"],
         lastName: json["lastName"],
         statusId: json["statusId"],
-        grandTotal: json["grandTotal"]?.toDouble(),
+        grandTotal: json["grandTotal"],
         accommodationAreaId: json["accommodationAreaId"],
         accommodationSpotId: json["accommodationSpotId"],
         orderItems: List<OrderItem>.from(
@@ -62,7 +61,7 @@ class Order {
   Map<String, dynamic> toJson() => {
         "orderId": orderId,
         "orderStatusId": orderStatusId,
-        "currencyUomId": currencyUomId,
+        "currencyUomId": currencyId,
         "placedDate": placedDate,
         "placedTime": placedTime,
         "partyId": partyId,
@@ -90,24 +89,20 @@ class OrderItem {
   String productId;
   String description;
   int quantity;
-  Money price;
+  double price;
 
   factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-        orderItemSeqId: json["orderItemSeqId"],
-        productId: json["productId"],
-        description: json["description"],
-        quantity: json["quantity"],
-        price: json["price"].indexOf('.') != -1 && json["price"].indexOf('.') == json["price"].length - 2?
-          Money.fromString(json["price"]+'0', Currency(json["currencyId"])):
-          Money.fromString(json["price"], Currency(json["currencyId"])),
-      );
+      orderItemSeqId: json["orderItemSeqId"],
+      productId: json["productId"],
+      description: json["description"],
+      quantity: json["quantity"],
+      price: double.parse(json["price"]));
 
   Map<String, dynamic> toJson() => {
         "orderItemSeqId": orderItemSeqId,
         "productId": productId,
         "description": description,
         "quantity": quantity,
-        "currencyId": price.currency.toString(),
-        "price": price.amount.toString(),
+        "price": price
       };
 }

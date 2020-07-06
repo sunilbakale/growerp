@@ -350,13 +350,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.1"
-  money:
-    dependency: "direct main"
-    description:
-      name: money
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.1"
   nested:
     dependency: transitive
     description:

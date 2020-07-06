@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:growerp/bloc/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import 'package:growerp/forms/@forms.dart';
+import 'package:growerp/router.dart' as router;
 import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}
@@ -16,7 +17,7 @@ class MockLoginBloc extends MockBloc<LoginEvent, LoginState>
     implements LoginBloc {}
 
 void main() {
-  group('Login_Form', () {
+  group('Login_Form test:', () {
     Repos repos;
     LoginBloc loginBloc;
     AuthBloc authBloc;
@@ -32,7 +33,7 @@ void main() {
       authBloc?.close();
     });
 
-    testWidgets('Login form text fields', (WidgetTester tester) async {
+    testWidgets('check text fields', (WidgetTester tester) async {
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -51,8 +52,7 @@ void main() {
       expect(find.text('register new account'), findsOneWidget);
       expect(find.text('forgot password?'), findsOneWidget);
     });
-    testWidgets('LoginForm enter fields and press login',
-        (WidgetTester tester) async {
+    testWidgets('enter fields and press login', (WidgetTester tester) async {
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -76,42 +76,31 @@ void main() {
             LoginButtonPressed(username: username, password: password)
           ]));
     });
-/*    testWidgets('LoginForm register, forgot password, go home at appbar',
-        (WidgetTester tester) async {
+    testWidgets('register', (WidgetTester tester) async {
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
             home: Scaffold(
               body: LoginForm(),
             ),
           ),
         ),
       ));
-      await tester.pumpAndSettle();
       await tester
           .tap(find.widgetWithText(GestureDetector, 'register new account'));
-      await tester
-          .tap(find.widgetWithText(GestureDetector, 'forgot password?'));
-      await tester.press(find.byKey(Key('goHome')));
-
-      whenListen(
-          loginBloc,
-          Stream.fromIterable(<LoginEvent>[
-            LoginButtonPressed(username: username), 
-            ResetPassword(username: username)
-          ]));
-
-      whenListen(authBloc, Stream.fromIterable(<AuthEvent>[StartAuth()]));
+      await tester.pumpAndSettle();
+      expect(find.text('Business name'), findsOneWidget);
     });
-*/
-    testWidgets('LoginForm forgot password modal', (WidgetTester tester) async {
+    testWidgets('forgot password', (WidgetTester tester) async {
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
           value: authBloc,
           child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
             home: Scaffold(
               body: LoginForm(),
             ),

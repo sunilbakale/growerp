@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:money/money.dart';
 import '../models/@models.dart';
 import '../services/repos.dart';
 
@@ -24,7 +23,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       dynamic result = await repos.createOrder(order: event.order);
       if (result is String && result.startsWith('orderId')) {
         yield CartPaid(orderId: result.substring(7));
-        repos.saveOrder(order: null);
+        repos.saveCart(order: null);
         yield* _mapLoadCartToState();
       } else
         yield CartError(message: result);
@@ -33,18 +32,19 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Stream<CartState> _mapLoadCartToState() async* {
     yield CartLoading();
-    dynamic order = await repos.getOrder();
+    dynamic order = await repos.getCart();
     if (order is String) {
       yield CartError(message: order);
     } else {
       if (order == null) {
-        // no order yet to create
+        Authenticate authenticate = await repos.getAuthenticate();
         order = Order(
           orderStatusId: "OrderOpen",
           partyId: authenticate?.user?.partyId,
           firstName: authenticate?.user?.firstName,
           lastName: authenticate?.user?.lastName,
           statusId: "Open",
+          currencyId: authenticate?.company?.currencyId,
           orderItems: [],
         );
       }
@@ -56,7 +56,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final currentState = state;
     if (currentState is CartLoaded) {
       currentState.order.orderItems.add(event.orderItem);
-      dynamic result = await repos.saveOrder(order: currentState.order);
+      dynamic result = await repos.saveCart(order: currentState.order);
       if (result is String)
         yield CartError(message: result);
       else
@@ -104,9 +104,9 @@ class CartLoading extends CartState {}
 class CartLoaded extends CartState {
   final Order order;
   const CartLoaded({this.order});
-  Money get totalPrice {
-    if (order.orderItems.length == 0) return null;
-    Money total = Money.fromString("0.00", order.orderItems[0].price.currency);
+  double get totalPrice {
+    if (order.orderItems.length == 0) return 0.00;
+    double total = 0.00;
     for (OrderItem i in order.orderItems) total += (i.price * i.quantity);
     return total;
   }
