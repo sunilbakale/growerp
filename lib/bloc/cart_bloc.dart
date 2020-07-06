@@ -105,31 +105,28 @@ class CartLoaded extends CartState {
   final Order order;
   const CartLoaded({this.order});
   double get totalPrice {
-    if (order.orderItems.length == 0) return 0.00;
+    if (order?.orderItems?.length == 0) return 0.00;
     double total = 0.00;
-    for (OrderItem i in order.orderItems) total += (i.price * i.quantity);
+    if (order != null)
+      for (OrderItem i in order?.orderItems) total += (i.price * i.quantity);
     return total;
   }
 
   @override
-  List<Object> get props => [order.orderItems];
+  List<Object> get props => [order];
   @override
   String toString() =>
       'Cart loaded, products: ' +
-      '${order.orderItems?.length} value: $totalPrice';
+      '${order?.orderItems?.length} value: $totalPrice';
 }
 
-class CartPaying extends CartState {
-  final Order order;
-  const CartPaying({this.order});
-  @override
-  List<Object> get props => [order];
-}
+class CartPaying extends CartState {}
 
 class CartPaid extends CartState {
   final String orderId;
   const CartPaid({this.orderId});
   List<Object> get props => [orderId];
+  String toString() => 'Cart Paid, orderId : $orderId';
 }
 
 class CartError extends CartState {

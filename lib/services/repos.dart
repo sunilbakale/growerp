@@ -240,9 +240,7 @@ class Repos {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String orderJson = prefs.getString('orderAndItems');
       if (orderJson != null) return orderFromJson(orderJson);
-      Authenticate auth = await getAuthenticate();
-      return Order(
-          currencyId: auth?.company?.currencyId ?? 'USD', orderItems: []);
+      return null;
     } catch (e) {
       return responseMessage(e);
     }

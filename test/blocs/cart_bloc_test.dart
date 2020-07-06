@@ -33,7 +33,7 @@ void main() {
       ],
     );
     blocTest(
-      'Cart load error',
+      'load error',
       build: () async => CartBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCart())
@@ -43,6 +43,35 @@ void main() {
       expect: <CartState>[
         CartLoading(),
         CartError(message: errorMessage),
+      ],
+    );
+    blocTest(
+      'load, add, pay',
+      build: () async => CartBloc(repos: mockReposRepository),
+      act: (bloc) async {
+        when(mockReposRepository.getCart()).thenAnswer((_) async => emptyOrder);
+        bloc.add(LoadCart());
+        when(mockReposRepository.saveCart(order: totalOrder))
+            .thenAnswer((_) async => null);
+        bloc.add(AddOrderItem(orderItem1));
+        when(mockReposRepository.saveCart(order: totalOrder))
+            .thenAnswer((_) async => null);
+        bloc.add(AddOrderItem(orderItem2));
+        when(mockReposRepository.createOrder(order: totalOrder))
+            .thenAnswer((_) async => 'orderId222222');
+        when(mockReposRepository.saveCart(order: null))
+            .thenAnswer((_) async => null);
+        when(mockReposRepository.getCart()).thenAnswer((_) async => emptyOrder);
+        bloc.add(PayOrder(totalOrder));
+      },
+//      wait: const Duration(milliseconds: 800),
+      expect: <CartState>[
+        CartLoading(),
+        CartLoaded(order: emptyOrder),
+        CartPaying(),
+        CartPaid(orderId: '222222'),
+        CartLoading(),
+        CartLoaded(order: emptyOrder),
       ],
     );
   });

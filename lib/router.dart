@@ -15,7 +15,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => ProductForm(product: settings.arguments));
     case LoginRoute:
       final String message = settings.arguments;
-      print("====router message: $message");
       return MaterialPageRoute(
           builder: (context) => LoginForm(message: message));
     case RegisterRoute:

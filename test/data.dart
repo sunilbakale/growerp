@@ -47,7 +47,11 @@ final Catalog catalog = catalogFromJson('''
       ]
     }
     ''');
-
+final Product product = productFromJson('''
+      {"productId": "secondProduct", "name": "This is the second product",
+      "currencyId": "USD",
+      "price": "17.13", "productCategoryId": "dummyFirstCategory"}
+''');
 final CurrencyList currencyList = currencyListFromJson('''
   { "currencyList" : currencies } ''');
 final String currencyId = 'United States Dollar [USD]';
@@ -67,3 +71,15 @@ final Order order = orderFromJson('''
    ]}
 ''');
 final Order emptyOrder = Order(currencyId: 'THB', orderItems: []);
+final OrderItem orderItem1 = OrderItem(
+    productId: "dummyFirstProduct",
+    description: "This is the first product",
+    quantity: 5,
+    price: 3.3);
+final OrderItem orderItem2 = OrderItem(
+    productId: "dummySecondProduct",
+    description: "This is the second product",
+    quantity: 3,
+    price: 2.2);
+final Order totalOrder =
+    Order(currencyId: 'THB', orderItems: [orderItem1, orderItem2]);

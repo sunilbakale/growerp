@@ -51,7 +51,7 @@ class Order {
         firstName: json["firstName"],
         lastName: json["lastName"],
         statusId: json["statusId"],
-        grandTotal: json["grandTotal"],
+        grandTotal: double.parse(json["grandTotal"]),
         accommodationAreaId: json["accommodationAreaId"],
         accommodationSpotId: json["accommodationSpotId"],
         orderItems: List<OrderItem>.from(
