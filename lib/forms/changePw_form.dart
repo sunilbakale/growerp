@@ -94,6 +94,7 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                       Text("username: $username"),
                       SizedBox(height: 20),
                       TextFormField(
+                        key: Key("password1"),
                         autofocus: true,
                         controller: _password1Controller,
                         obscureText: _obscureText1,
@@ -124,6 +125,7 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        key: Key("password2"),
                         obscureText: _obscureText2,
                         decoration: InputDecoration(
                           labelText: 'Verify Password',
@@ -152,7 +154,6 @@ class _ChangePwEntryState extends State<ChangePwEntry> {
                       RaisedButton(
                           child: Text('Submit new Password'),
                           onPressed: () {
-                            print("change password current state: $state");
                             if (_formKey.currentState.validate() &&
                                 state is ChangePwInitial)
                               BlocProvider.of<ChangePwBloc>(context).add(

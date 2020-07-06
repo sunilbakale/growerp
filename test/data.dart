@@ -25,6 +25,7 @@ final String firstName = 'dummyFirstName';
 final String lastName = 'dummylastName';
 final String username = 'dummyUsername';
 final String password = 'dummyPassword';
+final String newPassword = 'dummyNewPassword9!';
 final String email = 'dummy@example.com';
 
 final Catalog emptyCatalog = Catalog(categories: [], products: []);
