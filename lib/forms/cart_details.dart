@@ -128,7 +128,7 @@ class CartItem extends StatelessWidget {
           CircleAvatar(
             radius: 22,
             backgroundColor: Colors.black,
-            backgroundImage: AssetImage(product.image),
+            backgroundImage: AssetImage(product.image.toString()),
           ),
           Text(quantity.toString(),
               style: TextStyle(color: Colors.black, fontSize: 16)),

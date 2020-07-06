@@ -27,29 +27,30 @@ final String username = 'dummyUsername';
 final String password = 'dummyPassword';
 final String email = 'dummy@example.com';
 
+final Catalog emptyCatalog = Catalog(categories: [], products: []);
 final Catalog catalog = catalogFromJson('''
     { "categories": [ 
-      {"productCategoryId": "dummyFirstCategory", "categoryName": "This is the first category",
-      "description": "this is the long description of category first"},
+      {"productCategoryId": "dummyFirstCategory", "categoryName": "1stCat",
+      "description": "this is the long description of category first", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="},
       {"productCategoryId": "secondCategory", "categoryName": "This is the second category",
-      "description": "this is the long description of category second"}
+      "description": "this is the long description of category second", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="}
       ],
       "products": [
       {"productId": "dummyFirstProduct", "name": "This is the first product",
-      "currencyId": "USD",
+      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
       "price": "23.99", "productCategoryId": "dummyFirstCategory"},
       {"productId": "secondProduct", "name": "This is the second product",
-      "currencyId": "USD",
+      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
       "price": "17.13", "productCategoryId": "dummyFirstCategory"},
       {"productId": "thirdProduct", "name": "This is the third product",
-      "currencyId": "USD",
+      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
       "price": "12.33", "productCategoryId": "secondCategory"}
       ]
     }
     ''');
 final Product product = productFromJson('''
       {"productId": "secondProduct", "name": "This is the second product",
-      "currencyId": "USD",
+      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
       "price": "17.13", "productCategoryId": "dummyFirstCategory"}
 ''');
 final CurrencyList currencyList = currencyListFromJson('''

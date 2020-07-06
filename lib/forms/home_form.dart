@@ -80,7 +80,7 @@ class _HomeState extends State<HomeBody> {
                   }),
               SizedBox(height: 100),
               RaisedButton(
-                  child: Text(state.errorMessage + '\nRegister?'),
+                  child: Text(state.errorMessage + '\nRegister Company?'),
                   onPressed: () => Navigator.pushNamed(context, RegisterRoute)),
             ]));
           } else if (state is CatalogLoaded) {

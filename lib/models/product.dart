@@ -15,7 +15,7 @@ class Product extends Equatable {
   final String name;
   final double price;
   final String productCategoryId;
-  final image;
+  final MemoryImage image;
 
   Product({
     this.productId,
@@ -32,15 +32,14 @@ class Product extends Equatable {
       productCategoryId: json["productCategoryId"],
       image: json["image"] != null && json["image"].indexOf('data:image') == 0
           ? MemoryImage(base64.decode(json["image"].substring(22)))
-          : MemoryImage(base64.decode(
-              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==")));
+          : MemoryImage(base64.decode("R0lGODlhAQABAAAAACwAAAAAAQABAAA=")));
 
   Map<String, dynamic> toJson() => {
         "productId": productId,
         "name": name,
         "price": price,
         "productCategoryId": productCategoryId,
-        "image": image,
+        "image": image.toString(),
       };
 
   @override
