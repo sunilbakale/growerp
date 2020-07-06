@@ -48,7 +48,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           orderItems: [],
         );
       }
-      yield CartLoaded(order: order);
+      yield CartLoaded(order);
     }
   }
 
@@ -60,7 +60,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       if (result is String)
         yield CartError(message: result);
       else
-        yield CartLoaded(order: currentState.order);
+        yield CartLoaded(currentState.order);
     }
   }
 }
@@ -103,7 +103,7 @@ class CartLoading extends CartState {}
 
 class CartLoaded extends CartState {
   final Order order;
-  const CartLoaded({this.order});
+  const CartLoaded(this.order);
   double get totalPrice {
     if (order?.orderItems?.length == 0) return 0.00;
     double total = 0.00;

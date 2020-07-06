@@ -68,7 +68,7 @@ final Order order = orderFromJson('''
   "orderItems": [
   { "orderItemSeqId": "01", "productId": null, "description": "Cola",
     "quantity": "5", "price": "1.5"},
-  { "orderItemSeqId": "01", "productId": null, "description": "Macaroni",
+  { "orderItemSeqId": "02", "productId": null, "description": "Macaroni",
     "quantity": "3", "price": "4.5"}
    ]}
 ''');

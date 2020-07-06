@@ -95,14 +95,14 @@ class OrderItem {
       orderItemSeqId: json["orderItemSeqId"],
       productId: json["productId"],
       description: json["description"],
-      quantity: json["quantity"],
+      quantity: int.parse(json["quantity"]),
       price: double.parse(json["price"]));
 
   Map<String, dynamic> toJson() => {
         "orderItemSeqId": orderItemSeqId,
         "productId": productId,
         "description": description,
-        "quantity": quantity,
-        "price": price
+        "quantity": quantity.toString(),
+        "price": price.toString()
       };
 }

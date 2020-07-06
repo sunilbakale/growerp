@@ -29,7 +29,7 @@ void main() {
       },
       expect: <CartState>[
         CartLoading(),
-        CartLoaded(order: emptyOrder),
+        CartLoaded(emptyOrder),
       ],
     );
     blocTest(
@@ -67,11 +67,11 @@ void main() {
 //      wait: const Duration(milliseconds: 800),
       expect: <CartState>[
         CartLoading(),
-        CartLoaded(order: emptyOrder),
+        CartLoaded(emptyOrder),
         CartPaying(),
         CartPaid(orderId: '222222'),
         CartLoading(),
-        CartLoaded(order: emptyOrder),
+        CartLoaded(emptyOrder),
       ],
     );
   });
