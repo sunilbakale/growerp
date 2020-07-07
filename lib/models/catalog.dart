@@ -10,23 +10,26 @@ Catalog catalogFromJson(String str) => Catalog.fromJson(json.decode(str));
 String catalogToJson(Catalog data) => json.encode(data.toJson());
 
 class Catalog {
+  Company company;
   List<Category> categories;
   List<Product> products;
 
   Catalog({
+    this.company,
     this.categories,
     this.products,
   });
 
   Category getByCategoryId(String id) =>
       categories.firstWhere((element) => element.productCategoryId == id);
-  Category getByCategoryPosition(int position) => categories[position%2];
+  Category getByCategoryPosition(int position) => categories[position % 2];
 
   Product getByProductId(String id) =>
       products.firstWhere((element) => element.productId == id);
-  Product getByProductPosition(int position) => products[position%2];
+  Product getByProductPosition(int position) => products[position % 2];
 
   factory Catalog.fromJson(Map<String, dynamic> json) => Catalog(
+        company: Company.fromJson(json["company"]),
         categories: List<Category>.from(
             json["categories"].map((x) => Category.fromJson(x))),
         products: List<Product>.from(
@@ -34,6 +37,7 @@ class Catalog {
       );
 
   Map<String, dynamic> toJson() => {
+        "company": company.toJson(),
         "categories": List<dynamic>.from(categories.map((x) => x.toJson())),
         "products": List<dynamic>.from(products.map((x) => x.toJson())),
       };

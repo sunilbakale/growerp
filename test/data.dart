@@ -30,30 +30,36 @@ final String email = 'dummy@example.com';
 
 final Catalog emptyCatalog = Catalog(categories: [], products: []);
 final Catalog catalog = catalogFromJson('''
-    { "categories": [ 
+    { "company": {"name": "Dummy Company Name",
+                        "currency": "dummyCurrency"},
+      "categories": [ 
       {"productCategoryId": "dummyFirstCategory", "categoryName": "1stCat",
-      "description": "this is the long description of category first", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="},
+      "description": "this is the long description of category first", 
+      "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="},
       {"productCategoryId": "secondCategory", "categoryName": "This is the second category",
-      "description": "this is the long description of category second", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="}
-      ],
+      "description": "this is the long description of category second",
+      "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA="}],
       "products": [
       {"productId": "dummyFirstProduct", "name": "This is the first product",
-      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
-      "price": "23.99", "productCategoryId": "dummyFirstCategory"},
+      "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
+      "price": "23.99", "productCategoryId": "dummyFirstCategory",
+      "description": "This is a dummy description of first product"},
       {"productId": "secondProduct", "name": "This is the second product",
-      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
-      "price": "17.13", "productCategoryId": "dummyFirstCategory"},
+       "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
+       "price": "17.13", "productCategoryId": "dummyFirstCategory",
+       "description": "This is a dummy description of second product"},
       {"productId": "thirdProduct", "name": "This is the third product",
-      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
-      "price": "12.33", "productCategoryId": "secondCategory"}
-      ]
+       "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
+       "price": "12.33", "productCategoryId": "secondCategory",
+       "description": "This is a dummy description of third product"}]
     }
     ''');
 final Product product = productFromJson('''
       {"productId": "secondProduct", "name": "This is the second product",
-      "currencyId": "USD", "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
-      "price": "17.13", "productCategoryId": "dummyFirstCategory"}
-''');
+       "image": "data:image/png;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=",
+       "price": "17.13", "productCategoryId": "dummyFirstCategory",
+       "description": "This is a dummy description"},
+    ''');
 final CurrencyList currencyList = currencyListFromJson('''
   { "currencyList" : currencies } ''');
 final String currencyId = 'United States Dollar [USD]';
