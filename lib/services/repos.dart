@@ -190,12 +190,14 @@ class Repos {
     return null;
   }
 
+  /// The demo store can only register as a customer.
+  /// Any other store it depends on the person logging in.
   Future<dynamic> register(
-      {@required String companyName,
+      {String companyName,
       String companyPartyId, // if empty will create new company too!
       @required String firstName,
       @required String lastName,
-      @required String currency,
+      String currency,
       @required String email,
       List data}) async {
     try {
@@ -224,7 +226,7 @@ class Repos {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String catProdJson = prefs.getString('categoriesAndProducts');
-      if (catProdJson != null) return catalogFromJson(catProdJson);
+//      if (catProdJson != null) return catalogFromJson(catProdJson);
       Response response = await _client.get(
           's1/growerp/100/CategoriesAndProducts',
           queryParameters: {'companyPartyId': companyPartyId});

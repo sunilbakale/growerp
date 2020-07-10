@@ -8,13 +8,10 @@ import '../models/@models.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final Repos repos;
-  final AuthBloc authBloc;
 
   RegisterBloc({
     @required this.repos,
-    @required this.authBloc,
   })  : assert(repos != null),
-        assert(authBloc != null),
         super(RegisterInitial());
 
   @override
@@ -28,7 +25,20 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         yield RegisterError(errorMessage: currencyList);
       }
     } else if (event is RegisterButtonPressed) {
-      yield RegisterSubmitting();
+      yield RegisterSending();
+      final authenticate = await repos.register(
+          companyPartyId: event.companyPartyId,
+          firstName: event.firstName,
+          lastName: event.lastName,
+          email: event.email);
+      if (authenticate is Authenticate) {
+        await repos.persistAuthenticate(authenticate);
+        yield RegisterSuccess();
+      } else {
+        yield RegisterError(errorMessage: authenticate);
+      }
+    } else if (event is CreateShopButtonPressed) {
+      yield RegisterSending();
       final authenticate = await repos.register(
           companyName: event.companyName,
           currency: event.currency,
@@ -57,13 +67,34 @@ class LoadRegister extends RegisterEvent {
 }
 
 class RegisterButtonPressed extends RegisterEvent {
+  final String companyPartyId;
+  final String firstName;
+  final String lastName;
+  final String email;
+
+  const RegisterButtonPressed({
+    @required this.companyPartyId,
+    @required this.firstName,
+    @required this.lastName,
+    @required this.email,
+  });
+
+  @override
+  List<Object> get props => [companyPartyId, firstName, lastName, email];
+
+  @override
+  String toString() =>
+      'RegisterButtonPressed { first/Last name: $firstName/$lastName, email: $email }';
+}
+
+class CreateShopButtonPressed extends RegisterEvent {
   final String companyName;
   final String currency;
   final String firstName;
   final String lastName;
   final String email;
 
-  const RegisterButtonPressed({
+  const CreateShopButtonPressed({
     @required this.companyName,
     @required this.currency,
     @required this.firstName,
@@ -76,24 +107,20 @@ class RegisterButtonPressed extends RegisterEvent {
 
   @override
   String toString() =>
-      'RegisterButtonPressed { company name: $companyName, email: $email }';
+      'Create shop ButtonPressed { company name: $companyName, email: $email }';
 }
 
 // -------------------------------state ------------------------------
 @immutable
 abstract class RegisterState extends Equatable {
   const RegisterState();
-}
-
-class RegisterInitial extends RegisterState {
   @override
   List<Object> get props => [];
 }
 
-class RegisterLoading extends RegisterState {
-  @override
-  List<Object> get props => [];
-}
+class RegisterInitial extends RegisterState {}
+
+class RegisterLoading extends RegisterState {}
 
 class RegisterLoaded extends RegisterState {
   final List<String> currencies;
@@ -103,15 +130,12 @@ class RegisterLoaded extends RegisterState {
 
   @override
   String toString() => currencies != null
-      ? 'RegisterLoaded { currencies size: ${currencies?.length},' +
+      ? 'RegisterLoaded, currencies size: ${currencies?.length},' +
           ' first:${currencies[0].toString()}  }'
-      : 'RegisterLoaded { no currencies found }';
+      : 'RegisterLoaded, no currencies found }';
 }
 
-class RegisterSubmitting extends RegisterState {
-  @override
-  List<Object> get props => [];
-}
+class RegisterSending extends RegisterState {}
 
 class RegisterSuccess extends RegisterState {
   @override

@@ -19,7 +19,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield AuthLoading();
       final connected = await repos.getConnected();
       if (connected is String) {
-        // contains string error message or true for connected
         yield AuthConnectionProblem(connected);
       } else {
         final Authenticate authenticate = await repos.getAuthenticate();
@@ -109,7 +108,8 @@ class AuthAuthenticated extends AuthState {
   @override
   List<Object> get props => [authenticate];
   @override
-  String toString() => 'AuthAuthenticated, username: ${authenticate.user.name}';
+  String toString() =>
+      'AuthAuthenticated, company: ${authenticate?.company?.name} username: ${authenticate?.user?.name}';
 }
 
 class AuthUnauthenticated extends AuthState {
@@ -119,5 +119,5 @@ class AuthUnauthenticated extends AuthState {
   List<Object> get props => [authenticate];
   @override
   String toString() =>
-      'AuthUnauthenticated: username: ${authenticate?.user?.name}';
+      'AuthUnauthenticated: company: ${authenticate?.company?.name} username: ${authenticate?.user?.name}';
 }

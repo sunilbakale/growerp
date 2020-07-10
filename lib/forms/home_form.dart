@@ -10,6 +10,7 @@ import '../routing_constants.dart';
 class HomeForm extends StatelessWidget {
   final String message;
   const HomeForm({Key key, this.message}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +33,7 @@ class _HomeState extends State<HomeBody> {
   List<Product> products;
   List<Category> categories;
   String selectedCategoryId;
+  Company company;
 
   _HomeState(this.message);
 
@@ -46,114 +48,97 @@ class _HomeState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-        listeners: [
-          BlocListener<CatalogBloc, CatalogState>(listener: (context, state) {
-            if (state is CatalogError)
-              HelperFunctions.showMessage(
-                  context, state.errorMessage, Colors.red);
-          }),
-          BlocListener<AuthBloc, AuthState>(
-              bloc: context.bloc<AuthBloc>(),
-              listener: (context, state) {
-                if (state is AuthAuthenticated)
-                  authenticate = state.authenticate;
-                if (state is AuthConnectionProblem)
-                  HelperFunctions.showMessage(
-                      context, 'Connection problem', Colors.red);
-              })
-        ],
-        child:
-            BlocBuilder<CatalogBloc, CatalogState>(builder: (context, state) {
-          if (state is CatalogLoading) {
+    return BlocListener<CatalogBloc, CatalogState>(listener: (context, state) {
+      if (state is CatalogError)
+        HelperFunctions.showMessage(context, state.errorMessage, Colors.red);
+    }, child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthAuthenticated) authenticate = state.authenticate;
+      if (state is AuthUnauthenticated) authenticate = state.authenticate;
+      return BlocBuilder<CatalogBloc, CatalogState>(builder: (context, state) {
+        if (state is CatalogLoading)
+          return Center(child: CircularProgressIndicator());
+        if (state is CatalogError) {
+          return Center(
+              child: Column(children: [
+            SizedBox(height: 100),
+            RaisedButton(
+                child: Text(state.errorMessage + '\nRetry?'),
+                onPressed: () {
+                  BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                }),
+            SizedBox(height: 100),
+            RaisedButton(
+                child: Text(state.errorMessage + '\nRegister Company?'),
+                onPressed: () => Navigator.pushNamed(context, RegisterRoute)),
+          ]));
+        }
+        if (state is CatalogLoaded) {
+          if (state.catalog.categories.length == 0) {
             return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is CatalogError) {
-            return Center(
-                child: Column(children: [
-              SizedBox(height: 100),
-              RaisedButton(
-                  child: Text(state.errorMessage + '\nRetry?'),
-                  onPressed: () {
-                    BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-                  }),
-              SizedBox(height: 100),
-              RaisedButton(
-                  child: Text(state.errorMessage + '\nRegister Company?'),
-                  onPressed: () => Navigator.pushNamed(context, RegisterRoute)),
-            ]));
-          } else if (state is CatalogLoaded) {
-            if (state.catalog.categories.length == 0) {
-              return Center(
-                  child: RaisedButton(
-                child: Text('No categories found to display' + '\nRegister?'),
-                onPressed: () => Navigator.pushNamed(context, RegisterRoute),
-              ));
-            } else {
-              // finally the main form!
-              selectedCategoryId ??=
-                  state.catalog.categories[0].productCategoryId;
-              categories = state.catalog.categories;
-              products = state.catalog.products;
-              return Scaffold(
-                appBar: AppBar(
-                    title: Text(
-                        authenticate?.company?.name ?? 'GrowERP E-commerce'),
-                    actions: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.shopping_cart),
-                        tooltip: 'Cart',
-                        onPressed: () =>
-                            Navigator.pushNamed(context, CartRoute),
-                      ),
-                      if (BlocProvider.of<AuthBloc>(context).state
-                          is AuthUnauthenticated)
-                        IconButton(
-                            icon: Icon(Icons.exit_to_app),
-                            tooltip: 'Login',
-                            onPressed: () async {
-                              if (await Navigator.pushNamed(
-                                      context, LoginRoute) ==
-                                  true) {
-                                Navigator.popAndPushNamed(context, HomeRoute,
-                                    arguments: 'Login Successful');
-                              } else {
-                                HelperFunctions.showMessage(
-                                    context, 'Not logged in', Colors.green);
-                              }
-                            }),
-                      if (BlocProvider.of<AuthBloc>(context).state
-                          is AuthAuthenticated)
-                        IconButton(
-                            icon: Icon(Icons.do_not_disturb),
-                            tooltip: 'Logout',
-                            onPressed: () => {
-                                  BlocProvider.of<AuthBloc>(context)
-                                      .add(Logout()),
-                                  Future<Null>.delayed(
-                                      Duration(milliseconds: 300), () {
-                                    Navigator.popAndPushNamed(
-                                        context, HomeRoute,
-                                        arguments: 'Logout successful');
-                                  })
-                                })
-                    ]),
-                body: SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      _categoryList(),
-                      _productsGrid(),
-                    ],
-                  ),
-                ),
-              );
-            }
+                child: RaisedButton(
+              child: Text('No categories found to display' + '\nRegister?'),
+              onPressed: () => Navigator.pushNamed(context, RegisterRoute),
+            ));
+          } else {
+            selectedCategoryId ??=
+                state.catalog.categories[0].productCategoryId;
+            categories = state.catalog.categories;
+            products = state.catalog.products;
+            company = state.catalog.company;
           }
-          return Container();
-        }));
+          // finally the main form!
+          return Scaffold(
+            appBar: AppBar(
+                title: Text("${company?.name ?? 'Company??'} " +
+                    "${authenticate.apiKey != null ? '- username: ' + authenticate.user?.name : ''}"),
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.shopping_cart),
+                    tooltip: 'Cart',
+                    onPressed: () => Navigator.pushNamed(context, CartRoute),
+                  ),
+                  if (authenticate.apiKey == null)
+                    IconButton(
+                        icon: Icon(Icons.exit_to_app),
+                        tooltip: 'Login',
+                        onPressed: () async {
+                          if (await Navigator.pushNamed(context, LoginRoute) ==
+                              true) {
+                            Navigator.popAndPushNamed(context, HomeRoute,
+                                arguments: 'Login Successful');
+                          } else {
+                            HelperFunctions.showMessage(
+                                context, 'Not logged in', Colors.green);
+                          }
+                        }),
+                  if (authenticate.apiKey != null)
+                    IconButton(
+                        icon: Icon(Icons.do_not_disturb),
+                        tooltip: 'Logout',
+                        onPressed: () => {
+                              BlocProvider.of<AuthBloc>(context).add(Logout()),
+                              Future<Null>.delayed(Duration(milliseconds: 300),
+                                  () {
+                                Navigator.popAndPushNamed(context, HomeRoute,
+                                    arguments: 'Logout successful');
+                              })
+                            })
+                ]),
+            body: SingleChildScrollView(
+              physics: ClampingScrollPhysics(),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  _categoryList(),
+                  _productsGrid(),
+                ],
+              ),
+            ),
+          );
+        }
+        return Container();
+      });
+    }));
   }
 
   Widget _categoryList() {
