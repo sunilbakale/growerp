@@ -4,7 +4,7 @@ import 'forms/@forms.dart';
 
 // https://medium.com/flutter-community/flutter-navigation-cheatsheet-a-guide-to-named-routing-dc642702b98c
 Route<dynamic> generateRoute(RouteSettings settings) {
-  print("Navigate to ${settings.name}");
+  print("Navigate to ${settings.name} with data: ${settings.arguments}");
   switch (settings.name) {
     case HomeRoute:
       final String message = settings.arguments;

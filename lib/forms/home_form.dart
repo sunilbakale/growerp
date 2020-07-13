@@ -88,110 +88,103 @@ class _HomeState extends State<HomeBody> {
           }
           // finally the main form!
           return Scaffold(
-            appBar: AppBar(
-                title: Text("${company?.name ?? 'Company??'} " +
-                    "${authenticate.apiKey != null ? '- username: ' + authenticate.user?.name : ''}"),
-                actions: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    tooltip: 'Cart',
-                    onPressed: () => Navigator.pushNamed(context, CartRoute),
-                  ),
-                  if (authenticate.apiKey == null)
+              appBar: AppBar(
+                  title: Text("${company?.name ?? 'Company??'} " +
+                      "${authenticate?.apiKey != null ? '- username: ' + authenticate?.user?.name : ''}"),
+                  actions: <Widget>[
                     IconButton(
-                        icon: Icon(Icons.exit_to_app),
-                        tooltip: 'Login',
-                        onPressed: () async {
-                          if (await Navigator.pushNamed(context, LoginRoute) ==
-                              true) {
-                            Navigator.popAndPushNamed(context, HomeRoute,
-                                arguments: 'Login Successful');
-                          } else {
-                            HelperFunctions.showMessage(
-                                context, 'Not logged in', Colors.green);
-                          }
-                        }),
-                  if (authenticate.apiKey != null)
-                    IconButton(
-                        icon: Icon(Icons.do_not_disturb),
-                        tooltip: 'Logout',
-                        onPressed: () => {
-                              BlocProvider.of<AuthBloc>(context).add(Logout()),
-                              Future<Null>.delayed(Duration(milliseconds: 300),
-                                  () {
-                                Navigator.popAndPushNamed(context, HomeRoute,
-                                    arguments: 'Logout successful');
+                      icon: Icon(Icons.shopping_cart),
+                      tooltip: 'Cart',
+                      onPressed: () => Navigator.pushNamed(context, CartRoute),
+                    ),
+                    if (authenticate?.apiKey == null)
+                      IconButton(
+                          icon: Icon(Icons.exit_to_app),
+                          tooltip: 'Login',
+                          onPressed: () async {
+                            if (await Navigator.pushNamed(
+                                    context, LoginRoute) ==
+                                true) {
+                              Navigator.popAndPushNamed(context, HomeRoute,
+                                  arguments: 'Login Successful');
+                            } else {
+                              HelperFunctions.showMessage(
+                                  context, 'Not logged in', Colors.green);
+                            }
+                          }),
+                    if (authenticate?.apiKey != null)
+                      IconButton(
+                          icon: Icon(Icons.do_not_disturb),
+                          tooltip: 'Logout',
+                          onPressed: () => {
+                                BlocProvider.of<AuthBloc>(context)
+                                    .add(Logout()),
+                                Future<Null>.delayed(
+                                    Duration(milliseconds: 300), () {
+                                  Navigator.popAndPushNamed(context, HomeRoute,
+                                      arguments: 'Logout successful');
+                                })
                               })
-                            })
-                ]),
-            body: SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  _categoryList(),
-                  _productsGrid(),
-                ],
-              ),
-            ),
-          );
+                  ]),
+              body: SingleChildScrollView(
+                  physics: ClampingScrollPhysics(),
+                  child: ListView(shrinkWrap: true, children: <Widget>[
+                    _categoryList(),
+                    _productsGrid(),
+                  ])));
         }
-        return Container();
+        return Container(child: Text("Should not arrive here????"));
       });
     }));
   }
 
   Widget _categoryList() {
     return Container(
-      height: 110,
-      alignment: Alignment.centerLeft,
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: ClampingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          var data = categories[index];
-          return Column(children: <Widget>[
-            GestureDetector(
-              onTap: () =>
-                  setState(() => selectedCategoryId = data.productCategoryId),
-              child: Container(
-                margin: EdgeInsets.all(10),
-                width: 70,
-                height: 70,
-                alignment: Alignment.center,
-                child: Image(
-                  image: data.image,
-                  height: 40,
-                  width: 40,
+        height: 110,
+        alignment: Alignment.centerLeft,
+        child: ListView.builder(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              var data = categories[index];
+              return Column(children: <Widget>[
+                GestureDetector(
+                  onTap: () => setState(
+                      () => selectedCategoryId = data.productCategoryId),
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    width: 70,
+                    height: 70,
+                    alignment: Alignment.center,
+                    child: Image(
+                      image: data.image,
+                      height: 40,
+                      width: 40,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 5),
+                          blurRadius: 30,
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      offset: Offset(0, 5),
-                      blurRadius: 30,
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                Text(data.categoryName),
-                Icon(
-                  Icons.keyboard_arrow_right,
-                  size: 14,
-                )
-              ],
-            )
-          ]);
-        },
-      ),
-    );
+                Row(children: <Widget>[
+                  Text(data.categoryName),
+                  Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 14,
+                  )
+                ])
+              ]);
+            }));
   }
 
   Widget _productsGrid() {
@@ -212,53 +205,50 @@ class _HomeState extends State<HomeBody> {
       );
     } else {
       return ClipRRect(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(35),
-          bottomRight: Radius.circular(35),
-        ),
-        child: Container(
-          height: screenHeight - 100,
-          width: screenWidth,
-          decoration: BoxDecoration(
-            color: Color(0xffECE9DE),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(35),
-              bottomRight: Radius.circular(35),
-            ),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(35),
+            bottomRight: Radius.circular(35),
           ),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 50, bottom: 5),
-                width: screenWidth,
-                child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 4,
-                  itemCount: products.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                      new Container(
-                          margin: EdgeInsets.only(
-                            left: index % 2 == 0 ? 10 : 0,
-                            right: index % 2 == 0 ? 0 : 10,
-                          ),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(25)),
-                          child: Center(
-                            child: _gridItem(products[index]),
-                          )),
-                  staggeredTileBuilder: (int index) =>
-                      new StaggeredTile.count(2, index == 0 ? 2 : 3),
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
+          child: Container(
+              height: screenHeight - 100,
+              width: screenWidth,
+              decoration: BoxDecoration(
+                color: Color(0xffECE9DE),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(35),
+                  bottomRight: Radius.circular(35),
                 ),
               ),
-              _customTitle(categories
-                  .firstWhere((i) => i.productCategoryId == selectedCategoryId)
-                  .categoryName)
-            ],
-          ),
-        ),
-      );
+              child: Stack(children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(top: 50, bottom: 5),
+                  width: screenWidth,
+                  child: StaggeredGridView.countBuilder(
+                    crossAxisCount: 4,
+                    itemCount: products.length,
+                    itemBuilder: (BuildContext context, int index) =>
+                        new Container(
+                            margin: EdgeInsets.only(
+                              left: index % 2 == 0 ? 10 : 0,
+                              right: index % 2 == 0 ? 0 : 10,
+                            ),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(25)),
+                            child: Center(
+                              child: _gridItem(products[index]),
+                            )),
+                    staggeredTileBuilder: (int index) =>
+                        new StaggeredTile.count(2, index == 0 ? 2 : 3),
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                ),
+                _customTitle(categories
+                    .firstWhere(
+                        (i) => i.productCategoryId == selectedCategoryId)
+                    .categoryName)
+              ])));
     }
   }
 

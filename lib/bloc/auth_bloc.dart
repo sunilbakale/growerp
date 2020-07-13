@@ -52,7 +52,9 @@ abstract class AuthEvent extends Equatable {
 
 class ConnectionProblem extends AuthEvent {}
 
-class StartAuth extends AuthEvent {}
+class StartAuth extends AuthEvent {
+  String toString() => "StartAuth: starting auth bloc";
+}
 
 class Logout extends AuthEvent {}
 

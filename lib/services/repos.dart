@@ -120,9 +120,12 @@ class Repos {
   }
 
   Future<dynamic> login(
-      {@required String username, @required String password}) async {
+      {@required String companyPartyId,
+      @required String username,
+      @required String password}) async {
     try {
       Response response = await _client.post('s1/growerp/100/Login', data: {
+        'companyPartyId': companyPartyId,
         'username': username,
         'password': password,
         'moquiSessionToken': this.sessionToken
@@ -259,13 +262,14 @@ class Repos {
     }
   }
 
-  Future<dynamic> getOrders() async {
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
+  Future<dynamic> getCompanies() async {
     try {
-      _client.options.headers['authorization'] = basicAuth;
-      Response response = await _client.get('s1/growerp/100/Order');
-      return ordersFromJson(response.toString());
+      print(
+          "=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
+//      Authenticate authenticate = await getAuthenticate();
+//      _client.options.headers['api_key'] = authenticate.apiKey;
+      Response response = await _client.get('s1/growerp/100/Companies');
+      return companiesFromJson(response.toString());
     } catch (e) {
       return responseMessage(e);
     }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import '../bloc/@bloc.dart';
 import '../services/repos.dart';
 import '../models/@models.dart';
 
@@ -59,12 +58,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 @immutable
 abstract class RegisterEvent extends Equatable {
   const RegisterEvent();
-}
-
-class LoadRegister extends RegisterEvent {
   @override
   List<Object> get props => [];
 }
+
+class LoadRegister extends RegisterEvent {}
 
 class RegisterButtonPressed extends RegisterEvent {
   final String companyPartyId;

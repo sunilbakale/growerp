@@ -20,7 +20,9 @@ final Authenticate authenticate = authenticateFromJson('''
       ''');
 
 final String errorMessage = 'Dummy error message';
+final String screenMessage = 'Dummy screen message';
 final String companyName = 'Dummy Company Name';
+final String companyPartyId = '100001';
 final String firstName = 'dummyFirstName';
 final String lastName = 'dummylastName';
 final String username = 'dummyUsername';
@@ -29,6 +31,17 @@ final String newPassword = 'dummyNewPassword9!';
 final String email = 'dummy@example.com';
 
 final Catalog emptyCatalog = Catalog(categories: [], products: []);
+final List<Company> companies = [
+  Company(
+      name: "Dummy first Company Name",
+      partyId: '100001',
+      currencyId: "United States Dollar [USD]"),
+  Company(
+      name: "Dummy second first Company Name",
+      partyId: '100003',
+      currencyId: "Thailand baht [THB]")
+];
+
 final Catalog catalog = catalogFromJson('''
     { "company": {"name": "Dummy Company Name",
                         "currency": "dummyCurrency"},

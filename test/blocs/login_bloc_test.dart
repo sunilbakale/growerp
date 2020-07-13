@@ -34,14 +34,17 @@ void main() {
         act: (bloc) async {
           when(mockReposRepository.login(username: email, password: password))
               .thenAnswer((_) async => authenticate);
-          bloc.add(LoginButtonPressed(username: email, password: password));
+          bloc.add(LoginButtonPressed(
+              companyPartyId: companyPartyId,
+              username: email,
+              password: password));
           whenListen(
               authBloc,
               Stream.fromIterable(
                   <AuthEvent>[LoggedIn(authenticate: authenticate)]));
         },
         expect: <LoginState>[
-          LoginInProgress(),
+          LogginInProgress(),
           LoginOk(authenticate: authenticate)
         ]);
 
@@ -54,8 +57,8 @@ void main() {
         bloc.add(LoginButtonPressed(username: username, password: password));
       },
       expect: <LoginState>[
-        LoginInProgress(),
-        LoginFailure(error: errorMessage)
+        LogginInProgress(),
+        LoginError(errorMessage: errorMessage)
       ],
     );
 
@@ -63,16 +66,22 @@ void main() {
       'Login succes and change password',
       build: () async => LoginBloc(repos: mockReposRepository),
       act: (bloc) async {
-        when(mockReposRepository.login(username: username, password: password))
+        when(mockReposRepository.login(
+                companyPartyId: companyPartyId,
+                username: username,
+                password: password))
             .thenAnswer((_) async => "passwordChange");
-        bloc.add(LoginButtonPressed(username: username, password: password));
+        bloc.add(LoginButtonPressed(
+            companyPartyId: companyPartyId,
+            username: username,
+            password: password));
         whenListen(
             authBloc,
             Stream.fromIterable(
                 <AuthEvent>[LoggedIn(authenticate: authenticate)]));
       },
       expect: <LoginState>[
-        LoginInProgress(),
+        LogginInProgress(),
         LoginChangePw(username: username, password: password),
       ],
     );

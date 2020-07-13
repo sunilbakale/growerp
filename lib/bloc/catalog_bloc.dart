@@ -14,7 +14,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   Stream<CatalogState> mapEventToState(CatalogEvent event) async* {
     if (event is LoadCatalog) {
       yield CatalogLoading();
-      dynamic catalog = await repos.getCatalog(companyPartyId: "100001");
+      dynamic authenticate = await repos.getAuthenticate();
+      String companyPartyId = authenticate?.company?.partyId ?? "100001";
+      dynamic catalog = await repos.getCatalog(companyPartyId: companyPartyId);
       if (catalog is Catalog)
         yield CatalogLoaded(catalog);
       else {
@@ -28,11 +30,12 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 @immutable
 abstract class CatalogEvent extends Equatable {
   const CatalogEvent();
+  @override
+  List<Object> get props => [];
 }
 
 class LoadCatalog extends CatalogEvent {
-  @override
-  List<Object> get props => [];
+  String toString() => "Loadcatalog: loading products and categories";
 }
 
 // ################## state ###################
@@ -57,7 +60,8 @@ class CatalogLoaded extends CatalogState {
   @override
   String toString() =>
       'CatalogLoaded, categories: ${catalog.categories.length}' +
-      ' products: ${catalog.products.length}';
+      ' products: ${catalog.products.length}' +
+      ' shop: ${catalog.company.name}[${catalog.company.partyId}]';
 }
 
 class CatalogError extends CatalogState {
