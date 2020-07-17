@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:growerp/forms/cart_form.dart';
 import '../models/@models.dart';
-import '../bloc/@bloc.dart';
+import '../blocs/@bloc.dart';
 import '../services/repos.dart';
 import '../routing_constants.dart';
 import 'changePw_form.dart';
 import '../helper_functions.dart';
 
+class LoginArgs {
+  final String message; // to show at screen startup
+  final String companyPartyId; //if present select if not create company
+  final String companyName; // to show onscreen
+  const LoginArgs({
+    this.message,
+    this.companyPartyId,
+    this.companyName,
+  });
+  String toString() =>
+      "Message: ${this.message} Company: ${this.companyName}[${this.companyPartyId}]";
+}
+
 class LoginForm extends StatelessWidget {
-  final String message;
-  const LoginForm({Key key, this.message}) : super(key: key);
+  final LoginArgs loginArgs;
+  const LoginForm({this.loginArgs});
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -21,7 +33,13 @@ class LoginForm extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Login'),
+            title: Text(loginArgs?.companyPartyId == null ||
+                    loginArgs.companyPartyId == ''
+                ? 'Login'
+                : loginArgs?.companyPartyId != null &&
+                        loginArgs.companyPartyId != ''
+                    ? 'Login to ecommerce shop: ${loginArgs.companyName}'
+                    : ''),
             actions: <Widget>[
               IconButton(
                   icon: Icon(Icons.home),
@@ -29,9 +47,10 @@ class LoginForm extends StatelessWidget {
             ],
           ),
           body: BlocProvider(
-            create: (context) =>
-                LoginBloc(repos: context.repository<Repos>())..add(LoadLogin()),
-            child: LoginHeader(),
+            create: (context) => LoginBloc(repos: context.repository<Repos>())
+              ..add(
+                  LoadLogin(loginArgs?.companyPartyId, loginArgs?.companyName)),
+            child: LoginHeader(loginArgs?.message),
           ),
         ));
   }
@@ -39,8 +58,7 @@ class LoginForm extends StatelessWidget {
 
 class LoginHeader extends StatefulWidget {
   final String message;
-
-  const LoginHeader({Key key, this.message}) : super(key: key);
+  const LoginHeader(this.message);
   @override
   State<LoginHeader> createState() => _LoginHeaderState(message);
 }
@@ -50,6 +68,8 @@ class _LoginHeaderState extends State<LoginHeader> {
   final _formKey = GlobalKey<FormState>();
   Authenticate authenticate;
   bool _obscureText = true;
+  String companyPartyId;
+  String companyName;
   List<Company> companies;
 
   _LoginHeaderState(this.message);
@@ -77,6 +97,7 @@ class _LoginHeaderState extends State<LoginHeader> {
         BlocListener<AuthBloc, AuthState>(
             bloc: context.bloc<AuthBloc>(),
             listener: (context, state) {
+              print("login listen state: ${state.runtimeType}");
               if (state is AuthAuthenticated) Navigator.pop(context, true);
               if (state is AuthConnectionProblem) {
                 Scaffold.of(context).showSnackBar(SnackBar(
@@ -86,6 +107,7 @@ class _LoginHeaderState extends State<LoginHeader> {
               }
             }),
         BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+          print("login listen state: ${state.runtimeType}");
           if (state is LoginLoading) {
             HelperFunctions.showMessage(
                 context, 'Loading login form...', Colors.green);
@@ -115,46 +137,60 @@ class _LoginHeaderState extends State<LoginHeader> {
           if (state is LoginError)
             return Center(child: Text("Error ${state?.errorMessage}"));
           if (state is LoginLoaded) {
-            companies = state.companies;
-            _companySelected = companies[0];
+            companyPartyId = state?.companyPartyId;
+            companyName = state?.companyName;
+            companies = state?.companies;
+            _companySelected = companyPartyId != null && companyPartyId != ''
+                ? Company(partyId: companyPartyId)
+                : companies[0] ?? null;
+            print(
+                "===login loaded: companyPartyid: $companyPartyId companyName: $companyName");
             return Center(
-                child: SizedBox(
+                child: Container(
                     width: 400,
                     child: Form(
                       key: _formKey,
                       child: Column(
                         children: <Widget>[
                           SizedBox(height: 40),
-                          Container(
-                            width: 500,
-                            height: 60,
-                            padding: EdgeInsets.symmetric(horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25.0),
-                              border: Border.all(
-                                  color: Colors.grey,
-                                  style: BorderStyle.solid,
-                                  width: 0.80),
-                            ),
-                            child: DropdownButton(
-                              underline: SizedBox(), // remove underline
-                              hint: Text('Company'),
-                              value: _companySelected,
-                              items: companies.map((item) {
-                                return DropdownMenuItem<Company>(
-                                  child: Text(item?.name ?? 'Company??'),
-                                  value: item,
-                                );
-                              }).toList(),
-                              onChanged: (Company newValue) {
-                                setState(() {
-                                  _companySelected = newValue;
-                                });
-                              },
-                              isExpanded: false,
-                            ),
-                          ),
-                          SizedBox(height: 20),
+                          Visibility(
+                              // allow selection of company
+                              visible: companyPartyId == null ||
+                                  companyPartyId == '',
+                              child: Column(children: [
+                                Container(
+                                  width: 400,
+                                  height: 60,
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(25.0),
+                                    border: Border.all(
+                                        color: Colors.grey,
+                                        style: BorderStyle.solid,
+                                        width: 0.80),
+                                  ),
+                                  child: DropdownButton(
+                                    key: ValueKey('drop_down'),
+                                    underline: SizedBox(), // remove underline
+                                    hint: Text('Company'),
+                                    value: _companySelected,
+                                    items: companies?.map((item) {
+                                      return DropdownMenuItem<Company>(
+                                        child: Text(item?.name ?? 'Company??'),
+                                        value: item,
+                                      );
+                                    })?.toList(),
+                                    onChanged: (Company newValue) {
+                                      setState(() {
+                                        _companySelected = newValue;
+                                      });
+                                    },
+                                    isExpanded: true,
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                              ])),
                           TextFormField(
                             key: Key('username'),
                             decoration: InputDecoration(labelText: 'Username'),
@@ -205,8 +241,13 @@ class _LoginHeaderState extends State<LoginHeader> {
                           GestureDetector(
                             child: Text('register new account'),
                             onTap: () async {
+                              print(
+                                  "====login partyname to register: $companyName");
                               final dynamic result = await Navigator.pushNamed(
-                                  context, RegisterRoute);
+                                  context, RegisterRoute,
+                                  arguments: LoginArgs(
+                                      companyPartyId: companyPartyId,
+                                      companyName: companyName));
                               HelperFunctions.showMessage(
                                   context, '$result', Colors.green);
                             },

@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import '../data.dart';
 

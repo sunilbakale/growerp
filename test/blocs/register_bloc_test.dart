@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import '../data.dart';
 
@@ -12,7 +12,6 @@ class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
 void main() {
   MockReposRepository mockReposRepository;
   MockAuthBloc mockAuthBloc;
-  RegisterBloc registerBloc;
 
   setUp(() {
     mockReposRepository = MockReposRepository();
@@ -31,14 +30,38 @@ void main() {
     );
 
     blocTest(
-      'Register success',
+      'Register load success',
       build: () async => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
-            .thenAnswer((_) async => currencyList);
+            .thenAnswer((_) async => currencies);
+        bloc.add(LoadRegister());
+      },
+      expect: <RegisterState>[
+        RegisterLoading(),
+        RegisterLoaded(currencies: currencies)
+      ],
+    );
+
+    blocTest(
+      'Register load error',
+      build: () async => RegisterBloc(repos: mockReposRepository),
+      act: (bloc) async {
+        when(mockReposRepository.getCurrencies())
+            .thenAnswer((_) async => errorMessage);
+        bloc.add(LoadRegister());
+      },
+      expect: <RegisterState>[RegisterLoading(), RegisterError(errorMessage)],
+    );
+
+    blocTest(
+      'Register existing shop success',
+      build: () async => RegisterBloc(repos: mockReposRepository),
+      act: (bloc) async {
+        when(mockReposRepository.getCurrencies())
+            .thenAnswer((_) async => currencies);
         when(mockReposRepository.register(
-                companyName: companyName,
-                currency: currencyId,
+                companyPartyId: companyPartyId,
                 firstName: firstName,
                 lastName: lastName,
                 email: email))
@@ -51,8 +74,38 @@ void main() {
             email: email));
       },
       expect: <RegisterState>[
-        RegisterLoading(), // RegisterLoaded(currencies),
-        RegisterSending(), RegisterSuccess()
+        RegisterLoading(),
+        RegisterLoaded(currencies: currencies),
+        RegisterSending(),
+        RegisterSuccess()
+      ],
+    );
+    blocTest(
+      'Register new shop success',
+      build: () async => RegisterBloc(repos: mockReposRepository),
+      act: (bloc) async {
+        when(mockReposRepository.getCurrencies())
+            .thenAnswer((_) async => currencies);
+        when(mockReposRepository.register(
+                companyName: companyName,
+                currency: currencyId,
+                firstName: firstName,
+                lastName: lastName,
+                email: email))
+            .thenAnswer((_) async => authenticate);
+        bloc.add(LoadRegister());
+        bloc.add(CreateShopButtonPressed(
+            companyName: companyName,
+            currency: currencyId,
+            firstName: firstName,
+            lastName: lastName,
+            email: email));
+      },
+      expect: <RegisterState>[
+        RegisterLoading(),
+        RegisterLoaded(currencies: currencies),
+        RegisterSending(),
+        RegisterSuccess()
       ],
     );
     blocTest(
@@ -60,10 +113,9 @@ void main() {
       build: () async => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
-            .thenAnswer((_) async => errorMessage);
+            .thenAnswer((_) async => currencies);
         when(mockReposRepository.register(
-                companyName: companyName,
-                currency: currencyId,
+                companyPartyId: companyPartyId,
                 firstName: firstName,
                 lastName: lastName,
                 email: email))
@@ -74,16 +126,12 @@ void main() {
             firstName: firstName,
             lastName: lastName,
             email: email));
-        whenListen(
-            mockAuthBloc,
-            Stream.fromIterable(
-                <AuthEvent>[LoggedIn(authenticate: authenticate)]));
       },
       expect: <RegisterState>[
         RegisterLoading(),
-        RegisterError(errorMessage: errorMessage),
+        RegisterLoaded(currencies: currencies),
         RegisterSending(),
-        RegisterError(errorMessage: errorMessage)
+        RegisterError(errorMessage)
       ],
     );
   });

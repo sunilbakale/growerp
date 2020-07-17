@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:growerp/helper_functions.dart';
-import '../bloc/@bloc.dart';
+import '../blocs/@bloc.dart';
 import '../models/@models.dart';
 import '../helper_functions.dart';
 import '../routing_constants.dart';
@@ -48,37 +48,48 @@ class _HomeState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CatalogBloc, CatalogState>(listener: (context, state) {
-      if (state is CatalogError)
-        HelperFunctions.showMessage(context, state.errorMessage, Colors.red);
-    }, child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthConnectionProblem) {
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RaisedButton(
+                  child: Text("${state.errorMessage} \nRetry?"),
+                  onPressed: () {
+                    BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                    BlocProvider.of<AuthBloc>(context).add(StartAuth());
+                  }),
+            ]);
+      }
       if (state is AuthAuthenticated) authenticate = state.authenticate;
       if (state is AuthUnauthenticated) authenticate = state.authenticate;
       return BlocBuilder<CatalogBloc, CatalogState>(builder: (context, state) {
         if (state is CatalogLoading)
           return Center(child: CircularProgressIndicator());
         if (state is CatalogError) {
-          return Center(
-              child: Column(children: [
-            SizedBox(height: 100),
-            RaisedButton(
-                child: Text(state.errorMessage + '\nRetry?'),
-                onPressed: () {
-                  BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-                }),
-            SizedBox(height: 100),
-            RaisedButton(
-                child: Text(state.errorMessage + '\nRegister Company?'),
-                onPressed: () => Navigator.pushNamed(context, RegisterRoute)),
-          ]));
+          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Center(
+                child: RaisedButton(
+                    child: Text("${state.errorMessage}\n Click to create"),
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, RegisterRoute);
+                      BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                    }))
+          ]);
         }
         if (state is CatalogLoaded) {
           if (state.catalog.categories.length == 0) {
-            return Center(
-                child: RaisedButton(
-              child: Text('No categories found to display' + '\nRegister?'),
-              onPressed: () => Navigator.pushNamed(context, RegisterRoute),
-            ));
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                      child: RaisedButton(
+                    child: Text("No categories found to display\nRegister?"),
+                    onPressed: () async =>
+                        await Navigator.pushNamed(context, RegisterRoute),
+                  ))
+                ]);
           } else {
             selectedCategoryId ??=
                 state.catalog.categories[0].productCategoryId;
@@ -135,7 +146,7 @@ class _HomeState extends State<HomeBody> {
         }
         return Container(child: Text("Should not arrive here????"));
       });
-    }));
+    });
   }
 
   Widget _categoryList() {

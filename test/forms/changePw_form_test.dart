@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import 'package:growerp/forms/@forms.dart';
 import '../data.dart';
@@ -28,21 +28,18 @@ void main() {
     });
 
     tearDown(() {
-      changePwBloc?.close();
-      authBloc?.close();
+      changePwBloc.close();
+      authBloc.close();
     });
 
     testWidgets('check text fields + Load changePw event',
         (WidgetTester tester) async {
       await tester.pumpWidget(RepositoryProvider(
           create: (context) => repos,
-          child: BlocProvider<ChangePwBloc>.value(
-              value: changePwBloc,
-              child: MaterialApp(
-                  home: Scaffold(
-                body: ChangePwForm(
-                    changePwArgs: ChangePwArgs(username, password)),
-              )))));
+          child: MaterialApp(
+              home: Scaffold(
+            body: ChangePwForm(changePwArgs: ChangePwArgs(username, password)),
+          ))));
       await tester.pumpAndSettle();
       expect(find.text('You entered the correct temporary password\n'),
           findsOneWidget);

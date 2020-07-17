@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/forms/@forms.dart';
 import 'package:growerp/router.dart' as router;
 import '../data.dart';
@@ -30,8 +30,8 @@ void main() {
 
     testWidgets('renders with empty catalog not logged in',
         (WidgetTester tester) async {
-      when(catalogBloc.state).thenAnswer((_) => CatalogLoaded(emptyCatalog));
-      when(authBloc.state).thenAnswer((_) => AuthUnauthenticated(null));
+      when(catalogBloc.state).thenReturn(CatalogLoaded(emptyCatalog));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
       await tester.pumpWidget(
         MultiBlocProvider(
           providers: [

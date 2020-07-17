@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/@bloc.dart';
+import 'blocs/@bloc.dart';
 import 'services/repos.dart';
 import 'styles/themes.dart';
 import 'router.dart' as router;

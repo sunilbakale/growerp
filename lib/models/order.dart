@@ -15,6 +15,7 @@ class Order {
     this.currencyId,
     this.placedDate,
     this.placedTime,
+    this.companyPartyId,
     this.partyId,
     this.firstName,
     this.lastName,
@@ -31,6 +32,7 @@ class Order {
   String currencyId;
   String placedDate;
   String placedTime;
+  String companyPartyId;
   String partyId;
   String firstName;
   String lastName;
@@ -47,6 +49,7 @@ class Order {
         currencyId: json["currencyUomId"],
         placedDate: json["placedDate"],
         placedTime: json["placedTime"],
+        companyPartyId: json["companyPartyId"],
         partyId: json["partyId"],
         firstName: json["firstName"],
         lastName: json["lastName"],
@@ -64,6 +67,7 @@ class Order {
         "currencyUomId": currencyId,
         "placedDate": placedDate,
         "placedTime": placedTime,
+        "companyPartyId": companyPartyId,
         "partyId": partyId,
         "firstName": firstName,
         "lastName": lastName,

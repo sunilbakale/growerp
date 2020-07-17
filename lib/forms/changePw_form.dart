@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import '../bloc/@bloc.dart';
+import '../blocs/@bloc.dart';
 import '../services/repos.dart';
 
 class ChangePwArgs {

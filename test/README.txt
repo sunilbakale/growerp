@@ -8,3 +8,6 @@ flutter test --coverage && genhtml -o coverage coverage/lcov.info && xdg-open co
 
 example tests:
 https://github.com/brianegan/flutter_architecture_samples/tree/master/bloc_library/test
+
+backend tests:
+https://medium.com/flutter-community/flutter-essential-what-you-need-to-know-567ad25dcd8f#47f1

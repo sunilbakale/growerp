@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/@models.dart';
-import '../bloc/@bloc.dart';
+import '../blocs/@bloc.dart';
 
 class ProductForm extends StatefulWidget {
   final Product product;
@@ -222,7 +222,7 @@ class _ProductFormState extends State<ProductForm> {
                       backgroundColor: Colors.green,
                     )),
                     orderItem = OrderItem(
-                        productId: product.productId, 
+                        productId: product.productId,
                         quantity: quantity,
                         price: product.price,
                         description: product.name),

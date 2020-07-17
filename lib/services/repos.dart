@@ -17,7 +17,7 @@ class Repos {
       //platform not supported on the web
       // is Release Mode ??
       _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
-    } else if (kIsWeb || Platform.isIOS) {
+    } else if (kIsWeb || Platform.isIOS || Platform.isLinux) {
       _client.options.baseUrl = 'http://localhost:8080/rest/';
     } else if (Platform.isAndroid) {
       _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
@@ -93,15 +93,13 @@ class Repos {
       // print('dio no response, message: ${e.message}');
 //    }
     }
-    print('====returning error message: $errorDescription');
+    print('==repos.dart: returning error message: $errorDescription');
     return errorDescription;
   }
 
 // -----------------------------general ------------------------
   Future<dynamic> getConnected() async {
     try {
-      Authenticate authenticate = await getAuthenticate();
-      this.apiKey = authenticate?.apiKey;
       Response response = await _client.get('moquiSessionToken');
       this.sessionToken = response.data;
       return sessionToken != null;
@@ -216,6 +214,7 @@ class Repos {
         'companyName': companyName, 'currencyUomId': currency,
         'companyEmail': email,
         'partyClassificationId': 'AppEcommerceShop',
+        'groupDescription': 'Admin',
         'environment': kReleaseMode,
         'moquiSessionToken': sessionToken
       });
@@ -225,15 +224,16 @@ class Repos {
     }
   }
 
-  Future<dynamic> getCatalog({String companyPartyId}) async {
+  Future<dynamic> getCatalog(String companyPartyId) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+/*      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('categoriesAndProducts', response.toString());
       String catProdJson = prefs.getString('categoriesAndProducts');
-//      if (catProdJson != null) return catalogFromJson(catProdJson);
+      if (catProdJson != null) return catalogFromJson(catProdJson);
+*/
       Response response = await _client.get(
           's1/growerp/100/CategoriesAndProducts',
           queryParameters: {'companyPartyId': companyPartyId});
-      await prefs.setString('categoriesAndProducts', response.toString());
       return catalogFromJson(response.toString());
     } catch (e) {
       return responseMessage(e);
@@ -243,8 +243,8 @@ class Repos {
   Future<dynamic> getCart() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String orderJson = prefs.getString('orderAndItems');
-      if (orderJson != null) return orderFromJson(orderJson);
+//      String orderJson = prefs.getString('orderAndItems');
+//      if (orderJson != null) return orderFromJson(orderJson);
       return null;
     } catch (e) {
       return responseMessage(e);
@@ -269,13 +269,13 @@ class Repos {
 //      Authenticate authenticate = await getAuthenticate();
 //      _client.options.headers['api_key'] = authenticate.apiKey;
       Response response = await _client.get('s1/growerp/100/Companies');
-      return companiesFromJson(response.toString());
+      return companiesFromJson(response.toString()).companies;
     } catch (e) {
       return responseMessage(e);
     }
   }
 
-  Future<dynamic> createOrder({Order order}) async {
+  Future<dynamic> createOrder(Order order) async {
     try {
 //      String basicAuth =
 //          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));

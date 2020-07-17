@@ -9,25 +9,25 @@ Company companyFromJson(String str) => Company.fromJson(json.decode(str));
 String companyToJson(Company data) => json.encode(data.toJson());
 
 class Company {
-    String partyId;
-    String name;
-    String classificationId;
-    String classificationDescr;
-    String email;
-    String currencyId;
-    String image;
+  String partyId;
+  String name;
+  String classificationId;
+  String classificationDescr;
+  String email;
+  dynamic currencyId;
+  String image;
 
-    Company({
-        this.partyId,
-        this.name,
-        this.classificationId,
-        this.classificationDescr,
-        this.email,
-        this.currencyId,
-        this.image,
-    });
+  Company({
+    this.partyId,
+    this.name,
+    this.classificationId,
+    this.classificationDescr,
+    this.email,
+    this.currencyId,
+    this.image,
+  });
 
-    factory Company.fromJson(Map<String, dynamic> json) => Company(
+  factory Company.fromJson(Map<String, dynamic> json) => Company(
         partyId: json["partyId"],
         name: json["name"],
         classificationId: json["classificationId"],
@@ -35,9 +35,9 @@ class Company {
         email: json["email"],
         currencyId: json["currencyId"],
         image: json["image"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "partyId": partyId,
         "name": name,
         "classificationId": classificationId,
@@ -45,5 +45,5 @@ class Company {
         "email": email,
         "currencyId": currencyId,
         "image": image,
-    };
+      };
 }

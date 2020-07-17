@@ -1,21 +1,35 @@
 import 'package:growerp/models/@models.dart';
+import 'dart:math';
 
-final Authenticate authenticateNoKey = authenticateFromJson('''
+final String randomString4 = Random().nextInt(9999).toString();
+
+Authenticate authenticateNoKey = authenticateFromJson('''
            {  "company": {"name": "Dummy Company Name",
-                          "currency": "dummyCurrency"},
+                          "partyId": "100001",
+                          "currency": "dummyCurrency",
+                          "classificationId": "AppEcommerceShop",
+                          "classificationDescr": "App for Ecommerce and shop",
+                          "email": "dummy@example.com",
+                          "image": "~/assets/images/addImage.png"},
               "user": {"firstName": "dummyFirstName",
                        "lastName": "dummyLastName",
                        "email": "dummy@example.com",
-                       "name": "dummyUsername"},
+                       "name": "dummyUsername",
+                       "image": "~/assets/images/addImage.png",
+                       "groupDescription": "Admin",
+                       "userGroupId":"GROWERP_M_ADMIN",
+                       "roles":["Employee"]},
               "apiKey": null}
       ''');
-final Authenticate authenticate = authenticateFromJson('''
+Authenticate authenticate = authenticateFromJson('''
            {  "company": {"name": "Dummy Company Name",
+                          "partyId": "100001",
                           "currency": "dummyCurrency"},
               "user": {"firstName": "dummyFirstName",
                        "lastName": "dummyLastName",
                        "email": "dummy@example.com",
-                       "name": "dummyUsername"},
+                       "name": "dummyUsername",
+                       "roles":["Employee"]},
               "apiKey": "dummyKey"}
       ''');
 
@@ -24,27 +38,39 @@ final String screenMessage = 'Dummy screen message';
 final String companyName = 'Dummy Company Name';
 final String companyPartyId = '100001';
 final String firstName = 'dummyFirstName';
-final String lastName = 'dummylastName';
+final String lastName = 'dummyLastName';
 final String username = 'dummyUsername';
-final String password = 'dummyPassword';
+final String password = 'dummyPassword9!';
 final String newPassword = 'dummyNewPassword9!';
 final String email = 'dummy@example.com';
+
+Map register = {
+  'username': username,
+  'emailAddress': email,
+  'newPassword': password,
+  'firstName': firstName,
+  'lastName': lastName,
+  'companyName': companyName,
+  'currencyId': currencyId,
+  'companyEmail': email,
+  'partyClassificationId': 'AppEcommerceShop',
+  'environment': true, // true for production, false for debug
+  'moquiSessionToken': null // need to be set when used!
+};
 
 final Catalog emptyCatalog = Catalog(categories: [], products: []);
 final List<Company> companies = [
   Company(
-      name: "Dummy first Company Name",
-      partyId: '100001',
-      currencyId: "United States Dollar [USD]"),
+      name: "Dummy first Company Name", partyId: '100001', currencyId: "USD"),
   Company(
       name: "Dummy second first Company Name",
       partyId: '100003',
-      currencyId: "Thailand baht [THB]")
+      currencyId: "THB")
 ];
 
 final Catalog catalog = catalogFromJson('''
-    { "company": {"name": "Dummy Company Name",
-                        "currency": "dummyCurrency"},
+    { "company": {"name": "Dummy first Company Name", "partyId": "100001",
+                        "currency": "USD"},
       "categories": [ 
       {"productCategoryId": "dummyFirstCategory", "categoryName": "1stCat",
       "description": "this is the long description of category first", 
@@ -74,9 +100,14 @@ final Product product = productFromJson('''
        "description": "This is a dummy description"},
     ''');
 final CurrencyList currencyList = currencyListFromJson('''
-  { "currencyList" : currencies } ''');
-final String currencyId = 'United States Dollar [USD]';
-final currencies = ["Thailand baht [THB]", currencyId, "Euro [EUR]"];
+  { "currencyList" : ["Thailand Baht [THB]", "Euro [EUR]",
+    "United States Dollar [USD]"] } ''');
+final String currencyId = 'USD';
+final currencies = [
+  "Thailand Baht [THB]",
+  "Euro [EUR]",
+  "United States Dollar [USD]"
+];
 
 final Order order = orderFromJson('''
   { "orderId": null, "orderStatusId": "OrderOpen", "currencyUomId": "THB",

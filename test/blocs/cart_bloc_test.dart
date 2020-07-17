@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import '../data.dart';
 
@@ -57,7 +57,7 @@ void main() {
         when(mockReposRepository.saveCart(order: totalOrder))
             .thenAnswer((_) async => null);
         bloc.add(AddOrderItem(orderItem2));
-        when(mockReposRepository.createOrder(order: totalOrder))
+        when(mockReposRepository.createOrder(totalOrder))
             .thenAnswer((_) async => 'orderId222222');
         when(mockReposRepository.saveCart(order: null))
             .thenAnswer((_) async => null);

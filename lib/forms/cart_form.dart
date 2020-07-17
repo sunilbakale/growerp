@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/@bloc.dart';
+import '../blocs/@bloc.dart';
 import '../models/@models.dart';
 import '../routing_constants.dart';
 import '../helper_functions.dart';
+import 'login_form.dart';
 
 class CartForm extends StatelessWidget {
   @override
@@ -77,6 +78,8 @@ class _CartTotal extends StatelessWidget {
     final hugeStyle =
         Theme.of(context).textTheme.headline1.copyWith(fontSize: 48);
     Order order;
+    String companyPartyId;
+    String companyName;
     return SizedBox(
         height: 200,
         child: Center(
@@ -87,18 +90,21 @@ class _CartTotal extends StatelessWidget {
                   context, HomeRoute, ModalRoute.withName(HomeRoute),
                   arguments: "Order Accepted, id:${state.orderId}");
             }
-          }, child:
-              BlocBuilder<CartBloc, CartState>(builder: (context, cartState) {
-            if (cartState is CartLoading || cartState is CartPaying) {
-              return CircularProgressIndicator();
+          }, child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+            if (state is AuthUnauthenticated) {
+              companyPartyId = state?.authenticate?.company?.partyId;
+              companyName = state?.authenticate?.company?.name;
             }
-            if (cartState is CartError) {
-              BlocProvider.of<CartBloc>(context).add(LoadCart());
-              HelperFunctions.showMessage(context, 'Cart error?', Colors.red);
-            }
-            if (cartState is CartLoaded) {
-              return BlocBuilder<AuthBloc, AuthState>(
-                  builder: (BuildContext context, authState) {
+            return BlocBuilder<CartBloc, CartState>(
+                builder: (context, cartState) {
+              if (cartState is CartLoading || cartState is CartPaying) {
+                return CircularProgressIndicator();
+              }
+              if (cartState is CartError) {
+                HelperFunctions.showMessage(
+                    context, 'Cart error: $cartState.message}?', Colors.red);
+              }
+              if (cartState is CartLoaded) {
                 order = cartState.order;
                 return Row(children: <Widget>[
                   Text((cartState.totalPrice ?? 0.00).toString(),
@@ -112,23 +118,26 @@ class _CartTotal extends StatelessWidget {
                           ? null
                           : () async {
                               dynamic result;
-                              if (authState is AuthUnauthenticated)
+                              if (state is! AuthAuthenticated) {
                                 result = await Navigator.pushNamed(
-                                    context, LoginRoute);
-                              if (authState is AuthAuthenticated ||
+                                    context, LoginRoute,
+                                    arguments: LoginArgs(
+                                        message: 'Please login/register first?',
+                                        companyPartyId: companyPartyId,
+                                        companyName: companyName));
+                              }
+                              if (state is AuthAuthenticated ||
                                   result == true) {
                                 HelperFunctions.showMessage(
                                     context, 'Sending order...', Colors.green);
                                 BlocProvider.of<CartBloc>(context)
                                     .add(PayOrder(order));
-                              } else
-                                HelperFunctions.showMessage(
-                                    context, 'Should login first?', Colors.red);
+                              }
                             }),
                 ]);
-              });
-            }
-            return Container();
+              }
+              return Container();
+            });
           }))
         ])));
   }

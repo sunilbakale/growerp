@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/bloc/@bloc.dart';
+import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import 'package:growerp/forms/@forms.dart';
 import 'package:growerp/router.dart' as router;
@@ -16,101 +16,95 @@ class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
 class MockRegisterBloc extends MockBloc<RegisterEvent, RegisterState>
     implements RegisterBloc {}
 
-class MockCatalogBloc extends MockBloc<RegisterEvent, RegisterState>
-    implements CatalogBloc {}
-
 void main() {
   group('Register_Form', () {
     Repos repos;
     RegisterBloc registerBloc;
-    CatalogBloc catalogBloc;
+    AuthBloc authBloc;
 
     setUp(() {
       repos = MockRepos();
-      catalogBloc = MockCatalogBloc();
+      authBloc = MockAuthBloc();
       registerBloc = MockRegisterBloc();
     });
 
     tearDown(() {
-      registerBloc?.close();
-      catalogBloc?.close();
+      registerBloc.close();
+      authBloc.close();
     });
 
     testWidgets('check form text fields + Load register event',
         (WidgetTester tester) async {
-//      when(catalogBloc.state).thenAnswer((_) => CatalogLoaded(catalog));
-//      when(registerBloc.state).thenAnswer((_) => RegisterLoaded(currencies));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
+      //     when(registerBloc.state).thenReturn(RegisterLoaded(currencies));
+      // TODO: look like cannot mock registerblock so feed over repos
+      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
       await tester.pumpWidget(RepositoryProvider(
-        create: (context) => repos,
-        child: BlocProvider<CatalogBloc>.value(
-          value: catalogBloc,
-          child: MaterialApp(
-            onGenerateRoute: router.generateRoute,
-            home: Scaffold(
-              body: RegisterForm(),
+          create: (context) => repos,
+          child: BlocProvider<AuthBloc>.value(
+            value: authBloc,
+            child: BlocProvider<RegisterBloc>.value(
+              value: registerBloc,
+              child: MaterialApp(
+                onGenerateRoute: router.generateRoute,
+                home: Scaffold(
+                  body: RegisterForm(loginArgs: LoginArgs()),
+                ),
+              ),
             ),
-          ),
-        ),
-      ));
+          )));
       await tester.pumpAndSettle();
-//      expect(find.text('A temporary password will be send by email'),
-//          findsOneWidget);
-//      expect(find.text('Register'), findsWidgets);
-//      whenListen(
-//          registerBloc, Stream.fromIterable(<RegisterEvent>[LoadRegister()]));
+      expect(find.text('Register a new company and admin'), findsWidgets);
+      expect(find.byKey(Key('firstName')), findsOneWidget);
+      expect(find.byKey(Key('lastName')), findsOneWidget);
+      expect(find.byKey(Key('dropDown')), findsOneWidget);
+      expect(find.byKey(Key('companyName')), findsOneWidget);
+      expect(find.text('A temporary password will be send by email'),
+          findsOneWidget);
+      expect(find.byKey(Key('email')), findsOneWidget);
+      expect(find.text('Currency'), findsWidgets);
+      expect(
+          find.text('Register AND create new Ecommerce shop'), findsOneWidget);
+      expect(find.byKey(Key('newCompany')), findsOneWidget);
     });
-/*    testWidgets('RegisterForm enter fields and press register',
+
+    testWidgets('RegisterForm enter fields and press register',
         (WidgetTester tester) async {
-      when(registerBloc.state).thenReturn(RegisterLoaded(currencies));
+      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
       await tester.pumpWidget(RepositoryProvider(
-        create: (context) => repos,
-        child: BlocProvider<AuthBloc>.value(
-          value: authBloc,
-          child: MaterialApp(
-            home: Scaffold(
-              body: RegisterForm(),
+          create: (context) => repos,
+          child: BlocProvider<AuthBloc>.value(
+            value: authBloc,
+            child: BlocProvider<RegisterBloc>.value(
+              value: registerBloc,
+              child: MaterialApp(
+                onGenerateRoute: router.generateRoute,
+                home: Scaffold(
+                  body: RegisterForm(loginArgs: LoginArgs()),
+                ),
+              ),
             ),
-          ),
-        ),
-      ));
+          )));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(Key('companyName')), companyName);
-//      await tester.enterText(find.byType(DropdownButton), currencyId);
+//      await tester.enterText(find.byType(DropdownButton), currencies[2]);
       await tester.enterText(find.byKey(Key('firstName')), username);
       await tester.enterText(find.byKey(Key('lastName')), password);
       await tester.enterText(find.byKey(Key('email')), email);
-      await tester.tap(find.widgetWithText(RaisedButton, 'Register'));
+      await tester.tap(find.byKey(Key('newCompany')));
       await tester.pumpAndSettle();
       whenListen(
           registerBloc,
           Stream.fromIterable(<RegisterEvent>[
             LoadRegister(),
-            RegisterButtonPressed(
-                companyPartyId: companyPartyId,
+            CreateShopButtonPressed(
+                companyName: companyName,
+                currency: currencyId,
                 firstName: firstName,
                 lastName: lastName,
                 email: email)
           ]));
     });
-
-    testWidgets('RegisterForm register, forgot password ',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(RepositoryProvider(
-        create: (context) => repos,
-        child: BlocProvider<CatalogBloc>.value(
-          value: catalogBloc,
-          child: MaterialApp(
-            home: Scaffold(
-              body: RegisterForm(),
-            ),
-          ),
-        ),
-      ));
-      await tester.pumpAndSettle();
-
-      whenListen(registerBloc,
-          Stream.fromIterable(<AuthEvent>[ResetPassword(username: username)]));
-    });
-*/
   });
 }

@@ -4,25 +4,24 @@ import 'forms/@forms.dart';
 
 // https://medium.com/flutter-community/flutter-navigation-cheatsheet-a-guide-to-named-routing-dc642702b98c
 Route<dynamic> generateRoute(RouteSettings settings) {
-  print("Navigate to ${settings.name} with data: ${settings.arguments}");
+  print(
+      ">>> Navigate to ${settings.name} with data: ${settings.arguments.toString()}");
   switch (settings.name) {
     case HomeRoute:
-      final String message = settings.arguments;
       return MaterialPageRoute(
-          builder: (context) => HomeForm(message: message));
+          builder: (context) => HomeForm(message: settings.arguments));
     case ProductRoute:
       return MaterialPageRoute(
           builder: (context) => ProductForm(product: settings.arguments));
     case LoginRoute:
-      final String message = settings.arguments;
       return MaterialPageRoute(
-          builder: (context) => LoginForm(message: message));
+          builder: (context) => LoginForm(loginArgs: settings?.arguments));
     case RegisterRoute:
-      return MaterialPageRoute(builder: (context) => RegisterForm());
-    case ChangePwRoute:
-      ChangePwArgs changePwArgs = settings.arguments;
       return MaterialPageRoute(
-          builder: (context) => ChangePwForm(changePwArgs: changePwArgs));
+          builder: (context) => RegisterForm(loginArgs: settings?.arguments));
+    case ChangePwRoute:
+      return MaterialPageRoute(
+          builder: (context) => ChangePwForm(changePwArgs: settings.arguments));
     case CartRoute:
       return MaterialPageRoute(builder: (context) => CartForm());
     default:
