@@ -62,7 +62,7 @@ class _LoginHeaderState extends State<LoginHeader> {
   String companyPartyId;
   String companyName;
   List<Company> companies;
-
+  Company _companySelected;
   _LoginHeaderState(this.message);
 
   @override
@@ -80,7 +80,6 @@ class _LoginHeaderState extends State<LoginHeader> {
       ..text = authenticate?.user?.name != null
           ? authenticate.user.name
           : kReleaseMode ? '' : 'admin@growerp.com';
-    Company _companySelected;
     final _passwordController = TextEditingController()
       ..text = kReleaseMode ? '' : 'qqqqqq9!';
     return MultiBlocListener(
@@ -122,15 +121,20 @@ class _LoginHeaderState extends State<LoginHeader> {
           }),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-          if (state is AuthUnauthenticated) authenticate = state.authenticate;
+          if (state is AuthUnauthenticated) {
+            authenticate = state.authenticate;
+            _usernameController..text = authenticate?.user?.name;
+            companyPartyId = authenticate?.company?.partyId;
+            companyName = authenticate?.company?.name;
+          }
           return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
             if (state is LoginLoading)
               return Center(child: CircularProgressIndicator());
             if (state is LoginLoaded) {
-              companyPartyId = state?.companyPartyId;
-              companyName = state?.companyName;
               companies = state?.companies;
-              _companySelected = companies != null ? companies[0] : null;
+              _companySelected = companies != null
+                  ? companies[0]
+                  : Company(partyId: companyPartyId);
             }
             return Center(
                 child: Container(

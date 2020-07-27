@@ -12,8 +12,8 @@ void main() {
 
   client = Dio();
   client.options.baseUrl = 'http://localhost:8080/rest/';
-  client.options.connectTimeout = 5000; //5s
-  client.options.receiveTimeout = 16000;
+  client.options.connectTimeout = 10000; //10s
+  client.options.receiveTimeout = 20000;
   client.options.headers = {'Content-Type': 'application/json'};
 
   setUp(() async {
@@ -72,6 +72,7 @@ void main() {
     dynamic response = await client.post('s1/growerp/100/Login', data: login);
     Authenticate loginAuth = authenticateFromJson(response.toString());
     authenticate.apiKey = loginAuth.apiKey;
+    print("==========apiKey: ${loginAuth.apiKey}");
     apiKey = loginAuth.apiKey;
     authenticate.moquiSessionToken = loginAuth.moquiSessionToken;
     sessionToken = loginAuth.moquiSessionToken;
