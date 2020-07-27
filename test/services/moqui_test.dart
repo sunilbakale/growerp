@@ -77,7 +77,7 @@ void main() {
     sessionToken = loginAuth.moquiSessionToken;
     expect(authenticateToJson(loginAuth), authenticateToJson(authenticate));
   });
-/*  test('update password', () async {
+  test('update password', () async {
     Map updPassword = {
       'username': login['username'],
       'oldPassword': password,
@@ -105,5 +105,4 @@ void main() {
     expect(result.products.length, 2);
     expect(result.categories.length, 2);
   });
-*/
 }

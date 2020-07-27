@@ -17,12 +17,12 @@ void main() {
   group('Cart bloc test: ', () {
     blocTest(
       'check initial state',
-      build: () async => CartBloc(repos: mockReposRepository),
+      build: () => CartBloc(repos: mockReposRepository),
       expect: <CartState>[],
     );
     blocTest(
       'load with success',
-      build: () async => CartBloc(repos: mockReposRepository),
+      build: () => CartBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCart()).thenAnswer((_) async => emptyOrder);
         bloc.add(LoadCart());
@@ -34,7 +34,7 @@ void main() {
     );
     blocTest(
       'load error',
-      build: () async => CartBloc(repos: mockReposRepository),
+      build: () => CartBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCart())
             .thenAnswer((_) async => errorMessage);
@@ -47,7 +47,7 @@ void main() {
     );
     blocTest(
       'load, add, pay',
-      build: () async => CartBloc(repos: mockReposRepository),
+      build: () => CartBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCart()).thenAnswer((_) async => emptyOrder);
         bloc.add(LoadCart());

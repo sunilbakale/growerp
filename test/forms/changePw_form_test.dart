@@ -10,10 +10,10 @@ import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
-class MockChangePwBloc extends MockBloc<ChangePwEvent, ChangePwState>
-    implements ChangePwBloc {}
+class MockChangePwBloc extends MockBloc<ChangePwState> implements ChangePwBloc {
+}
 
 void main() {
   group('ChangePw_Form test: ', () {

@@ -11,9 +11,9 @@ import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
-class MockCartBloc extends MockBloc<CartEvent, CartState> implements CartBloc {}
+class MockCartBloc extends MockBloc<CartState> implements CartBloc {}
 
 void main() {
   group('Cart_Form test:', () {

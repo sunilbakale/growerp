@@ -17,13 +17,13 @@ void main() {
   group('First catalog test', () {
     blocTest(
       'check initial state',
-      build: () async => CatalogBloc(repos: mockReposRepository),
+      build: () => CatalogBloc(repos: mockReposRepository),
       expect: <AuthState>[],
     );
 
     blocTest(
       'Catalog load success',
-      build: () async => CatalogBloc(repos: mockReposRepository),
+      build: () => CatalogBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCatalog("100001"))
             .thenAnswer((_) async => catalog);
@@ -38,7 +38,7 @@ void main() {
     );
     blocTest(
       'Catalog load error',
-      build: () async => CatalogBloc(repos: mockReposRepository),
+      build: () => CatalogBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCatalog("100001"))
             .thenAnswer((_) async => errorMessage);

@@ -8,10 +8,9 @@ import 'package:growerp/forms/@forms.dart';
 import 'package:growerp/router.dart' as router;
 import '../data.dart';
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
-class MockCatalogBloc extends MockBloc<CatalogEvent, CatalogState>
-    implements CatalogBloc {}
+class MockCatalogBloc extends MockBloc<CatalogState> implements CatalogBloc {}
 
 void main() {
   group('Home_Form test:', () {

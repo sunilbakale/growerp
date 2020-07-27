@@ -11,10 +11,10 @@ import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
-class MockRegisterBloc extends MockBloc<RegisterEvent, RegisterState>
-    implements RegisterBloc {}
+class MockRegisterBloc extends MockBloc<RegisterState> implements RegisterBloc {
+}
 
 void main() {
   group('Register_Form', () {

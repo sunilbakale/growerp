@@ -7,7 +7,7 @@ import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
 void main() {
   MockReposRepository mockReposRepository;
@@ -25,12 +25,12 @@ void main() {
   group('Login bloc test', () {
     blocTest(
       'check initial state',
-      build: () async => LoginBloc(repos: mockReposRepository),
+      build: () => LoginBloc(repos: mockReposRepository),
       expect: <AuthState>[],
     );
 
     blocTest('Login success',
-        build: () async => LoginBloc(repos: mockReposRepository),
+        build: () => LoginBloc(repos: mockReposRepository),
         act: (bloc) async {
           when(mockReposRepository.login(
                   companyPartyId: companyPartyId,
@@ -50,7 +50,7 @@ void main() {
 
     blocTest(
       'Login failure',
-      build: () async => LoginBloc(repos: mockReposRepository),
+      build: () => LoginBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.login(
                 companyPartyId: companyPartyId,
@@ -67,7 +67,7 @@ void main() {
 
     blocTest(
       'Login succes and change password',
-      build: () async => LoginBloc(repos: mockReposRepository),
+      build: () => LoginBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.login(
                 companyPartyId: companyPartyId,

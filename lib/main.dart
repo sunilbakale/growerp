@@ -45,20 +45,20 @@ class MyApp extends StatelessWidget {
 
 class SimpleBlocObserver extends BlocObserver {
   @override
-  void onEvent(Bloc bloc, Object event) {
+  void onEvent(Cubit cubit, Object event) {
     print("event: $event: ");
-    super.onEvent(bloc, event);
+    super.onEvent(cubit, event);
   }
 
   @override
-  void onTransition(Bloc bloc, Transition transition) {
+  void onTransition(Cubit cubit, Transition transition) {
     print(transition);
-    super.onTransition(bloc, transition);
+    super.onTransition(cubit, transition);
   }
 
   @override
-  void onError(Bloc bloc, Object error, StackTrace stackTrace) {
+  void onError(Cubit cubit, Object error, StackTrace stackTrace) {
     print("error: $error");
-    super.onError(bloc, error, stackTrace);
+    super.onError(cubit, error, stackTrace);
   }
 }

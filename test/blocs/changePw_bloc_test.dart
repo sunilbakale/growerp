@@ -18,11 +18,11 @@ void main() {
 
   group('ChangePassword bloc test', () {
     blocTest('check initial state',
-        build: () async => ChangePwBloc(repos: mockReposRepository),
+        build: () => ChangePwBloc(repos: mockReposRepository),
         expect: <AuthState>[]);
 
     blocTest('ChangePw success',
-        build: () async => ChangePwBloc(repos: mockReposRepository),
+        build: () => ChangePwBloc(repos: mockReposRepository),
         act: (bloc) async {
           when(mockReposRepository.updatePassword(
                   username: username,
@@ -37,7 +37,7 @@ void main() {
         expect: <ChangePwState>[ChangePwInProgress(), ChangePwOk()]);
 // cannot run see: https://stackoverflow.com/questions/57689492/flutter-unhandled-exception-servicesbinding-defaultbinarymessenger-was-accesse
 /*    blocTest('ChangePw failure',
-        build: () async =>
+        build: () =>
             ChangePwBloc(authBloc: mockAuthBloc, repos: mockReposRepository),
         act: (bloc) async {
           when(mockReposRepository.updatePassword(

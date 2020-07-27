@@ -7,7 +7,7 @@ import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
 void main() {
   MockReposRepository mockReposRepository;
@@ -25,13 +25,13 @@ void main() {
   group('Register bloc test', () {
     blocTest(
       'check initial state',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       expect: <AuthState>[],
     );
 
     blocTest(
       'Register load success',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
             .thenAnswer((_) async => currencies);
@@ -45,7 +45,7 @@ void main() {
 
     blocTest(
       'Register load error',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
             .thenAnswer((_) async => errorMessage);
@@ -56,7 +56,7 @@ void main() {
 
     blocTest(
       'Register existing shop success',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
             .thenAnswer((_) async => currencies);
@@ -82,7 +82,7 @@ void main() {
     );
     blocTest(
       'Register new shop success',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
             .thenAnswer((_) async => currencies);
@@ -110,7 +110,7 @@ void main() {
     );
     blocTest(
       'Register Failure',
-      build: () async => RegisterBloc(repos: mockReposRepository),
+      build: () => RegisterBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getCurrencies())
             .thenAnswer((_) async => currencies);

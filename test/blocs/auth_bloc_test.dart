@@ -18,13 +18,13 @@ void main() {
   group('Authbloc test', () {
     blocTest(
       'check initial state',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       expect: <AuthState>[],
     );
 
-    blocTest<AuthBloc, AuthEvent, AuthState>(
+    blocTest(
       'succesful connection and Unauthenticated',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
@@ -38,7 +38,7 @@ void main() {
     );
     blocTest(
       'failed connection with ConnectionProblem',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected())
             .thenAnswer((_) async => errorMessage);
@@ -52,7 +52,7 @@ void main() {
 
     blocTest(
       'succesfull connection and Authenticated',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
@@ -67,7 +67,7 @@ void main() {
     );
     blocTest(
       'connection and login and logout',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
@@ -87,7 +87,7 @@ void main() {
     );
     blocTest(
       'succesful connection and register',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
@@ -105,7 +105,7 @@ void main() {
     dynamic result = Response;
     blocTest(
       'succesful connection login screen and reset password',
-      build: () async => AuthBloc(repos: mockReposRepository),
+      build: () => AuthBloc(repos: mockReposRepository),
       act: (bloc) async {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
