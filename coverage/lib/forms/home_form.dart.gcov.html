@@ -120,7 +120,7 @@
 <a name="58"><span class="lineNum">      58 </span><span class="lineNoCov">          0 :                   child: Text(&quot;${state.errorMessage} \nRetry?&quot;),</span></a>
 <a name="59"><span class="lineNum">      59 </span><span class="lineNoCov">          0 :                   onPressed: () {</span></a>
 <a name="60"><span class="lineNum">      60 </span><span class="lineNoCov">          0 :                     BlocProvider.of&lt;CatalogBloc&gt;(context).add(LoadCatalog());</span></a>
-<a name="61"><span class="lineNum">      61 </span><span class="lineNoCov">          0 :                     BlocProvider.of&lt;AuthBloc&gt;(context).add(StartAuth());</span></a>
+<a name="61"><span class="lineNum">      61 </span><span class="lineNoCov">          0 :                     BlocProvider.of&lt;AuthBloc&gt;(context).add(LoadAuth());</span></a>
 <a name="62"><span class="lineNum">      62 </span>            :                   }),</a>
 <a name="63"><span class="lineNum">      63 </span>            :             ]);</a>
 <a name="64"><span class="lineNum">      64 </span>            :       }</a>

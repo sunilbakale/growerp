@@ -4,7 +4,6 @@ import '../blocs/@bloc.dart';
 import '../models/@models.dart';
 import '../routing_constants.dart';
 import '../helper_functions.dart';
-import 'login_form.dart';
 
 class CartForm extends StatelessWidget {
   @override
@@ -78,8 +77,6 @@ class _CartTotal extends StatelessWidget {
     final hugeStyle =
         Theme.of(context).textTheme.headline1.copyWith(fontSize: 48);
     Order order;
-    String companyPartyId;
-    String companyName;
     return SizedBox(
         height: 200,
         child: Center(
@@ -91,10 +88,6 @@ class _CartTotal extends StatelessWidget {
                   arguments: "Order Accepted, id:${state.orderId}");
             }
           }, child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-            if (state is AuthUnauthenticated) {
-              companyPartyId = state?.authenticate?.company?.partyId;
-              companyName = state?.authenticate?.company?.name;
-            }
             return BlocBuilder<CartBloc, CartState>(
                 builder: (context, cartState) {
               if (cartState is CartLoading || cartState is CartPaying) {
@@ -121,10 +114,7 @@ class _CartTotal extends StatelessWidget {
                               if (state is! AuthAuthenticated) {
                                 result = await Navigator.pushNamed(
                                     context, LoginRoute,
-                                    arguments: LoginArgs(
-                                        message: 'Please login/register first?',
-                                        companyPartyId: companyPartyId,
-                                        companyName: companyName));
+                                    arguments: 'Please login/register first?');
                               }
                               if (state is AuthAuthenticated ||
                                   result == true) {

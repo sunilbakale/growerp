@@ -15,7 +15,7 @@ void main() {
     child: MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(repos: repos)..add(StartAuth())),
+            create: (context) => AuthBloc(repos: repos)..add(LoadAuth())),
         BlocProvider<CatalogBloc>(
             create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog())),
         BlocProvider<CartBloc>(

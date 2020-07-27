@@ -14,11 +14,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => ProductForm(product: settings.arguments));
     case LoginRoute:
-      return MaterialPageRoute(
-          builder: (context) => LoginForm(loginArgs: settings?.arguments));
+      return MaterialPageRoute(builder: (context) => LoginForm());
     case RegisterRoute:
-      return MaterialPageRoute(
-          builder: (context) => RegisterForm(loginArgs: settings?.arguments));
+      return MaterialPageRoute(builder: (context) => RegisterForm());
     case ChangePwRoute:
       return MaterialPageRoute(
           builder: (context) => ChangePwForm(changePwArgs: settings.arguments));

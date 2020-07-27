@@ -24,6 +24,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           yield LoginLoaded(
               companyPartyId: event.companyPartyId,
               companyName: event.companyName,
+              username: event.username,
               companies: companies);
         } else {
           yield LoginError(companies);
@@ -32,7 +33,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         // create new customer existing company
         yield LoginLoaded(
             companyPartyId: event.companyPartyId,
-            companyName: event.companyName);
+            companyName: event.companyName,
+            username: event.username);
       }
     }
     if (event is LoginButtonPressed) {
@@ -63,14 +65,15 @@ abstract class LoginEvent extends Equatable {
 class LoadLogin extends LoginEvent {
   final String companyPartyId;
   final String companyName;
+  final String username;
 
-  LoadLogin([this.companyPartyId, this.companyName]);
+  LoadLogin([this.companyPartyId, this.companyName, this.username]);
   @override
-  List<Object> get props => [companyPartyId];
+  List<Object> get props => [companyPartyId, companyName, username];
 
   @override
   String toString() =>
-      'Login Load event: company: $companyName[$companyPartyId]';
+      'Login Load event: company: $companyName[$companyPartyId] username: $username';
 }
 
 class LoginButtonPressed extends LoginEvent {
@@ -102,13 +105,15 @@ class LoginLoading extends LoginState {}
 class LoginLoaded extends LoginState {
   final String companyPartyId;
   final String companyName;
+  final String username;
   final List<Company> companies;
-  LoginLoaded({this.companyPartyId, this.companyName, this.companies});
+  LoginLoaded(
+      {this.companyPartyId, this.companyName, this.username, this.companies});
   @override
-  List<Object> get props => [companyPartyId, companyName, companies];
+  List<Object> get props => [companyPartyId, companyName, username, companies];
   String toString() =>
       'Login loaded, company: $companyName[$companyPartyId] ' +
-      'companies size: ${companies?.length}';
+      'username: $username companies size: ${companies?.length}';
 }
 
 class LoginChangePw extends LoginState {

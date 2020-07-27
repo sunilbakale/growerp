@@ -77,7 +77,7 @@
 <a name="15"><span class="lineNum">      15 </span>            : </a>
 <a name="16"><span class="lineNum">      16 </span>            :   @override</a>
 <a name="17"><span class="lineNum">      17 </span><span class="lineCov">          1 :   Stream&lt;AuthState&gt; mapEventToState(AuthEvent event) async* {</span></a>
-<a name="18"><span class="lineNum">      18 </span><span class="lineCov">          1 :     if (event is StartAuth) {</span></a>
+<a name="18"><span class="lineNum">      18 </span><span class="lineCov">          1 :     if (event is LoadAuth) {</span></a>
 <a name="19"><span class="lineNum">      19 </span><span class="lineCov">          2 :       yield AuthLoading();</span></a>
 <a name="20"><span class="lineNum">      20 </span><span class="lineCov">          3 :       final dynamic connected = await repos.getConnected();</span></a>
 <a name="21"><span class="lineNum">      21 </span><span class="lineCov">          1 :       if (connected is String) {</span></a>
@@ -122,8 +122,8 @@
 <a name="60"><span class="lineNum">      60 </span>            : </a>
 <a name="61"><span class="lineNum">      61 </span>            : class ConnectionProblem extends AuthEvent {}</a>
 <a name="62"><span class="lineNum">      62 </span>            : </a>
-<a name="63"><span class="lineNum">      63 </span>            : class StartAuth extends AuthEvent {</a>
-<a name="64"><span class="lineNum">      64 </span><span class="lineNoCov">          0 :   String toString() =&gt; &quot;StartAuth: starting auth bloc&quot;;</span></a>
+<a name="63"><span class="lineNum">      63 </span>            : class LoadAuth extends AuthEvent {</a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineNoCov">          0 :   String toString() =&gt; &quot;LoadAuth: starting auth bloc&quot;;</span></a>
 <a name="65"><span class="lineNum">      65 </span>            : }</a>
 <a name="66"><span class="lineNum">      66 </span>            : </a>
 <a name="67"><span class="lineNum">      67 </span>            : class Logout extends AuthEvent {}</a>

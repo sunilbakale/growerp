@@ -39,6 +39,7 @@ void main() {
       //     when(registerBloc.state).thenReturn(RegisterLoaded(currencies));
       // TODO: look like cannot mock registerblock so feed over repos
       when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(repos.getCompanies()).thenAnswer((_) async => companies);
       await tester.pumpWidget(RepositoryProvider(
           create: (context) => repos,
           child: BlocProvider<AuthBloc>.value(
@@ -48,7 +49,7 @@ void main() {
               child: MaterialApp(
                 onGenerateRoute: router.generateRoute,
                 home: Scaffold(
-                  body: RegisterForm(loginArgs: LoginArgs()),
+                  body: RegisterForm(),
                 ),
               ),
             ),
@@ -63,8 +64,6 @@ void main() {
           findsOneWidget);
       expect(find.byKey(Key('email')), findsOneWidget);
       expect(find.text('Currency'), findsWidgets);
-      expect(
-          find.text('Register AND create new Ecommerce shop'), findsOneWidget);
       expect(find.byKey(Key('newCompany')), findsOneWidget);
     });
 
@@ -81,7 +80,7 @@ void main() {
               child: MaterialApp(
                 onGenerateRoute: router.generateRoute,
                 home: Scaffold(
-                  body: RegisterForm(loginArgs: LoginArgs()),
+                  body: RegisterForm(),
                 ),
               ),
             ),

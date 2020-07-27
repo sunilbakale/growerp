@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import '../services/repos.dart';
 import '../models/@models.dart';
@@ -16,8 +17,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   @override
   Stream<RegisterState> mapEventToState(RegisterEvent event) async* {
     if (event is LoadRegister) {
-      print(
-          "===regbloc: load: comp: ${event.companyName}[${event.companyPartyId}]");
       yield RegisterLoading();
       if (event.companyPartyId == null) {
         // create new company and admin user
@@ -155,7 +154,7 @@ class RegisterLoaded extends RegisterState {
   final String companyPartyId;
   final String companyName;
   final List<String> currencies;
-  final List<String> companies;
+  final List<Company> companies;
   RegisterLoaded(
       {this.companyPartyId, this.companyName, this.currencies, this.companies});
   @override

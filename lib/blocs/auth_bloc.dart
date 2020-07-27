@@ -15,7 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    if (event is StartAuth) {
+    if (event is LoadAuth) {
       yield AuthLoading();
       final dynamic connected = await repos.getConnected();
       if (connected is String) {
@@ -44,6 +44,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       yield AuthUnauthenticated(authenticate);
     } else if (event is ResetPassword) {
       await repos.resetPassword(username: event.username);
+    } else if (event is UpdateAuth) {
+      yield AuthUnauthenticated(event.authenticate);
     } else {
       final Authenticate authenticate = await repos.getAuthenticate();
       yield AuthUnauthenticated(authenticate);
@@ -60,11 +62,20 @@ abstract class AuthEvent extends Equatable {
 
 class ConnectionProblem extends AuthEvent {}
 
-class StartAuth extends AuthEvent {
-  String toString() => "StartAuth: starting auth bloc";
-}
+class LoadAuth extends AuthEvent {}
 
 class Logout extends AuthEvent {}
+
+class UpdateAuth extends AuthEvent {
+  final Authenticate authenticate;
+
+  UpdateAuth(this.authenticate);
+  @override
+  List<Object> get props => [authenticate];
+
+  @override
+  String toString() => 'Update Authenticate in AuthBloc';
+}
 
 class LoggedIn extends AuthEvent {
   final Authenticate authenticate;
@@ -120,7 +131,7 @@ class AuthAuthenticated extends AuthState {
   @override
   String toString() =>
       'AuthAuthenticated, company: ${authenticate?.company?.name}' +
-      '[${authenticate.company.partyId}] username: ${authenticate?.user?.name}';
+      '[${authenticate?.company?.partyId}] username: ${authenticate?.user?.name}';
 }
 
 class AuthUnauthenticated extends AuthState {
@@ -131,5 +142,5 @@ class AuthUnauthenticated extends AuthState {
   @override
   String toString() =>
       'AuthUnauthenticated: company: ${authenticate?.company?.name}' +
-      '[${authenticate.company.partyId}] username: ${authenticate?.user?.name}';
+      '[${authenticate?.company?.partyId}] username: ${authenticate?.user?.name}';
 }

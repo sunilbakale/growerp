@@ -34,9 +34,10 @@ void main() {
     });
 
     testWidgets('check text fields', (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(authenticateNoKey));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
       when(repos.getCompanies()).thenAnswer((_) async => companies);
+      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
       await tester.pumpWidget(RepositoryProvider(
           create: (context) => repos,
           child: BlocProvider.value(
@@ -61,9 +62,10 @@ void main() {
       whenListen(loginBloc, Stream.fromIterable(<LoginEvent>[LoadLogin()]));
     });
     testWidgets('enter fields and press login', (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(authenticateNoKey));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
       when(repos.getCompanies()).thenAnswer((_) async => companies);
+      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
       await tester.pumpWidget(RepositoryProvider(
           create: (context) => repos,
           child: BlocProvider.value(
@@ -94,7 +96,7 @@ void main() {
           ]));
     });
     testWidgets('register', (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(authenticateNoKey));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
       when(repos.getCompanies()).thenAnswer((_) async => companies);
       when(repos.getCurrencies()).thenAnswer((_) async => currencies);
@@ -116,11 +118,11 @@ void main() {
       await tester
           .tap(find.widgetWithText(GestureDetector, 'register new account'));
       await tester.pumpAndSettle();
-      expect(
-          find.text('Register AND create new Ecommerce shop'), findsOneWidget);
+      expect(find.text('Register AND create a new Ecommerce shop'),
+          findsOneWidget);
     });
     testWidgets('forgot password', (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(authenticateNoKey));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
       when(repos.getCompanies()).thenAnswer((_) async => companies);
       when(repos.getCurrencies()).thenAnswer((_) async => currencies);

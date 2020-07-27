@@ -180,6 +180,8 @@ class Repos {
   }
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
+//    print(
+//        "====repos persist auth, companyPartyid: ${authenticate?.company?.partyId} username: ${authenticate?.user?.name}");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('authenticate', authenticateToJson(authenticate));
   }
@@ -187,6 +189,11 @@ class Repos {
   Future<Authenticate> getAuthenticate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String result = prefs.getString('authenticate');
+    if (result != null) {
+//      Authenticate authenticate = authenticateFromJson(result);
+//      print(
+//          "====repos get auth, companyPartyid: ${authenticate?.company?.partyId} username: ${authenticate?.user?.name}");
+    }
     if (result != null) return authenticateFromJson(result);
     return null;
   }

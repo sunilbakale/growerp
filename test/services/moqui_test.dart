@@ -16,6 +16,11 @@ void main() {
   client.options.receiveTimeout = 16000;
   client.options.headers = {'Content-Type': 'application/json'};
 
+  setUp(() async {
+    Response response = await client.get('moquiSessionToken');
+    sessionToken = response.data;
+  });
+
   test('test connection', () async {
     print("need a local version of Moqui see: README of this project");
     print("=========================================================");
@@ -72,7 +77,7 @@ void main() {
     sessionToken = loginAuth.moquiSessionToken;
     expect(authenticateToJson(loginAuth), authenticateToJson(authenticate));
   });
-  test('update password', () async {
+/*  test('update password', () async {
     Map updPassword = {
       'username': login['username'],
       'oldPassword': password,
@@ -100,4 +105,5 @@ void main() {
     expect(result.products.length, 2);
     expect(result.categories.length, 2);
   });
+*/
 }

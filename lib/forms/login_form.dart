@@ -8,51 +8,42 @@ import '../routing_constants.dart';
 import 'changePw_form.dart';
 import '../helper_functions.dart';
 
-class LoginArgs {
-  final String message; // to show at screen startup
-  final String companyPartyId; //if present select if not create company
-  final String companyName; // to show onscreen
-  const LoginArgs({
-    this.message,
-    this.companyPartyId,
-    this.companyName,
-  });
-  String toString() =>
-      "Message: ${this.message} Company: ${this.companyName}[${this.companyPartyId}]";
-}
-
 class LoginForm extends StatelessWidget {
-  final LoginArgs loginArgs;
-  const LoginForm({this.loginArgs});
+  final String message;
+  const LoginForm({this.message});
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          Navigator.pop(context, false);
-          return false;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(loginArgs?.companyPartyId == null ||
-                    loginArgs.companyPartyId == ''
-                ? 'Login'
-                : loginArgs?.companyPartyId != null &&
-                        loginArgs.companyPartyId != ''
-                    ? 'Login to ecommerce shop: ${loginArgs.companyName}'
-                    : ''),
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.home),
-                  onPressed: () => Navigator.pushNamed(context, HomeRoute)),
-            ],
-          ),
-          body: BlocProvider(
-            create: (context) => LoginBloc(repos: context.repository<Repos>())
-              ..add(
-                  LoadLogin(loginArgs?.companyPartyId, loginArgs?.companyName)),
-            child: LoginHeader(loginArgs?.message),
-          ),
-        ));
+    Authenticate authenticate;
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthUnauthenticated) authenticate = state.authenticate;
+      return WillPopScope(
+          onWillPop: () async {
+            Navigator.pop(context, false);
+            return false;
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(authenticate?.company?.partyId == null ||
+                      authenticate?.company?.partyId == ''
+                  ? 'Login'
+                  : authenticate?.company?.partyId != null &&
+                          authenticate?.company?.partyId != ''
+                      ? 'Login to: ${authenticate?.company?.name}'
+                      : ''),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.home),
+                    onPressed: () => Navigator.pushNamed(context, HomeRoute)),
+              ],
+            ),
+            body: BlocProvider(
+              create: (context) => LoginBloc(repos: context.repository<Repos>())
+                ..add(LoadLogin(authenticate?.company?.partyId,
+                    authenticate?.company?.name)),
+              child: LoginHeader(message),
+            ),
+          ));
+    });
   }
 }
 
@@ -93,58 +84,54 @@ class _LoginHeaderState extends State<LoginHeader> {
     final _passwordController = TextEditingController()
       ..text = kReleaseMode ? '' : 'qqqqqq9!';
     return MultiBlocListener(
-      listeners: [
-        BlocListener<AuthBloc, AuthState>(
-            bloc: context.bloc<AuthBloc>(),
-            listener: (context, state) {
-              print("login listen state: ${state.runtimeType}");
-              if (state is AuthAuthenticated) Navigator.pop(context, true);
-              if (state is AuthConnectionProblem) {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('${state.errorMessage}'),
-                  backgroundColor: Colors.red,
-                ));
-              }
-            }),
-        BlocListener<LoginBloc, LoginState>(listener: (context, state) {
-          print("login listen state: ${state.runtimeType}");
-          if (state is LoginLoading) {
-            HelperFunctions.showMessage(
-                context, 'Loading login form...', Colors.green);
-          }
-          if (state is LogginInProgress) {
-            HelperFunctions.showMessage(context, 'Logging in...', Colors.green);
-          }
-          if (state is LoginError) {
-            HelperFunctions.showMessage(
-                context, '${state.errorMessage}', Colors.red);
-          }
-          if (state is LoginChangePw) {
-            Navigator.pushNamed(context, ChangePwRoute,
-                arguments: ChangePwArgs(state.username, state.password));
-          }
-          if (state is LoginOk) {
-            BlocProvider.of<AuthBloc>(context)
-                .add(LoggedIn(authenticate: state.authenticate));
-          }
-        }),
-      ],
-      child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-        if (state is AuthUnauthenticated) authenticate = state.authenticate;
-        return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-          if (state is LoginLoading)
-            return Center(child: CircularProgressIndicator());
-          if (state is LoginError)
-            return Center(child: Text("Error ${state?.errorMessage}"));
-          if (state is LoginLoaded) {
-            companyPartyId = state?.companyPartyId;
-            companyName = state?.companyName;
-            companies = state?.companies;
-            _companySelected = companyPartyId != null && companyPartyId != ''
-                ? Company(partyId: companyPartyId)
-                : companies[0] ?? null;
-            print(
-                "===login loaded: companyPartyid: $companyPartyId companyName: $companyName");
+        listeners: [
+          BlocListener<AuthBloc, AuthState>(
+              bloc: context.bloc<AuthBloc>(),
+              listener: (context, state) {
+                if (state is AuthAuthenticated) Navigator.pop(context, true);
+                if (state is AuthConnectionProblem) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('${state.errorMessage}'),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              }),
+          BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+            if (state is LoginLoading &&
+                companyPartyId != null &&
+                companyPartyId.isNotEmpty) {
+              HelperFunctions.showMessage(
+                  context, 'Loading login form...', Colors.green);
+            }
+            if (state is LogginInProgress) {
+              HelperFunctions.showMessage(
+                  context, 'Logging in...', Colors.green);
+            }
+            if (state is LoginError) {
+              HelperFunctions.showMessage(
+                  context, '${state.errorMessage}', Colors.red);
+            }
+            if (state is LoginChangePw) {
+              Navigator.pushNamed(context, ChangePwRoute,
+                  arguments: ChangePwArgs(state.username, state.password));
+            }
+            if (state is LoginOk) {
+              BlocProvider.of<AuthBloc>(context)
+                  .add(LoggedIn(authenticate: state.authenticate));
+            }
+          }),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+          if (state is AuthUnauthenticated) authenticate = state.authenticate;
+          return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+            if (state is LoginLoading)
+              return Center(child: CircularProgressIndicator());
+            if (state is LoginLoaded) {
+              companyPartyId = state?.companyPartyId;
+              companyName = state?.companyName;
+              companies = state?.companies;
+              _companySelected = companies != null ? companies[0] : null;
+            }
             return Center(
                 child: Container(
                     width: 400,
@@ -157,7 +144,7 @@ class _LoginHeaderState extends State<LoginHeader> {
                               // allow selection of company
                               visible: companyPartyId == null ||
                                   companyPartyId == '',
-                              child: Column(children: [
+                              child: Column(children: <Widget>[
                                 Container(
                                   width: 400,
                                   height: 60,
@@ -241,13 +228,8 @@ class _LoginHeaderState extends State<LoginHeader> {
                           GestureDetector(
                             child: Text('register new account'),
                             onTap: () async {
-                              print(
-                                  "====login partyname to register: $companyName");
                               final dynamic result = await Navigator.pushNamed(
-                                  context, RegisterRoute,
-                                  arguments: LoginArgs(
-                                      companyPartyId: companyPartyId,
-                                      companyName: companyName));
+                                  context, RegisterRoute);
                               HelperFunctions.showMessage(
                                   context, '$result', Colors.green);
                             },
@@ -280,11 +262,8 @@ class _LoginHeaderState extends State<LoginHeader> {
                         ],
                       ),
                     )));
-          }
-          return Container();
-        });
-      }),
-    );
+          });
+        }));
   }
 }
 
@@ -300,8 +279,8 @@ _sendResetPasswordDialog(BuildContext context, String username) async {
         title: Text(
             'Email you registered with?\nWe will send you a reset password',
             textAlign: TextAlign.center),
-        content: new Row(children: <Widget>[
-          new Expanded(
+        content: Row(children: <Widget>[
+          Expanded(
               child: TextFormField(
                   initialValue: username,
                   autofocus: true,

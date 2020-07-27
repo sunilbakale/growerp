@@ -1,0 +1,21 @@
+import 'package:growerp/services/repos.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:http/http.dart' as http;
+
+class MockClient extends Mock implements http.Client {}
+
+main() {
+  group('Repos test', () {
+    test('get connected', () async {
+      final client = MockClient();
+      final repos = Repos();
+
+      when(client.get('http://localhost:8080/rest/moquiSessionToken'))
+          .thenAnswer((_) async => http.Response('{"data": "xxxxxx"}', 200));
+      dynamic result = await repos.getConnected();
+
+      expect(result, true);
+    });
+  });
+}

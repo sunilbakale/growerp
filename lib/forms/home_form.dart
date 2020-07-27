@@ -58,7 +58,7 @@ class _HomeState extends State<HomeBody> {
                   child: Text("${state.errorMessage} \nRetry?"),
                   onPressed: () {
                     BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-                    BlocProvider.of<AuthBloc>(context).add(StartAuth());
+                    BlocProvider.of<AuthBloc>(context).add(LoadAuth());
                   }),
             ]);
       }
@@ -103,6 +103,12 @@ class _HomeState extends State<HomeBody> {
                   title: Text("${company?.name ?? 'Company??'} " +
                       "${authenticate?.apiKey != null ? '- username: ' + authenticate?.user?.name : ''}"),
                   actions: <Widget>[
+                    IconButton(
+                        icon: Icon(Icons.settings),
+                        tooltip: 'Settings',
+                        onPressed: () async {
+                          await _settingsDialog(context, authenticate);
+                        }),
                     IconButton(
                       icon: Icon(Icons.shopping_cart),
                       tooltip: 'Cart',
@@ -329,4 +335,37 @@ class _HomeState extends State<HomeBody> {
       )),
     );
   }
+}
+
+_settingsDialog(BuildContext context, Authenticate authenticate) async {
+  return showDialog<String>(
+    context: context,
+    barrierDismissible:
+        false, // dialog is dismissible with a tap on the barrier
+    builder: (BuildContext context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          title: Text('Settings', textAlign: TextAlign.center),
+          content: Container(
+            height: 200,
+            child: Column(children: <Widget>[
+              RaisedButton(
+                child: Text('Select an another company'),
+                onPressed: () {},
+              ),
+              SizedBox(height: 20),
+              RaisedButton(
+                child: Text('Create a new company and admin'),
+                onPressed: () {
+                  authenticate.company.partyId = null;
+                  BlocProvider.of<AuthBloc>(context)
+                      .add(UpdateAuth(authenticate));
+                  Navigator.popAndPushNamed(context, RegisterRoute);
+                },
+              ),
+            ]),
+          ));
+    },
+  );
 }

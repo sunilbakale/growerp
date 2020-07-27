@@ -29,7 +29,7 @@ void main() {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
             .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
@@ -42,7 +42,7 @@ void main() {
       act: (bloc) async {
         when(mockReposRepository.getConnected())
             .thenAnswer((_) async => errorMessage);
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
@@ -58,7 +58,7 @@ void main() {
         when(mockReposRepository.getAuthenticate())
             .thenAnswer((_) async => authenticate);
         authenticate.apiKey = 'dummyKey';
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
       },
       expect: <AuthState>[
         AuthLoading(),
@@ -74,7 +74,7 @@ void main() {
             .thenAnswer((_) async => authenticateNoKey);
         when(mockReposRepository.logout())
             .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
         bloc.add(LoggedIn(authenticate: authenticate));
         bloc.add(Logout());
       },
@@ -92,7 +92,7 @@ void main() {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
             .thenAnswer((_) async => authenticateNoKey);
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
         bloc.add(LoggedIn(authenticate: authenticate));
       },
       expect: <AuthState>[
@@ -112,7 +112,7 @@ void main() {
             .thenAnswer((_) async => authenticateNoKey);
         when(mockReposRepository.resetPassword(username: 'dummyEmail'))
             .thenAnswer((_) async => result);
-        bloc.add(StartAuth());
+        bloc.add(LoadAuth());
         await bloc.add(ResetPassword(username: 'dummyEmail'));
       },
       expect: <AuthState>[
