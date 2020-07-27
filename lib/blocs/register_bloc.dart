@@ -22,8 +22,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         // create new company and admin user
         dynamic currencies = await repos.getCurrencies();
         if (currencies is List) {
-          yield RegisterLoaded(
-              companyPartyId: event.companyPartyId, currencies: currencies);
+          yield RegisterLoaded(currencies: currencies);
         } else {
           yield RegisterError(currencies);
         }
@@ -31,16 +30,13 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         // create new customer any company
         dynamic companies = await repos.getCompanies();
         if (companies is List) {
-          yield RegisterLoaded(
-              companyPartyId: event.companyPartyId, companies: companies);
+          yield RegisterLoaded(companies: companies);
         } else {
           yield RegisterError(companies);
         }
       } else {
         // create new customer existing company
-        yield RegisterLoaded(
-            companyPartyId: event.companyPartyId,
-            companyName: event.companyName);
+        yield RegisterLoaded();
       }
     } else if (event is RegisterButtonPressed) {
       yield RegisterSending();
@@ -50,6 +46,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           lastName: event.lastName,
           email: event.email);
       if (authenticate is Authenticate) {
+        print("====username regbloc: ${authenticate.user.name}");
         await repos.persistAuthenticate(authenticate);
         yield RegisterSuccess();
       } else {
@@ -151,18 +148,15 @@ class RegisterInitial extends RegisterState {}
 class RegisterLoading extends RegisterState {}
 
 class RegisterLoaded extends RegisterState {
-  final String companyPartyId;
-  final String companyName;
   final List<String> currencies;
   final List<Company> companies;
-  RegisterLoaded(
-      {this.companyPartyId, this.companyName, this.currencies, this.companies});
+  RegisterLoaded({this.currencies, this.companies});
   @override
   List<Object> get props => [currencies];
 
   @override
   String toString() =>
-      "Register Loaded: company: $companyName[$companyPartyId], currencies: ${currencies?.length}" +
+      "Register Loaded: currencies: ${currencies?.length}" +
       " companies: ${companies?.length}";
 }
 

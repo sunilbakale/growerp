@@ -36,24 +36,20 @@ void main() {
     testWidgets('check form text fields + Load register event',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-      //     when(registerBloc.state).thenReturn(RegisterLoaded(currencies));
-      // TODO: look like cannot mock registerblock so feed over repos
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
-      when(repos.getCompanies()).thenAnswer((_) async => companies);
+      when(registerBloc.state).thenReturn(
+          RegisterLoaded(currencies: currencies, companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider<AuthBloc>.value(
-            value: authBloc,
-            child: BlocProvider<RegisterBloc>.value(
-              value: registerBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: RegisterForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: RegisterForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('Register a new company and admin'), findsWidgets);
       expect(find.byKey(Key('firstName')), findsOneWidget);
@@ -69,22 +65,21 @@ void main() {
 
     testWidgets('RegisterForm enter fields and press register',
         (WidgetTester tester) async {
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
+      when(registerBloc.state).thenReturn(
+          RegisterLoaded(currencies: currencies, companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider<AuthBloc>.value(
-            value: authBloc,
-            child: BlocProvider<RegisterBloc>.value(
-              value: registerBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: RegisterForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: RegisterForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(Key('companyName')), companyName);
 //      await tester.enterText(find.byType(DropdownButton), currencies[2]);

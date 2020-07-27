@@ -7,46 +7,46 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Repos {
-  Dio _client;
+  final Dio client;
+
   String sessionToken;
   String apiKey;
 
-  Repos() {
-    _client = new Dio();
+  Repos({@required this.client}) {
+    print("====start new repos ======");
     if (kReleaseMode) {
       //platform not supported on the web
       // is Release Mode ??
-      _client.options.baseUrl = 'https://mobile.growerp.com/rest/';
+      client.options.baseUrl = 'https://mobile.growerp.com/rest/';
     } else if (kIsWeb || Platform.isIOS || Platform.isLinux) {
-      _client.options.baseUrl = 'http://localhost:8080/rest/';
+      client.options.baseUrl = 'http://localhost:8080/rest/';
     } else if (Platform.isAndroid) {
-      _client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
+      client.options.baseUrl = 'http://10.0.2.2:8080/rest/';
     }
-    _client.options.connectTimeout = 5000; //5s
-    _client.options.receiveTimeout = 8000;
-    _client.options.headers = {'Content-Type': 'application/json'};
+    client.options.connectTimeout = 5000; //5s
+    client.options.receiveTimeout = 8000;
+    client.options.headers = {'Content-Type': 'application/json'};
 
-/*  logging in/out going backend requests
-    _client.interceptors.add(InterceptorsWrapper(
-      onRequest:(RequestOptions options) async {
-        print('===Outgoing dio request headers: ${options.headers}');
-        print('===Outgoing dio request data: ${options.data}');
+//  logging in/out going backend requests
+/*    client.interceptors
+        .add(InterceptorsWrapper(onRequest: (RequestOptions options) async {
+      print('===Outgoing dio request headers: ${options.headers}');
+      print('===Outgoing dio request data: ${options.data}');
       // Do something before request is sent
       return options; //continue
       // If you want to resolve the request with some custom data，
       // you can return a `Response` object or return `dio.resolve(data)`.
       // If you want to reject the request with a error message,
       // you can return a `DioError` object or return `dio.reject(errMsg)`
-      },
-      onResponse:(Response response) async {
+    }, onResponse: (Response response) async {
       // Do something with response data
+      print("===incoming response: ${response.toString()}");
       return response; // continue
-      },
-      onError: (DioError e) async {
+    }, onError: (DioError e) async {
       // Do something with response error
-      return  e;//continue
-      }
-    ));
+      print("error: $e");
+      return e; //continue
+    }));
 */
   }
 
@@ -100,8 +100,8 @@ class Repos {
 // -----------------------------general ------------------------
   Future<dynamic> getConnected() async {
     try {
-      Response response = await _client.get('moquiSessionToken');
-      this.sessionToken = response.data;
+      Response response = await client.get('moquiSessionToken');
+      this.sessionToken = response.toString();
       return sessionToken != null;
     } catch (e) {
       return responseMessage(e);
@@ -110,8 +110,50 @@ class Repos {
 
   Future<dynamic> getCurrencies() async {
     try {
-      Response response = await _client.get('s1/growerp/100/CurrencyList');
+      Response response = await client.get('s1/growerp/100/CurrencyList');
       return currencyListFromJson(response.toString()).currencyList;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> getCompanies() async {
+    try {
+      Response response = await client.get('s1/growerp/100/Companies');
+      return companiesFromJson(response.toString()).companies;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  /// The demo store can only register as a customer.
+  /// Any other store it depends on the person logging in.
+  Future<dynamic> register(
+      {String companyName,
+      String companyPartyId, // if empty will create new company too!
+      @required String firstName,
+      @required String lastName,
+      String currency,
+      @required String email,
+      List data}) async {
+    try {
+      // create some category and product when company empty
+      var locale;
+      // if (!kIsWeb) locale = await Devicelocale.currentLocale;
+      Response response =
+          await client.post('s1/growerp/100/UserAndCompany', data: {
+        'username': email, 'emailAddress': email,
+        'newPassword': 'qqqqqq9!', 'firstName': firstName,
+        'lastName': lastName, 'locale': locale,
+        'companyPartyId': companyPartyId, // for existing companies
+        'companyName': companyName, 'currencyUomId': currency,
+        'companyEmail': email,
+        'partyClassificationId': 'AppEcommerceShop',
+        'groupDescription': 'Admin',
+        'environment': kReleaseMode,
+        'moquiSessionToken': sessionToken
+      });
+      return authenticateFromJson(response.toString());
     } catch (e) {
       return responseMessage(e);
     }
@@ -122,7 +164,7 @@ class Repos {
       @required String username,
       @required String password}) async {
     try {
-      Response response = await _client.post('s1/growerp/100/Login', data: {
+      Response response = await client.post('s1/growerp/100/Login', data: {
         'companyPartyId': companyPartyId,
         'username': username,
         'password': password,
@@ -130,6 +172,7 @@ class Repos {
       });
       dynamic result = jsonDecode(response.toString());
       if (result['passwordChange'] == 'true') return 'passwordChange';
+      print("=====repos: apiKey: ${result['apiKey']}");
       this.apiKey = result['apiKey'];
       this.sessionToken = result['moquiSessionToken'];
       return authenticateFromJson(response.toString());
@@ -140,7 +183,7 @@ class Repos {
 
   Future<dynamic> resetPassword({@required String username}) async {
     try {
-      Response result = await _client.post('s1/growerp/100/ResetPassword',
+      Response result = await client.post('s1/growerp/100/ResetPassword',
           data: {'username': username, 'moquiSessionToken': this.sessionToken});
       return json.decode(result.toString());
     } catch (e) {
@@ -153,7 +196,7 @@ class Repos {
       @required String oldPassword,
       @required String newPassword}) async {
     try {
-      await _client.put('s1/growerp/100/Password', data: {
+      await client.put('s1/growerp/100/Password', data: {
         'username': username,
         'oldPassword': oldPassword,
         'newPassword': newPassword,
@@ -167,9 +210,9 @@ class Repos {
 
   Future<dynamic> logout() async {
     this.apiKey = null;
-    _client.options.headers['api_key'] = this.apiKey;
+    client.options.headers['api_key'] = this.apiKey;
     try {
-      await _client.post('logout');
+      await client.post('logout');
       Authenticate authenticate = await getAuthenticate();
       authenticate.apiKey = null;
       persistAuthenticate(authenticate);
@@ -198,39 +241,6 @@ class Repos {
     return null;
   }
 
-  /// The demo store can only register as a customer.
-  /// Any other store it depends on the person logging in.
-  Future<dynamic> register(
-      {String companyName,
-      String companyPartyId, // if empty will create new company too!
-      @required String firstName,
-      @required String lastName,
-      String currency,
-      @required String email,
-      List data}) async {
-    try {
-      // create some category and product when company empty
-      var locale;
-      // if (!kIsWeb) locale = await Devicelocale.currentLocale;
-      Response response =
-          await _client.post('s1/growerp/100/UserAndCompany', data: {
-        'username': email, 'emailAddress': email,
-        'newPassword': 'qqqqqq9!', 'firstName': firstName,
-        'lastName': lastName, 'locale': locale,
-        'companyPartyId': companyPartyId, // for existing companies
-        'companyName': companyName, 'currencyUomId': currency,
-        'companyEmail': email,
-        'partyClassificationId': 'AppEcommerceShop',
-        'groupDescription': 'Admin',
-        'environment': kReleaseMode,
-        'moquiSessionToken': sessionToken
-      });
-      return authenticateFromJson(response.toString());
-    } catch (e) {
-      return responseMessage(e);
-    }
-  }
-
   Future<dynamic> getCatalog(String companyPartyId) async {
     try {
 /*      SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -238,7 +248,7 @@ class Repos {
       String catProdJson = prefs.getString('categoriesAndProducts');
       if (catProdJson != null) return catalogFromJson(catProdJson);
 */
-      Response response = await _client.get(
+      Response response = await client.get(
           's1/growerp/100/CategoriesAndProducts',
           queryParameters: {'companyPartyId': companyPartyId});
       return catalogFromJson(response.toString());
@@ -269,30 +279,17 @@ class Repos {
     }
   }
 
-  Future<dynamic> getCompanies() async {
-    try {
-      print(
-          "=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
-//      Authenticate authenticate = await getAuthenticate();
-//      _client.options.headers['api_key'] = authenticate.apiKey;
-      Response response = await _client.get('s1/growerp/100/Companies');
-      return companiesFromJson(response.toString()).companies;
-    } catch (e) {
-      return responseMessage(e);
-    }
-  }
-
   Future<dynamic> createOrder(Order order) async {
     try {
 //      String basicAuth =
 //          'Basic ' + base64Encode(utf8.encode('admin@growerp.com:qqqqqq9!'));
-//      _client.options.headers['authorization'] = basicAuth;
+//      client.options.headers['authorization'] = basicAuth;
       print(
           "=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
       Authenticate authenticate = await getAuthenticate();
-      _client.options.headers['api_key'] = authenticate.apiKey;
-//      _client.options.headers['api_key'] = this.apiKey;
-      Response response = await _client.post('s1/growerp/100/Order', data: {
+      client.options.headers['api_key'] = authenticate.apiKey;
+//      client.options.headers['api_key'] = this.apiKey;
+      Response response = await client.post('s1/growerp/100/Order', data: {
         'orderJson': orderToJson(order),
         'moquiSessionToken': sessionToken
       });

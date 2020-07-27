@@ -54,12 +54,14 @@ class _HomeState extends State<HomeBody> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              RaisedButton(
-                  child: Text("${state.errorMessage} \nRetry?"),
-                  onPressed: () {
-                    BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
-                    BlocProvider.of<AuthBloc>(context).add(LoadAuth());
-                  }),
+              Center(
+                child: RaisedButton(
+                    child: Text("${state.errorMessage} \nRetry?"),
+                    onPressed: () {
+                      BlocProvider.of<CatalogBloc>(context).add(LoadCatalog());
+                      BlocProvider.of<AuthBloc>(context).add(LoadAuth());
+                    }),
+              )
             ]);
       }
       if (state is AuthAuthenticated) authenticate = state.authenticate;

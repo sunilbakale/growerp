@@ -21,20 +21,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         // create new customer any company
         dynamic companies = await repos.getCompanies();
         if (companies is List) {
-          yield LoginLoaded(
-              companyPartyId: event.companyPartyId,
-              companyName: event.companyName,
-              username: event.username,
-              companies: companies);
+          yield LoginLoaded(companies: companies);
         } else {
           yield LoginError(companies);
         }
       } else {
         // create new customer existing company
-        yield LoginLoaded(
-            companyPartyId: event.companyPartyId,
-            companyName: event.companyName,
-            username: event.username);
+        yield LoginLoaded();
       }
     }
     if (event is LoginButtonPressed) {
@@ -103,17 +96,11 @@ class LoginInitial extends LoginState {}
 class LoginLoading extends LoginState {}
 
 class LoginLoaded extends LoginState {
-  final String companyPartyId;
-  final String companyName;
-  final String username;
   final List<Company> companies;
-  LoginLoaded(
-      {this.companyPartyId, this.companyName, this.username, this.companies});
+  LoginLoaded({this.companies});
   @override
-  List<Object> get props => [companyPartyId, companyName, username, companies];
-  String toString() =>
-      'Login loaded, company: $companyName[$companyPartyId] ' +
-      'username: $username companies size: ${companies?.length}';
+  List<Object> get props => [companies];
+  String toString() => 'Login loaded, companies size: ${companies?.length}';
 }
 
 class LoginChangePw extends LoginState {

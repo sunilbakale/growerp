@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
 import 'blocs/@bloc.dart';
 import 'services/repos.dart';
 import 'styles/themes.dart';
@@ -9,9 +10,9 @@ import 'forms/@forms.dart';
 
 void main() {
   Bloc.observer = SimpleBlocObserver();
-  final repos = Repos();
+  final repos = Repos(client: Dio());
   runApp(RepositoryProvider(
-    create: (context) => Repos(),
+    create: (context) => repos,
     child: MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(

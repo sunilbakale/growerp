@@ -6,6 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:growerp/blocs/@bloc.dart';
 import 'package:growerp/services/repos.dart';
 import 'package:growerp/forms/@forms.dart';
+import 'package:growerp/models/@models.dart';
 import 'package:growerp/router.dart' as router;
 import '../data.dart';
 
@@ -28,31 +29,29 @@ void main() {
     });
 
     tearDown(() {
-      loginBloc?.close();
-      authBloc?.close();
+      loginBloc.close();
+      authBloc.close();
     });
 
-    testWidgets('check text fields', (WidgetTester tester) async {
+    testWidgets('check text fields with company dropdown',
+        (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-//      when(loginBloc.state).thenReturn(LoginLoaded(companies));
-      when(repos.getCompanies()).thenAnswer((_) async => companies);
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider.value(
-            value: authBloc,
-            child: BlocProvider.value(
-              value: loginBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: LoginForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: LoginForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
-      expect(find.text(companies[0].name), findsOneWidget);
+//      expect(find.text(companies[0].name), findsOneWidget);
+      expect(find.byKey(Key('drop_down')), findsOneWidget);
       expect(find.byKey(Key('username')), findsOneWidget);
       expect(find.byKey(Key('password')), findsOneWidget);
       expect(find.text('Login'), findsWidgets);
@@ -60,25 +59,46 @@ void main() {
       expect(find.text('forgot password?'), findsOneWidget);
       whenListen(loginBloc, Stream.fromIterable(<LoginEvent>[LoadLogin()]));
     });
+
+    testWidgets('check text fields with NO company dropdown',
+        (WidgetTester tester) async {
+      when(authBloc.state).thenReturn(AuthUnauthenticated(
+          Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
+      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      await tester.pumpWidget(RepositoryProvider(
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: LoginForm(),
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.byKey(Key('drop_down')), findsNothing);
+      whenListen(loginBloc, Stream.fromIterable(<LoginEvent>[LoadLogin()]));
+    });
     testWidgets('enter fields and press login', (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
-      when(repos.getCompanies()).thenAnswer((_) async => companies);
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(authBloc.state).thenReturn(AuthUnauthenticated(
+          Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
+      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider.value(
-            value: authBloc,
-            child: BlocProvider.value(
-              value: loginBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: LoginForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: LoginForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(Key('username')), username);
       await tester.enterText(find.byKey(Key('password')), password);
@@ -94,25 +114,22 @@ void main() {
                 password: password)
           ]));
     });
-    testWidgets('register', (WidgetTester tester) async {
+    testWidgets('register new company and admin user',
+        (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-//      when(loginBloc.state).thenReturn(LoginLoaded(companies));
-      when(repos.getCompanies()).thenAnswer((_) async => companies);
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider.value(
-            value: authBloc,
-            child: BlocProvider.value(
-              value: loginBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: LoginForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: LoginForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
       await tester
           .tap(find.widgetWithText(GestureDetector, 'register new account'));
@@ -121,24 +138,21 @@ void main() {
           findsOneWidget);
     });
     testWidgets('forgot password', (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-//      when(loginBloc.state).thenReturn(LoginLoaded(companies));
-      when(repos.getCompanies()).thenAnswer((_) async => companies);
-      when(repos.getCurrencies()).thenAnswer((_) async => currencies);
+      when(authBloc.state).thenReturn(AuthUnauthenticated(
+          Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
+      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
       await tester.pumpWidget(RepositoryProvider(
-          create: (context) => repos,
-          child: BlocProvider.value(
-            value: authBloc,
-            child: BlocProvider.value(
-              value: loginBloc,
-              child: MaterialApp(
-                onGenerateRoute: router.generateRoute,
-                home: Scaffold(
-                  body: LoginForm(),
-                ),
-              ),
+        create: (context) => repos,
+        child: BlocProvider<AuthBloc>.value(
+          value: authBloc,
+          child: MaterialApp(
+            onGenerateRoute: router.generateRoute,
+            home: Scaffold(
+              body: LoginForm(),
             ),
-          )));
+          ),
+        ),
+      ));
       await tester.pumpAndSettle();
       expect(find.text('forgot password?'), findsOneWidget);
       await tester
