@@ -75,8 +75,7 @@ class CatalogLoaded extends CatalogState {
   @override
   String toString() =>
       'CatalogLoaded, categories: ${catalog.categories.length}' +
-      ' products: ${catalog.products.length}' +
-      ' shop: ${catalog.company.name}[${catalog.company.partyId}]';
+      ' products: ${catalog.products.length}';
 }
 
 class CatalogError extends CatalogState {

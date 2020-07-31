@@ -8,9 +8,13 @@ import '../routing_constants.dart';
 import 'changePw_form.dart';
 import '../helper_functions.dart';
 
+/// LoginForm: logon or company selection depending on [Auth.company.partyId]
+///  shows dual form depending on Auth.company.partyId:
+///   when null show company selection and returns to homescreen
+///   when present show customer login user/password
 class LoginForm extends StatelessWidget {
   final String message;
-  const LoginForm({this.message});
+  const LoginForm([this.message]);
   @override
   Widget build(BuildContext context) {
     Authenticate authenticate;
@@ -23,13 +27,9 @@ class LoginForm extends StatelessWidget {
           },
           child: Scaffold(
             appBar: AppBar(
-              title: Text(authenticate?.company?.partyId == null ||
-                      authenticate?.company?.partyId == ''
-                  ? 'Login'
-                  : authenticate?.company?.partyId != null &&
-                          authenticate?.company?.partyId != ''
-                      ? 'Login to: ${authenticate?.company?.name}'
-                      : ''),
+              title: Text(authenticate?.company?.partyId == null
+                  ? 'Select company'
+                  : 'Login to: ${authenticate?.company?.name}'),
               actions: <Widget>[
                 IconButton(
                     icon: Icon(Icons.home),
@@ -96,9 +96,7 @@ class _LoginHeaderState extends State<LoginHeader> {
                 }
               }),
           BlocListener<LoginBloc, LoginState>(listener: (context, state) {
-            if (state is LoginLoading &&
-                companyPartyId != null &&
-                companyPartyId.isNotEmpty) {
+            if (state is LoginLoading && companyPartyId == null) {
               HelperFunctions.showMessage(
                   context, 'Loading login form...', Colors.green);
             }
@@ -136,136 +134,151 @@ class _LoginHeaderState extends State<LoginHeader> {
                   ? companies[0]
                   : Company(partyId: companyPartyId);
             }
-            return Center(
-                child: Container(
-                    width: 400,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(height: 40),
-                          Visibility(
-                              // allow selection of company
-                              visible: companyPartyId == null ||
-                                  companyPartyId == '',
-                              child: Column(children: <Widget>[
-                                Container(
-                                  width: 400,
-                                  height: 60,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                    border: Border.all(
-                                        color: Colors.grey,
-                                        style: BorderStyle.solid,
-                                        width: 0.80),
-                                  ),
-                                  child: DropdownButton(
-                                    key: ValueKey('drop_down'),
-                                    underline: SizedBox(), // remove underline
-                                    hint: Text('Company'),
-                                    value: _companySelected,
-                                    items: companies?.map((item) {
-                                      return DropdownMenuItem<Company>(
-                                        child: Text(item?.name ?? 'Company??'),
-                                        value: item,
-                                      );
-                                    })?.toList(),
-                                    onChanged: (Company newValue) {
-                                      setState(() {
-                                        _companySelected = newValue;
-                                      });
-                                    },
-                                    isExpanded: true,
-                                  ),
-                                ),
-                                SizedBox(height: 20),
-                              ])),
-                          TextFormField(
-                            key: Key('username'),
-                            decoration: InputDecoration(labelText: 'Username'),
-                            controller: _usernameController,
-                            validator: (value) {
-                              if (value.isEmpty)
-                                return 'Please enter username or email?';
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                              key: Key('password'),
+            if (companyPartyId == null) {
+              return Center(
+                  child: Container(
+                      width: 400,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 40),
+                            Container(
+                              width: 400,
+                              height: 60,
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(25.0),
+                                border: Border.all(
+                                    color: Colors.grey,
+                                    style: BorderStyle.solid,
+                                    width: 0.80),
+                              ),
+                              child: DropdownButton(
+                                key: ValueKey('drop_down'),
+                                underline: SizedBox(), // remove underline
+                                hint: Text('Company'),
+//                                value: _companySelected,
+                                items: companies?.map((item) {
+                                  return DropdownMenuItem<Company>(
+                                    child: Text(item?.name ?? 'Company??'),
+                                    value: item,
+                                  );
+                                })?.toList(),
+                                onChanged: (Company newValue) {
+                                  print(
+                                      "==login=comp selected: ${newValue.name}");
+                                  authenticate.company = newValue;
+                                  BlocProvider.of<AuthBloc>(context)
+                                      .add(UpdateAuth(authenticate));
+                                  Navigator.pushNamedAndRemoveUntil(context,
+                                      HomeRoute, ModalRoute.withName(HomeRoute),
+                                      arguments: "Ecommerce company changed!");
+                                },
+                                isExpanded: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )));
+            } else {
+              return Center(
+                  child: Container(
+                      width: 400,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 40),
+                            SizedBox(height: 20),
+                            TextFormField(
+                              key: Key('username'),
+                              decoration:
+                                  InputDecoration(labelText: 'Username'),
+                              controller: _usernameController,
                               validator: (value) {
                                 if (value.isEmpty)
-                                  return 'Please enter your password?';
+                                  return 'Please enter username or email?';
                                 return null;
                               },
-                              controller: _passwordController,
-                              obscureText: _obscureText,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                  child: Icon(_obscureText
-                                      ? Icons.visibility
-                                      : Icons.visibility_off),
-                                ),
-                              )),
-                          SizedBox(height: 20),
-                          RaisedButton(
-                              child: Text('Login'),
-                              onPressed: () {
-                                if (_formKey.currentState.validate() &&
-                                    state is! LogginInProgress)
-                                  BlocProvider.of<LoginBloc>(context).add(
-                                      LoginButtonPressed(
-                                          companyPartyId:
-                                              _companySelected.partyId,
-                                          username: _usernameController.text,
-                                          password: _passwordController.text));
-                              }),
-                          SizedBox(height: 30),
-                          GestureDetector(
-                            child: Text('register new account'),
-                            onTap: () async {
-                              final dynamic result = await Navigator.pushNamed(
-                                  context, RegisterRoute);
-                              HelperFunctions.showMessage(
-                                  context, '$result', Colors.green);
-                            },
-                          ),
-                          SizedBox(height: 30),
-                          GestureDetector(
-                              child: Text('forgot password?'),
+                            ),
+                            SizedBox(height: 20),
+                            TextFormField(
+                                key: Key('password'),
+                                validator: (value) {
+                                  if (value.isEmpty)
+                                    return 'Please enter your password?';
+                                  return null;
+                                },
+                                controller: _passwordController,
+                                obscureText: _obscureText,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      });
+                                    },
+                                    child: Icon(_obscureText
+                                        ? Icons.visibility
+                                        : Icons.visibility_off),
+                                  ),
+                                )),
+                            SizedBox(height: 20),
+                            RaisedButton(
+                                child: Text('Login'),
+                                onPressed: () {
+                                  if (_formKey.currentState.validate() &&
+                                      state is! LogginInProgress)
+                                    BlocProvider.of<LoginBloc>(context).add(
+                                        LoginButtonPressed(
+                                            companyPartyId:
+                                                _companySelected.partyId,
+                                            username: _usernameController.text,
+                                            password:
+                                                _passwordController.text));
+                                }),
+                            SizedBox(height: 30),
+                            GestureDetector(
+                              child: Text('register new account'),
                               onTap: () async {
-                                final String username =
-                                    await _sendResetPasswordDialog(
+                                final dynamic result =
+                                    await Navigator.pushNamed(
+                                        context, RegisterRoute);
+                                HelperFunctions.showMessage(
+                                    context, '$result', Colors.green);
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            GestureDetector(
+                                child: Text('forgot password?'),
+                                onTap: () async {
+                                  final String username =
+                                      await _sendResetPasswordDialog(
+                                          context,
+                                          authenticate?.user?.name == null ||
+                                                  kReleaseMode
+                                              ? 'admin@growerp.com'
+                                              : authenticate?.user?.name);
+                                  if (username != null) {
+                                    BlocProvider.of<AuthBloc>(context)
+                                        .add(ResetPassword(username: username));
+                                    HelperFunctions.showMessage(
                                         context,
-                                        authenticate?.user?.name == null ||
-                                                kReleaseMode
-                                            ? 'admin@growerp.com'
-                                            : authenticate?.user?.name);
-                                if (username != null) {
-                                  BlocProvider.of<AuthBloc>(context)
-                                      .add(ResetPassword(username: username));
-                                  HelperFunctions.showMessage(
-                                      context,
-                                      'An email with password has been send to $username',
-                                      Colors.green);
-                                }
-                              }),
-                          Container(
-                            child: state is LogginInProgress
-                                ? CircularProgressIndicator()
-                                : null,
-                          ),
-                        ],
-                      ),
-                    )));
+                                        'An email with password has been send to $username',
+                                        Colors.green);
+                                  }
+                                }),
+                            Container(
+                              child: state is LogginInProgress
+                                  ? CircularProgressIndicator()
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      )));
+            }
           });
         }));
   }

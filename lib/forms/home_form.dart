@@ -66,6 +66,7 @@ class _HomeState extends State<HomeBody> {
       }
       if (state is AuthAuthenticated) authenticate = state.authenticate;
       if (state is AuthUnauthenticated) authenticate = state.authenticate;
+      company = authenticate?.company;
       return BlocBuilder<CatalogBloc, CatalogState>(builder: (context, state) {
         if (state is CatalogLoading)
           return Center(child: CircularProgressIndicator());
@@ -97,7 +98,6 @@ class _HomeState extends State<HomeBody> {
                 state.catalog.categories[0].productCategoryId;
             categories = state.catalog.categories;
             products = state.catalog.products;
-            company = state.catalog.company;
           }
           // finally the main form!
           return Scaffold(
@@ -354,7 +354,12 @@ _settingsDialog(BuildContext context, Authenticate authenticate) async {
             child: Column(children: <Widget>[
               RaisedButton(
                 child: Text('Select an another company'),
-                onPressed: () {},
+                onPressed: () async {
+                  authenticate.company.partyId = null;
+                  BlocProvider.of<AuthBloc>(context)
+                      .add(UpdateAuth(authenticate));
+                  Navigator.popAndPushNamed(context, LoginRoute);
+                },
               ),
               SizedBox(height: 20),
               RaisedButton(

@@ -102,7 +102,6 @@ void main() {
     Response response = await client.get('s1/growerp/100/CategoriesAndProducts',
         queryParameters: {'companyPartyId': login['companyPartyId']});
     Catalog result = catalogFromJson(response.toString());
-    expect(result.company.partyId, login['companyPartyId']);
     expect(result.products.length, 2);
     expect(result.categories.length, 2);
   });

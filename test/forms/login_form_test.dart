@@ -33,7 +33,7 @@ void main() {
       authBloc.close();
     });
 
-    testWidgets('check text fields with company dropdown',
+    testWidgets('check text fields with company selection',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
       when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
@@ -52,15 +52,10 @@ void main() {
       await tester.pumpAndSettle();
 //      expect(find.text(companies[0].name), findsOneWidget);
       expect(find.byKey(Key('drop_down')), findsOneWidget);
-      expect(find.byKey(Key('username')), findsOneWidget);
-      expect(find.byKey(Key('password')), findsOneWidget);
-      expect(find.text('Login'), findsWidgets);
-      expect(find.text('register new account'), findsOneWidget);
-      expect(find.text('forgot password?'), findsOneWidget);
       whenListen(loginBloc, Stream.fromIterable(<LoginEvent>[LoadLogin()]));
     });
 
-    testWidgets('check text fields with NO company dropdown',
+    testWidgets('check text fields with NO company dropdown: customer login',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(
           Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
@@ -114,10 +109,9 @@ void main() {
                 password: password)
           ]));
     });
-    testWidgets('register new company and admin user',
+    testWidgets('goto register screen: register new customer',
         (WidgetTester tester) async {
-      when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      when(authBloc.state).thenReturn(AuthUnauthenticated(authenticate));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -134,8 +128,7 @@ void main() {
       await tester
           .tap(find.widgetWithText(GestureDetector, 'register new account'));
       await tester.pumpAndSettle();
-      expect(find.text('Register AND create a new Ecommerce shop'),
-          findsOneWidget);
+      expect(find.text('Register as a customer'), findsOneWidget);
     });
     testWidgets('forgot password', (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(

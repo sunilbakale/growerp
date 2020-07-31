@@ -17,8 +17,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoadLogin) {
       yield LoginLoading();
-      if (event.companyPartyId == null || event.companyPartyId == '') {
-        // create new customer any company
+      if (event.companyPartyId == null) {
         dynamic companies = await repos.getCompanies();
         if (companies is List) {
           yield LoginLoaded(companies: companies);

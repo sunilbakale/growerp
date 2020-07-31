@@ -7,13 +7,13 @@ import '../services/repos.dart';
 import '../helper_functions.dart';
 import '../routing_constants.dart';
 
+/// RegisterForm shows dual registration forms depending on:
+///  Auth.company.partyId:
+///   when null show new company registration/admin
+///   when present show customer registration for specified company.partyId
 class RegisterForm extends StatelessWidget {
-  final bool newCompany;
   final String message;
-
-  const RegisterForm({Key key, this.newCompany, this.message})
-      : super(key: key);
-
+  const RegisterForm([this.message]);
   @override
   Widget build(BuildContext context) {
     Authenticate authenticate;
@@ -22,15 +22,9 @@ class RegisterForm extends StatelessWidget {
       return Scaffold(
         key: Key('RegisterForm'),
         appBar: AppBar(
-          title: Text(
-            authenticate?.company?.partyId == null
-                ? 'Register a new company and admin'
-                : authenticate.company.partyId == ''
-                    ? 'Register as a customer'
-                    : authenticate.company.partyId.isNotEmpty
-                        ? 'Register as a customer for ${authenticate?.company?.name}'
-                        : '',
-          ),
+          title: Text(authenticate?.company?.partyId == null
+              ? 'Register a new company and admin'
+              : 'Register as a customer for ${authenticate?.company?.name}'),
           actions: <Widget>[
             IconButton(
                 icon: Icon(Icons.home),
@@ -123,43 +117,6 @@ class _RegisterHeaderState extends State<RegisterHeader> {
                       key: _formKey,
                       child: ListView(children: <Widget>[
                         SizedBox(height: 30),
-                        Visibility(
-                            // allow selection of company
-                            visible:
-                                companyPartyId == null || companyPartyId == '',
-                            child: Column(children: [
-                              Container(
-                                width: 400,
-                                height: 60,
-                                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  border: Border.all(
-                                      color: Colors.grey,
-                                      style: BorderStyle.solid,
-                                      width: 0.80),
-                                ),
-                                child: DropdownButton(
-                                  key: ValueKey('drop_down'),
-                                  underline: SizedBox(), // remove underline
-                                  hint: Text('Company'),
-                                  value: _companySelected,
-                                  items: companies?.map((item) {
-                                    return DropdownMenuItem<Company>(
-                                      child: Text(item?.name ?? 'Company??'),
-                                      value: item,
-                                    );
-                                  })?.toList(),
-                                  onChanged: (Company newValue) {
-                                    setState(() {
-                                      _companySelected = newValue;
-                                    });
-                                  },
-                                  isExpanded: true,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ])),
                         TextFormField(
                           key: Key('firstName'),
                           decoration: InputDecoration(labelText: 'First Name'),

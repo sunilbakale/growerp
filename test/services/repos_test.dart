@@ -135,8 +135,8 @@ void main() {
       expect(response, equals(expected));
     });
     test('Get catalog', () async {
-      final responsepayload = catalogToJson(Catalog(
-          company: Company(), categories: [Category()], products: [Product()]));
+      final responsepayload = catalogToJson(
+          Catalog(categories: [Category()], products: [Product()]));
       final httpResponse = ResponseBody.fromString(
         responsepayload,
         200,
@@ -149,8 +149,7 @@ void main() {
           .thenAnswer((_) async => httpResponse);
 
       final response = await repos.getCatalog(companyPartyId);
-      final expected = Catalog(
-          company: Company(), categories: [Category()], products: [Product()]);
+      final expected = Catalog(categories: [Category()], products: [Product()]);
       expect(catalogToJson(response), equals(catalogToJson(expected)));
     }, skip: 'TODO: test has probems');
   });

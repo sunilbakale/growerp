@@ -26,14 +26,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         } else {
           yield RegisterError(currencies);
         }
-      } else if (event.companyPartyId == '') {
-        // create new customer any company
-        dynamic companies = await repos.getCompanies();
-        if (companies is List) {
-          yield RegisterLoaded(companies: companies);
-        } else {
-          yield RegisterError(companies);
-        }
       } else {
         // create new customer existing company
         yield RegisterLoaded();
@@ -46,7 +38,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           lastName: event.lastName,
           email: event.email);
       if (authenticate is Authenticate) {
-        print("====username regbloc: ${authenticate.user.name}");
         await repos.persistAuthenticate(authenticate);
         yield RegisterSuccess();
       } else {

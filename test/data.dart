@@ -69,8 +69,7 @@ final List<Company> companies = [
 ];
 
 final Catalog catalog = catalogFromJson('''
-    { "company": {"name": "Dummy first Company Name", "partyId": "100001",
-                        "currency": "USD"},
+    {
       "categories": [ 
       {"productCategoryId": "dummyFirstCategory", "categoryName": "1stCat",
       "description": "this is the long description of category first", 

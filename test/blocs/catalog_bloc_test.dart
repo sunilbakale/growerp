@@ -18,7 +18,7 @@ void main() {
     blocTest(
       'check initial state',
       build: () => CatalogBloc(repos: mockReposRepository),
-      expect: <AuthState>[],
+      expect: <CatalogState>[],
     );
 
     blocTest(
