@@ -6,6 +6,10 @@ import 'package:equatable/equatable.dart';
 import '../services/repos.dart';
 import '../models/@models.dart';
 
+/// Authbloc controls the connection to the backend
+///
+/// It contains company and user information and signals connection errrors,
+/// keeps the token and apiKey in the [Authenticate] class.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Repos repos;
 
@@ -63,7 +67,10 @@ abstract class AuthEvent extends Equatable {
 
 class ConnectionProblem extends AuthEvent {}
 
-class LoadAuth extends AuthEvent {}
+class LoadAuth extends AuthEvent {
+  @override
+  String toString() => 'Load AuthBoc with backend status.';
+}
 
 class Logout extends AuthEvent {}
 

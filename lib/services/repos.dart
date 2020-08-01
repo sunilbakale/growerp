@@ -13,7 +13,6 @@ class Repos {
   String apiKey;
 
   Repos({@required this.client}) {
-    print("====start new repos ======");
     if (kReleaseMode) {
       //platform not supported on the web
       // is Release Mode ??

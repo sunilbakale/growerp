@@ -8,7 +8,8 @@ import '../routing_constants.dart';
 import 'changePw_form.dart';
 import '../helper_functions.dart';
 
-/// LoginForm: logon or company selection depending on [Auth.company.partyId]
+/// LoginForm: login or company selection depending on [Authenticate.company.partyId]
+///
 ///  shows dual form depending on Auth.company.partyId:
 ///   when null show company selection and returns to homescreen
 ///   when present show customer login user/password
@@ -102,7 +103,7 @@ class _LoginHeaderState extends State<LoginHeader> {
             }
             if (state is LogginInProgress) {
               HelperFunctions.showMessage(
-                  context, 'Logging in...', Colors.green);
+                  context, 'Getting company list..', Colors.green);
             }
             if (state is LoginError) {
               HelperFunctions.showMessage(
@@ -166,8 +167,6 @@ class _LoginHeaderState extends State<LoginHeader> {
                                   );
                                 })?.toList(),
                                 onChanged: (Company newValue) {
-                                  print(
-                                      "==login=comp selected: ${newValue.name}");
                                   authenticate.company = newValue;
                                   BlocProvider.of<AuthBloc>(context)
                                       .add(UpdateAuth(authenticate));

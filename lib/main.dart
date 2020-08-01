@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
 class SimpleBlocObserver extends BlocObserver {
   @override
   void onEvent(Cubit cubit, Object event) {
-    print("event: $event: ");
+    print("Bloc event { $event: }");
     super.onEvent(cubit, event);
   }
 
