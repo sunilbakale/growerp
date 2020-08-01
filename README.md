@@ -1,13 +1,17 @@
 # growerp ecommerce
 
-Growerp flutter frontend ecommerce for external ordering for a restaurant.
+Growerp flutter frontend multicompany ecommerce for external ordering for an ecommerce company.
 Runs on Android, IOS and the web.
 
-design ideas used from:
-https://github.com/leoelstin/Flutter-UI-Kits
-https://github.com/wmfadel/Groceries
-
-tests:
-https://github.com/brianegan/flutter_architecture_samples/tree/master/bloc_library/test
-
 It needs the Moqui.org backend system, more detail to install see the repository at: https://github.com/growerp/growerp-backend-mobile
+
+A docker component can be created with the following command after docker is installed.
+
+In the Dockerfile add --release for release version.
+
+In this home directory execute:
+docker build -t ecommerce .
+docker run -d -p 5001:80 --name ecommerce ecommerce
+
+in browser http://localhost:5001
+
