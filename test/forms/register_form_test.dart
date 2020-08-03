@@ -36,8 +36,8 @@ void main() {
     testWidgets('check form text fields + Load register event',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-      when(registerBloc.state).thenReturn(
-          RegisterLoaded(currencies: currencies, companies: companies));
+      when(registerBloc.state)
+          .thenReturn(RegisterLoaded(currencies: currencies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -66,8 +66,8 @@ void main() {
     testWidgets('RegisterForm enter fields and press register',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-      when(registerBloc.state).thenReturn(
-          RegisterLoaded(currencies: currencies, companies: companies));
+      when(registerBloc.state)
+          .thenReturn(RegisterLoaded(currencies: currencies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(

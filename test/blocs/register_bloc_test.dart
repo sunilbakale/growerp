@@ -77,7 +77,7 @@ void main() {
         RegisterLoading(),
         RegisterLoaded(currencies: currencies),
         RegisterSending(),
-        RegisterSuccess()
+        RegisterSuccess(authenticate)
       ],
     );
     blocTest(
@@ -92,7 +92,7 @@ void main() {
                 firstName: firstName,
                 lastName: lastName,
                 email: email))
-            .thenAnswer((_) async => authenticate);
+            .thenAnswer((_) async => authenticateNoKey);
         bloc.add(LoadRegister());
         bloc.add(CreateShopButtonPressed(
             companyName: companyName,
@@ -105,7 +105,7 @@ void main() {
         RegisterLoading(),
         RegisterLoaded(currencies: currencies),
         RegisterSending(),
-        RegisterSuccess()
+        RegisterSuccess(authenticateNoKey)
       ],
     );
     blocTest(

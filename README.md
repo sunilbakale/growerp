@@ -1,7 +1,7 @@
 # growerp ecommerce
 
 Growerp flutter frontend multicompany ecommerce for external ordering for an ecommerce company.
-Runs on Android, IOS and the web.
+Runs on Android, IOS and the web, demo at: https://ecommerce.growerp.com
 
 It needs the Moqui.org backend system, more detail to install see the repository at: https://github.com/growerp/growerp-backend-mobile
 
