@@ -24,5 +24,7 @@ class Companies {
   Map<String, dynamic> toJson() => {
         "companies": List<dynamic>.from(this.companies.map((x) => x.toJson())),
       };
-  String toString() => 'Companies length ${this.companies.length}';
+  String toString() =>
+      "Companies length ${this.companies.length} first: " +
+      "${companies[0]?.name}[${companies[0]?.partyId}";
 }

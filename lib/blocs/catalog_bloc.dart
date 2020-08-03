@@ -21,6 +21,8 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         catalog = await repos.getCatalog(companyPartyId);
       }
       if (companyPartyId == null || catalog is String) {
+        await repos.persistAuthenticate(null); // was not found, so remove
+        // no company or catalog error find company from list:
         dynamic companies = await repos.getCompanies();
         if (companies is List && companies.length > 0) {
           companyPartyId = companies[0].partyId;
@@ -29,6 +31,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         }
       }
       if (companyPartyId == null) {
+        // still not found so we give up.....
         yield CatalogError("No companies found in the system");
       } else {
         catalog = await repos.getCatalog(companyPartyId);

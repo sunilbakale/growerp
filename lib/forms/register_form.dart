@@ -83,7 +83,7 @@ class _RegisterHeaderState extends State<RegisterHeader> {
           HelperFunctions.showMessage(
               context, 'Sending the registration...', Colors.green);
         if (state is RegisterSuccess) {
-          if (authenticate.company.partyId != null) {
+          if (authenticate?.company?.partyId != null) {
             Navigator.pop(
                 context,
                 'Register successfull,' +
