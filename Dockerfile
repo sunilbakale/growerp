@@ -22,7 +22,7 @@ RUN flutter config --enable-web
 RUN mkdir /usr/local/growerpecommerce
 COPY . /usr/local/growerpecommerce
 WORKDIR /usr/local/growerpecommerce
-RUN /usr/local/flutter/bin/flutter build web  # --release
+RUN /usr/local/flutter/bin/flutter build web --release
 
 # Stage 2 - Create the run-time image
 FROM nginx
