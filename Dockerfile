@@ -27,3 +27,4 @@ RUN /usr/local/flutter/bin/flutter build web  # --release
 # Stage 2 - Create the run-time image
 FROM nginx
 COPY --from=build-env /usr/local/growerpecommerce/build/web /usr/share/nginx/html
+EXPOSE 80

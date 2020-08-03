@@ -16,7 +16,7 @@ class Repos {
     if (kReleaseMode) {
       //platform not supported on the web
       // is Release Mode ??
-      client.options.baseUrl = 'https://mobile.growerp.com/rest/';
+      client.options.baseUrl = 'https://test.growerp.com/rest/';
     } else if (kIsWeb || Platform.isIOS || Platform.isLinux) {
       client.options.baseUrl = 'http://localhost:8080/rest/';
     } else if (Platform.isAndroid) {

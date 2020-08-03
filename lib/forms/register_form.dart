@@ -8,7 +8,7 @@ import '../helper_functions.dart';
 import '../routing_constants.dart';
 
 /// RegisterForm shows dual registration forms depending on:
-///  Auth.company.partyId:
+///  Authenticate.company.partyId: (from AuthBloc)
 ///   when null show new company registration/admin
 ///   when present show customer registration for specified company.partyId
 class RegisterForm extends StatelessWidget {
@@ -18,6 +18,7 @@ class RegisterForm extends StatelessWidget {
   Widget build(BuildContext context) {
     Authenticate authenticate;
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      // always [AuthUnauthenticated] becaused not logged in
       if (state is AuthUnauthenticated) authenticate = state.authenticate;
       return Scaffold(
         key: Key('RegisterForm'),
@@ -55,11 +56,11 @@ class RegisterHeader extends StatefulWidget {
 class _RegisterHeaderState extends State<RegisterHeader> {
   final String message;
   final _formKey = GlobalKey<FormState>();
+  String _currencySelected = kReleaseMode ? '' : 'Thailand Baht [THB]';
   Authenticate authenticate;
   List<String> currencies;
   String companyPartyId;
   String companyName;
-  List<Company> companies;
 
   _RegisterHeaderState(this.message);
 
@@ -67,14 +68,12 @@ class _RegisterHeaderState extends State<RegisterHeader> {
   Widget build(BuildContext context) {
     final _companyController = TextEditingController()
       ..text = kReleaseMode ? '' : 'My Little Ecommerce Shop';
-    String _currencySelected = kReleaseMode ? '' : 'Thailand Baht [THB]';
     final _firstNameController = TextEditingController()
       ..text = kReleaseMode ? '' : 'John';
     final _lastNameController = TextEditingController()
       ..text = kReleaseMode ? '' : 'Doe';
     final _emailController = TextEditingController()
       ..text = kReleaseMode ? '' : 'admin@growerp.com';
-    Company _companySelected;
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state is RegisterError)
@@ -105,10 +104,7 @@ class _RegisterHeaderState extends State<RegisterHeader> {
             return Center(child: CircularProgressIndicator());
           if (state is RegisterLoaded) {
             currencies = state?.currencies;
-            companies = state?.companies;
-            _companySelected = companies != null
-                ? companies[0]
-                : Company(partyId: companyPartyId);
+            _currencySelected = _currencySelected ?? currencies[0];
           }
           return Center(
               child: Container(
@@ -162,9 +158,7 @@ class _RegisterHeaderState extends State<RegisterHeader> {
                           },
                         ),
                         Visibility(
-                            // when companyParty is full create customer
-                            visible: authenticate?.company?.partyId != null &&
-                                authenticate?.company?.partyId != '',
+                            visible: authenticate?.company?.partyId != null,
                             child: Column(children: [
                               SizedBox(height: 20),
                               RaisedButton(
@@ -192,8 +186,8 @@ class _RegisterHeaderState extends State<RegisterHeader> {
                             ])),
                         SizedBox(height: 20),
                         Visibility(
-                            visible: authenticate?.company?.partyId ==
-                                null, // register new company
+                            // register new company and admin
+                            visible: authenticate?.company?.partyId == null,
                             child: Column(children: [
                               SizedBox(height: 10),
                               TextFormField(

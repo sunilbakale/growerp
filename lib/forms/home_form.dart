@@ -103,7 +103,7 @@ class _HomeState extends State<HomeBody> {
           return Scaffold(
               appBar: AppBar(
                   title: Text("${company?.name ?? 'Company??'} " +
-                      "${authenticate?.apiKey != null ? '- username: ' + authenticate?.user?.name : ''}"),
+                      "${authenticate?.apiKey != null ? "- username: " + authenticate?.user?.name : ''}"),
                   actions: <Widget>[
                     IconButton(
                         icon: Icon(Icons.settings),
