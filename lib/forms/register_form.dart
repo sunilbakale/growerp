@@ -83,18 +83,18 @@ class _RegisterHeaderState extends State<RegisterHeader> {
           HelperFunctions.showMessage(
               context, 'Sending the registration...', Colors.green);
         if (state is RegisterSuccess) {
+          BlocProvider.of<AuthBloc>(context)
+              .add(UpdateAuth(state.authenticate));
           if (authenticate?.company?.partyId != null) {
             Navigator.pop(
                 context,
                 'Register successfull,' +
                     ' you can now login with your email password');
           } else {
-            BlocProvider.of<AuthBloc>(context)
-                .add(UpdateAuth(state.authenticate));
             Navigator.pushNamedAndRemoveUntil(
                 context, HomeRoute, ModalRoute.withName(HomeRoute),
-                arguments:
-                    "Register successfull you can now login with your email password.");
+                arguments: "Register Company and admin successfull\n" +
+                    "you can now login with your email password.");
           }
         }
       },

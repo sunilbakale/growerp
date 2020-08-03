@@ -286,8 +286,7 @@ class _LoginHeaderState extends State<LoginHeader> {
 _sendResetPasswordDialog(BuildContext context, String username) async {
   return showDialog<String>(
     context: context,
-    barrierDismissible:
-        false, // dialog is dismissible with a tap on the barrier
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(

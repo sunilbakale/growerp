@@ -343,8 +343,7 @@ class _HomeState extends State<HomeBody> {
 _settingsDialog(BuildContext context, Authenticate authenticate) async {
   return showDialog<String>(
     context: context,
-    barrierDismissible:
-        false, // dialog is dismissible with a tap on the barrier
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return AlertDialog(
           shape: RoundedRectangleBorder(
