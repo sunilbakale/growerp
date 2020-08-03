@@ -40,8 +40,9 @@ class _HomeState extends State<HomeBody> {
   @override
   void initState() {
     Future<Null>.delayed(Duration(milliseconds: 0), () {
-      if (message != null)
+      if (message != null) {
         HelperFunctions.showMessage(context, '$message', Colors.green);
+      }
     });
     super.initState();
   }

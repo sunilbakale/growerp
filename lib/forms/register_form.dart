@@ -57,23 +57,21 @@ class _RegisterHeaderState extends State<RegisterHeader> {
   final String message;
   final _formKey = GlobalKey<FormState>();
   String _currencySelected = kReleaseMode ? '' : 'Thailand Baht [THB]';
-  Authenticate authenticate;
-  List<String> currencies;
-  String companyPartyId;
-  String companyName;
+  final _companyController = TextEditingController()
+    ..text = kReleaseMode ? '' : 'My Little Ecommerce Shop';
+  final _firstNameController = TextEditingController()
+    ..text = kReleaseMode ? '' : 'John';
+  final _lastNameController = TextEditingController()
+    ..text = kReleaseMode ? '' : 'Doe';
+  final _emailController = TextEditingController()
+    ..text = kReleaseMode ? '' : 'admin@growerp.com';
 
   _RegisterHeaderState(this.message);
 
   @override
   Widget build(BuildContext context) {
-    final _companyController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'My Little Ecommerce Shop';
-    final _firstNameController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'John';
-    final _lastNameController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'Doe';
-    final _emailController = TextEditingController()
-      ..text = kReleaseMode ? '' : 'admin@growerp.com';
+    Authenticate authenticate;
+    List<String> currencies;
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state is RegisterError)
@@ -85,19 +83,23 @@ class _RegisterHeaderState extends State<RegisterHeader> {
           HelperFunctions.showMessage(
               context, 'Sending the registration...', Colors.green);
         if (state is RegisterSuccess) {
-          BlocProvider.of<AuthBloc>(context).add(LoadAuth());
-          Navigator.pop(
-              context,
-              'Register successfull,' +
-                  ' you can now login with your email password');
+          if (authenticate.company.partyId != null) {
+            Navigator.pop(
+                context,
+                'Register successfull,' +
+                    ' you can now login with your email password');
+          } else {
+            BlocProvider.of<AuthBloc>(context)
+                .add(UpdateAuth(state.authenticate));
+            Navigator.pushNamedAndRemoveUntil(
+                context, HomeRoute, ModalRoute.withName(HomeRoute),
+                arguments:
+                    "Register successfull you can now login with your email password.");
+          }
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-        if (state is AuthUnauthenticated) {
-          authenticate = state.authenticate;
-          companyPartyId = authenticate?.company?.partyId;
-          companyName = authenticate?.company?.name;
-        }
+        if (state is AuthUnauthenticated) authenticate = state.authenticate;
         return BlocBuilder<RegisterBloc, RegisterState>(
             builder: (context, state) {
           if (state is RegisterLoading || state is RegisterSending)

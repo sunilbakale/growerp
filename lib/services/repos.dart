@@ -171,7 +171,6 @@ class Repos {
       });
       dynamic result = jsonDecode(response.toString());
       if (result['passwordChange'] == 'true') return 'passwordChange';
-      print("=====repos: apiKey: ${result['apiKey']}");
       this.apiKey = result['apiKey'];
       this.sessionToken = result['moquiSessionToken'];
       return authenticateFromJson(response.toString());

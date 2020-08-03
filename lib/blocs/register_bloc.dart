@@ -39,7 +39,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           email: event.email);
       if (authenticate is Authenticate) {
         await repos.persistAuthenticate(authenticate);
-        yield RegisterSuccess();
+        yield RegisterSuccess(authenticate);
       } else {
         yield RegisterError(authenticate);
       }
@@ -53,7 +53,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           email: event.email);
       if (authenticate is Authenticate) {
         await repos.persistAuthenticate(authenticate);
-        yield RegisterSuccess();
+        yield RegisterSuccess(authenticate);
       } else {
         yield RegisterError(authenticate);
       }
@@ -140,20 +140,23 @@ class RegisterLoading extends RegisterState {}
 
 class RegisterLoaded extends RegisterState {
   final List<String> currencies;
-  final List<Company> companies;
-  RegisterLoaded({this.currencies, this.companies});
+  RegisterLoaded({this.currencies});
   @override
   List<Object> get props => [currencies];
-
   @override
-  String toString() =>
-      "Register Loaded: currencies: ${currencies?.length}" +
-      " companies: ${companies?.length}";
+  String toString() => "Register Loaded: currencies: ${currencies?.length}";
 }
 
 class RegisterSending extends RegisterState {}
 
-class RegisterSuccess extends RegisterState {}
+class RegisterSuccess extends RegisterState {
+  final Authenticate authenticate;
+  RegisterSuccess(this.authenticate);
+  List<Object> get props => [authenticate];
+  String toString() =>
+      "Register success new company: " +
+      "${authenticate.company.name}[${authenticate.company.partyId}]";
+}
 
 class RegisterError extends RegisterState {
   final String errorMessage;
