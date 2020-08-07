@@ -2,8 +2,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
-import 'package:growerp/blocs/@bloc.dart';
-import 'package:growerp/services/repos.dart';
+import 'package:ecommerce/blocs/@bloc.dart';
+import 'package:ecommerce/services/repos.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}

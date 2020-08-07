@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:growerp/blocs/@bloc.dart';
-import 'package:growerp/services/repos.dart';
-import 'package:growerp/forms/@forms.dart';
-import 'package:growerp/router.dart' as router;
+import 'package:ecommerce/blocs/@bloc.dart';
+import 'package:ecommerce/services/repos.dart';
+import 'package:ecommerce/forms/@forms.dart';
+import 'package:ecommerce/router.dart' as router;
 import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}

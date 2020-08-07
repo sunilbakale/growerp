@@ -24,6 +24,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => ChangePwForm(changePwArgs: settings.arguments));
     case CartRoute:
       return MaterialPageRoute(builder: (context) => CartForm());
+    case AboutRoute:
+      return MaterialPageRoute(builder: (context) => AboutForm());
     default:
       return MaterialPageRoute(
           builder: (context) => UndefinedView(name: settings.name));

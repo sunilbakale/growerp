@@ -1,24 +1,19 @@
 import 'package:about/about.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AboutForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isIos = theme.platform == TargetPlatform.iOS ||
-        theme.platform == TargetPlatform.macOS;
-
-    const Widget aboutPage = AboutPage(
-      title: Text('About'),
+    return AboutPage(
+      title: Text('About GrowERP Ecommerce'),
       applicationVersion: 'Version {{ version }}, build #{{ buildNumber }}',
-      applicationDescription: Text(
-        'Displays an About dialog, which describes the application.',
-        textAlign: TextAlign.justify,
+      applicationIcon: Image(
+        image: AssetImage('assets/growerp.png'),
+        height: 100,
+        width: 200,
       ),
-      applicationIcon: FlutterLogo(size: 100),
-      applicationLegalese: '© David PHAM-VAN, {{ year }}',
+      applicationLegalese: '© GrowERP, {{ year }}',
       children: <Widget>[
         MarkdownPageListTile(
           filename: 'README.md',
@@ -42,7 +37,7 @@ class AboutForm extends StatelessWidget {
         ),
         MarkdownPageListTile(
           filename: 'CODE_OF_CONDUCT.md',
-          title: Text('Code of conduct'),
+          title: Text('Privacy, Code of conduct'),
           icon: Icon(Icons.sentiment_satisfied),
         ),
         LicensesPageListTile(
@@ -50,23 +45,6 @@ class AboutForm extends StatelessWidget {
           icon: Icon(Icons.favorite),
         ),
       ],
-    );
-
-    if (isIos) {
-      return CupertinoApp(
-        title: 'About Demo (Cupertino)',
-        home: aboutPage,
-        theme: CupertinoThemeData(
-          brightness: theme.brightness,
-        ),
-      );
-    }
-
-    return MaterialApp(
-      title: 'About Demo (Material)',
-      home: aboutPage,
-      theme: ThemeData(),
-      darkTheme: ThemeData(brightness: Brightness.dark),
     );
   }
 }
