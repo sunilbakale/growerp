@@ -11,7 +11,8 @@ class NavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenTypeLayout(
       mobile: NavigationBarMobile(),
-      tablet: NavigationBarTabletDesktop(),
+      tablet: NavigationBarTabletDesktop(20),
+      desktop: NavigationBarTabletDesktop(50),
     );
   }
 }
@@ -41,7 +42,8 @@ class NavigationBarMobile extends StatelessWidget {
 }
 
 class NavigationBarTabletDesktop extends StatelessWidget {
-  const NavigationBarTabletDesktop({Key key}) : super(key: key);
+  final double spacing;
+  const NavigationBarTabletDesktop(this.spacing);
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +57,11 @@ class NavigationBarTabletDesktop extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               NavBarItem('Home', HomeRoute),
-              SizedBox(width: 60),
+              SizedBox(width: spacing),
               NavBarItem('About', AboutRoute),
-              SizedBox(width: 60),
+              SizedBox(width: spacing),
               NavBarItem('Moqui', MoquiRoute),
-              SizedBox(width: 60),
+              SizedBox(width: spacing),
               NavBarItem('OFBiz', OfbizRoute),
             ],
           )

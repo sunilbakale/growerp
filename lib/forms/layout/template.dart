@@ -22,13 +22,14 @@ class LayoutTemplate extends StatelessWidget {
           child: Column(
             children: <Widget>[
               NavigationBar(),
+              SizedBox(height: 20),
               Expanded(
                 child: Navigator(
                   key: locator<NavigationService>().navigatorKey,
                   onGenerateRoute: generateRoute,
                   initialRoute: HomeRoute,
                 ),
-              )
+              ),
             ],
           ),
         ),

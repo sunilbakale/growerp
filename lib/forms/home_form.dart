@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../constants/app_colors.dart';
+import 'package:link/link.dart';
 
 class HomeForm extends StatelessWidget {
   const HomeForm({Key key}) : super(key: key);
@@ -42,9 +43,7 @@ class HomeContentMobile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         GrowerpDetails(),
-        SizedBox(
-          height: 100,
-        ),
+        SizedBox(height: 20),
         CallToAction('Follow us on twitter'),
       ],
     );
@@ -76,24 +75,22 @@ class GrowerpDetails extends StatelessWidget {
           width: 800,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Text(
-                'Open Source ERP, multiplatform,\nsingle codebase mini user interface\nfor Moqui & Apache Ofbiz.',
+                'Open Source ERP, multiplatform single codebase, mini'
+                ' user interface for Moqui & Apache Ofbiz.',
                 style: TextStyle(
                     fontWeight: FontWeight.w800,
                     height: 1.0,
                     fontSize: titleSize),
                 textAlign: textAlignment,
               ),
-              SizedBox(
-                height: 30,
-              ),
               Text(
-                'A userinterface which runs natively on Android,\n' +
-                    'IOS, Webrowser, Linux, Windows and Mac using\n' +
-                    'either Moqui or Apache Ofbiz as backend.\n' +
-                    'Currently under initial development',
+                'A user interface which runs natively on Android,'
+                ' IOS, Webrowser, Linux, Windows and Mac using'
+                ' either Moqui or Apache Ofbiz as backend.\n'
+                'Currently under initial development',
                 style: TextStyle(
                   fontSize: descriptionSize,
                   height: 1.7,
@@ -154,14 +151,14 @@ class CallToActionTabletDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
-        ),
-      ),
+      child: Link(
+          child: Text(title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              )),
+          url: 'https://twitter.com/grow_erp'),
       decoration: BoxDecoration(
         color: primaryColor,
         borderRadius: BorderRadius.circular(5),

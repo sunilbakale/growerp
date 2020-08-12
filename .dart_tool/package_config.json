@@ -62,8 +62,20 @@
       "languageVersion": "2.2"
     },
     {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///home/hans/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "get_it",
       "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/get_it-4.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "link",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/link-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
@@ -84,6 +96,24 @@
       "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.0-nullsafety",
       "packageUri": "lib/",
       "languageVersion": "2.10"
+    },
+    {
+      "name": "platform_detect",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/platform_detect-1.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.4"
+    },
+    {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "pub_semver",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/pub_semver-1.4.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
     },
     {
       "name": "responsive_builder",
@@ -140,6 +170,36 @@
       "languageVersion": "2.10"
     },
     {
+      "name": "url_launcher",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher-5.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "url_launcher_linux",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_linux-0.0.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "url_launcher_macos",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_macos-0.0.1+7",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "url_launcher_platform_interface",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_platform_interface-1.0.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "url_launcher_web",
+      "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_web-0.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
       "name": "vector_math",
       "rootUri": "file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/vector_math-2.1.0-nullsafety.2",
       "packageUri": "lib/",
@@ -152,7 +212,7 @@
       "languageVersion": "2.2"
     }
   ],
-  "generated": "2020-08-08T10:27:33.522251Z",
+  "generated": "2020-08-12T02:38:32.898051Z",
   "generator": "pub",
   "generatorVersion": "2.10.0-4.0.dev.flutter-365525432a"
 }
