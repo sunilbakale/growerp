@@ -8,7 +8,7 @@ class Bloc extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 400,
+        width: 550,
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(45),

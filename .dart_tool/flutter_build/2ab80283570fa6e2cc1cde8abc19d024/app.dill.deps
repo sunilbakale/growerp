@@ -67,6 +67,8 @@ file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0-n
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0-nullsafety.2/lib/src/wrappers.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/get_it-4.0.4/lib/get_it.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/get_it-4.0.4/lib/get_it_impl.dart
+file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/link-1.1.0/lib/link.dart
+file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/link-1.1.0/lib/src/link_base.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.3.0-nullsafety.2/lib/meta.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/platform_detect-1.4.0/lib/platform_detect.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/platform_detect-1.4.0/lib/src/browser.dart
@@ -90,6 +92,7 @@ file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/responsive_builder-
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/responsive_builder-0.2.0+2/lib/src/widget_builders.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/typed_data-1.3.0-nullsafety.2/lib/src/typed_buffer.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/typed_data-1.3.0-nullsafety.2/lib/typed_buffers.dart
+file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher-5.5.0/lib/url_launcher.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_platform_interface-1.0.7/lib/method_channel_url_launcher.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_platform_interface-1.0.7/lib/url_launcher_platform_interface.dart
 file:///home/hans/flutter/.pub-cache/hosted/pub.dartlang.org/url_launcher_web-0.1.2/lib/url_launcher_web.dart
@@ -767,3 +770,4 @@ file:///home/hans/mobile/flutter/website/lib/main.dart
 file:///home/hans/mobile/flutter/website/lib/routing/route_names.dart
 file:///home/hans/mobile/flutter/website/lib/routing/router.dart
 file:///home/hans/mobile/flutter/website/lib/services/navigation_service.dart
+file:///home/hans/mobile/flutter/website/lib/widgets/text_bloc.dart

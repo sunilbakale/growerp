@@ -7,7 +7,8 @@ class MoquiForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Wrap(
+        child: Center(
+            child: Wrap(
       spacing: 20,
       runSpacing: 20,
       children: <Widget>[
@@ -40,6 +41,6 @@ class MoquiForm extends StatelessWidget {
                 'o oi oio ihoihoihoh oih oih ih oih oih oiho hoh o oiuy o oi'
                 'oio ihoihoihoh oih oih ih oih oih oiho hoh o '),
       ],
-    ));
+    )));
   }
 }
