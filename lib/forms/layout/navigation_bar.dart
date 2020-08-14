@@ -3,6 +3,7 @@ import '../../routing/route_names.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../../services/navigation_service.dart';
 import '../../locator.dart';
+import 'nav_bar_item.dart';
 
 class NavigationBar extends StatelessWidget {
   const NavigationBar({Key key}) : super(key: key);
@@ -85,27 +86,5 @@ class NavBarLogo extends StatelessWidget {
         child: SizedBox(
           child: Image.asset('assets/growerp.png'),
         ));
-  }
-}
-
-class NavBarItem extends StatelessWidget {
-  final String title;
-  final String navigationPath;
-  const NavBarItem(this.title, this.navigationPath);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // DON'T EVER USE A SERVICE DIRECTLY IN THE UI TO CHANGE ANY KIND OF STATE
-        // SERVICES SHOULD ONLY BE USED FROM A VIEWMODEL
-        Navigator.pop(context);
-        locator<NavigationService>().navigateTo(navigationPath);
-      },
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 18),
-      ),
-    );
   }
 }
