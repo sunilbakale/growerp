@@ -99,6 +99,7 @@ class NavBarItem extends StatelessWidget {
       onTap: () {
         // DON'T EVER USE A SERVICE DIRECTLY IN THE UI TO CHANGE ANY KIND OF STATE
         // SERVICES SHOULD ONLY BE USED FROM A VIEWMODEL
+        Navigator.pop(context);
         locator<NavigationService>().navigateTo(navigationPath);
       },
       child: Text(
