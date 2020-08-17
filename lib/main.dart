@@ -1,92 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:growerp/styles/themes.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
+import 'blocs/@bloc.dart';
 import 'services/repos.dart';
-
-import 'bloc/auth/auth.dart';
-import 'forms/forms.dart';
-import 'widgets/widgets.dart';
-
-class SimpleBlocDelegate extends BlocDelegate {
-  @override
-  void onEvent(Bloc bloc, Object event) {
-    super.onEvent(bloc, event);
-    print("===event: $event");
-  }
-
-  @override
-  void onTransition(Bloc bloc, Transition transition) {
-    super.onTransition(bloc, transition);
-    print("===Transition: $transition");
-  }
-
-  @override
-  void onError(Bloc bloc, Object error, StackTrace stacktrace) {
-    super.onError(bloc, error, stacktrace);
-    print("===error: $error");
-  }
-}
+import 'styles/themes.dart';
+import 'router.dart' as router;
+import 'forms/@forms.dart';
 
 void main() {
-  BlocSupervisor.delegate = SimpleBlocDelegate();
-  final repos = Repos();
-  final authBloc = AuthBloc(repos: repos);
-
-  runApp(
-    BlocProvider<AuthBloc>(
-      create: (context) {
-        return AuthBloc(repos: repos)..add(AppStarted());
-      },
-      child: App(repos: repos, authBloc: authBloc),
-    ),
-  );
-}
-
-Widget buildError(BuildContext context, FlutterErrorDetails error) {
-  return Scaffold(
-      body: Center(
-    child: Text(
-      "Error appeared.",
-      style: Theme.of(context).textTheme.headline6,
+  Bloc.observer = SimpleBlocObserver();
+  final repos = Repos(client: Dio());
+  runApp(RepositoryProvider(
+    create: (context) => repos,
+    child: MultiBlocProvider(
+      providers: [
+        BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(repos: repos)..add(LoadAuth())),
+      ],
+      // add other blocs here
+      child: MyApp(),
     ),
   ));
 }
 
-class App extends StatelessWidget {
-  final Repos repos;
-  final AuthBloc authBloc;
-
-  App({Key key, @required this.repos, @required this.authBloc})
-      : assert(repos != null, authBloc != null),
-        super(key: key);
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: Themes.formTheme,
-      home: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is AuthConnectionProblem || state is AuthUnauthenticated) {
-            return LoginForm(repos: repos, authBloc: authBloc);
-          } else if (state is AuthAuthenticated) {
-            return HomeForm(authBloc: authBloc);
-          } else if (state is AuthLoading) {
-            return LoadingIndicator();
-          } else if (state is AuthRegister) {
-            return RegisterForm(repos: repos);
-          } else if (state is AuthUpdatePassword) {
-            return UpdatePasswordForm(
-                repos: repos,
-                username: state.username,
-                password: state.password);
-          } else
-            return SplashForm();
-        },
-      ),
-      routes: {
-        '/home': (context) => HomeForm(authBloc: authBloc),
-      },
-    );
+        theme: Themes.formTheme,
+        onGenerateRoute: router.generateRoute,
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthLoading || state is AuthInitial) {
+              return SplashForm();
+            } else
+              return HomeForm();
+          },
+        ));
+  }
+}
+
+class SimpleBlocObserver extends BlocObserver {
+  @override
+  void onEvent(Cubit cubit, Object event) {
+    print("Bloc event { $event: }");
+    super.onEvent(cubit, event);
+  }
+
+  @override
+  void onTransition(Cubit cubit, Transition transition) {
+    print(transition);
+    super.onTransition(cubit, transition);
+  }
+
+  @override
+  void onError(Cubit cubit, Object error, StackTrace stackTrace) {
+    print("error: $error");
+    super.onError(cubit, error, stackTrace);
   }
 }

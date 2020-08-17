@@ -1,16 +1,46 @@
-# growerp
+# growerp hotel
+GrowERP Flutter frontend component for Android, IOS and Web using Flutter.
 
-A new Flutter project.
+Under development.
+This is the Hotel branch for a hotel desk reservation and together with the
+ecommerce app by customers themselves.
 
-## Getting Started
+This hotel branch will have the following functions:
 
-This project is a starting point for a Flutter application.
+Hotel:
 
-A few resources to get you started if this is your first Flutter project:
+Room type = accommodationType
+Room number = accommodationspot
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+we have rooms/tables/accomspot with different types/areas/accomarea and status: ready for rent, cleaning
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+customers make a reservation for room type: check availability
+
+customers check-in --> room occupied --> checkout/payment -> toClean
+
+customers check-out -> room toClean -> cleaning -> toCheck
+
+employees clean room -> room toCheck (opt) -> checking -> available
+
+employee check room -> room available
+employee check room -> room unAvailable
+
+main menu:
+
+1. reservations(orders): create/change/cancel
+2. check-in: find customer, assign room
+3. check-out: print receipt, order complete, room -> cleaning
+4. rooms for clean: -> available -> print
+5. my info
+6. logout
+
+Setup menu
+
+1. hotel
+2. room types with room numbers
+3. employees
+4. customers
+5. export orders, rooms & status
+
+For the backend you need the Moqui ERP system (moqui.org) 
+with an extra component: https://github.com/growerp/growerp-backend-mobile

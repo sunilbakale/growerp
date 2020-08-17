@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class DetailForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -53,6 +52,7 @@ class DetailForm extends StatelessWidget {
     );
   }
 }
+
 const String _loremIpsumParagraph =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod '
     'tempor incididunt ut labore et dolore magna aliqua. Vulputate dignissim '

@@ -1,3 +1,13 @@
+// To parse this JSON data, do
+//
+//     final user = userFromJson(jsonString);
+
+import 'dart:convert';
+
+User userFromJson(String str) => User.fromJson(json.decode(str));
+
+String userToJson(User data) => json.encode(data.toJson());
+
 class User {
   String partyId;
   String userId;
@@ -6,10 +16,11 @@ class User {
   String name;
   String email;
   String groupDescription;
-  List roles;
+  List<String> roles;
   String userGroupId;
-  String locale;
+  dynamic locale;
   dynamic externalId;
+  String image;
 
   User({
     this.partyId,
@@ -23,6 +34,7 @@ class User {
     this.userGroupId,
     this.locale,
     this.externalId,
+    this.image,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -33,10 +45,11 @@ class User {
         name: json["name"],
         email: json["email"],
         groupDescription: json["groupDescription"],
-        roles: json["roles"],
+        roles: List<String>.from(json["roles"].map((x) => x)),
         userGroupId: json["userGroupId"],
         locale: json["locale"],
         externalId: json["externalId"],
+        image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -44,12 +57,13 @@ class User {
         "userId": userId,
         "firstName": firstName,
         "lastName": lastName,
-        "name": name, // username
+        "name": name,
         "email": email,
         "groupDescription": groupDescription,
-        "roles": roles,
+        "roles": List<dynamic>.from(roles.map((x) => x)),
         "userGroupId": userGroupId,
         "locale": locale,
         "externalId": externalId,
+        "image": image,
       };
 }

@@ -1,4 +1,4 @@
-name: growerp
+name: hotel
 version: 0.0.1+1
 
 environment:
@@ -9,22 +9,14 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  equatable: ^1.1.1
-  flutter_bloc: ^3.2.0
-  flutter_form_bloc: ^0.13.1
+  equatable: ^1.2.0
+  flutter_bloc: ^6.0.1
   dio: ^3.0.9
   meta: ^1.1.6
-  devicelocale: ^0.2.2
-  rxdart: ^0.23.1
-  shared_preferences: ^0.5.6+1
-  liquid_progress_indicator: ^0.3.2
+  shared_preferences: ^0.5.6
   image_picker: ^0.6.2+3
-#  flushbar: ^1.9.1
-  flushbar:
-    git:
-      url: git://github.com/valterh4ck3r/flushbar.git
-  groovin_widgets: ^1.4.5
-  flutter_keychain: ^1.0.0
+  about: ^1.1.2
+  package_info: ^0.4.1
   animations: ^1.0.0+5
   date_utils: ^0.1.0+3
 
@@ -33,20 +25,17 @@ dev_dependencies:
     sdk: flutter
   mockito: ^4.1.1
   test_coverage: ^0.4.0
-  bloc_test: ^4.0.0
+  bloc_test: ^7.0.0
+  flutter_launcher_icons: ^0.7.5
+# to run icons: flutter pub run flutter_launcher_icons:main 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/growerp.jpg"
 
 flutter:
   uses-material-design: true
 # from https://www.flaticon.com/
   assets:
-    - assets/growerp.png
-    - assets/growerp.jpg
-    - check-in.png
-    - check-out.png
-    - customers.png
-    - myInfo.png
-    - reservation.png
-    - setup.png
-    - single-bed.png
-    - twin-beds.png
-    - users.png
+    - assets/
+    - ./

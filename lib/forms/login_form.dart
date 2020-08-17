@@ -1,166 +1,293 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_bloc/flutter_form_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+import '../models/@models.dart';
+import '../blocs/@bloc.dart';
 import '../services/repos.dart';
-import '../bloc/bloc.dart';
-import '../widgets/widgets.dart';
-import 'package:animations/animations.dart';
+import '../routing_constants.dart';
+import 'changePw_form.dart';
+import '../helper_functions.dart';
 
-class LoginForm extends StatefulWidget {
-  final Repos repos;
-  final AuthBloc authBloc;
-
-  LoginForm({Key key, @required this.repos, @required this.authBloc})
-      : assert(repos != null, authBloc != null);
-
+/// LoginForm: login or company selection depending on [Authenticate.company.partyId]
+///
+///  shows dual form depending on Auth.company.partyId:
+///   when null show company selection and returns to homescreen
+///   when present show customer login user/password
+class LoginForm extends StatelessWidget {
+  final String message;
+  const LoginForm([this.message]);
   @override
-  _LoginState createState() => _LoginState(repos);
+  Widget build(BuildContext context) {
+    Authenticate authenticate;
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is AuthUnauthenticated) authenticate = state.authenticate;
+      return WillPopScope(
+          onWillPop: () async {
+            Navigator.pop(context, false);
+            return false;
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(authenticate?.company?.partyId == null
+                  ? 'Select company'
+                  : 'Login to: ${authenticate?.company?.name}'),
+              actions: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.home),
+                    onPressed: () => Navigator.pushNamed(context, HomeRoute)),
+              ],
+            ),
+            body: BlocProvider(
+              create: (context) => LoginBloc(repos: context.repository<Repos>())
+                ..add(LoadLogin(authenticate?.company?.partyId,
+                    authenticate?.company?.name)),
+              child: LoginHeader(message),
+            ),
+          ));
+    });
+  }
 }
 
-class _LoginState extends State<LoginForm> {
-  final Repos repos;
-  String errorMessage;
+class LoginHeader extends StatefulWidget {
+  final String message;
+  const LoginHeader(this.message);
+  @override
+  State<LoginHeader> createState() => _LoginHeaderState(message);
+}
 
-  List<FocusNode> _focusNodes;
-
-  _LoginState(this.repos);
+class _LoginHeaderState extends State<LoginHeader> {
+  final String message;
+  final _formKey = GlobalKey<FormState>();
+  Authenticate authenticate;
+  bool _obscureText = true;
+  String companyPartyId;
+  String companyName;
+  List<Company> companies;
+  Company _companySelected;
+  _LoginHeaderState(this.message);
 
   @override
   void initState() {
-    _focusNodes = [FocusNode()];
+    Future<Null>.delayed(Duration(milliseconds: 0), () {
+      if (message != null)
+        HelperFunctions.showMessage(context, '$message', Colors.green);
+    });
     super.initState();
   }
 
   @override
-  void dispose() {
-    _focusNodes.forEach((focusNode) => focusNode.dispose());
-    super.dispose();
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+        listeners: [
+          BlocListener<AuthBloc, AuthState>(
+              cubit: context.bloc<AuthBloc>(),
+              listener: (context, state) {
+                if (state is AuthAuthenticated) Navigator.pop(context, true);
+                if (state is AuthConnectionProblem) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('${state.errorMessage}'),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              }),
+          BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+            if (state is LoginLoading && companyPartyId == null) {
+              HelperFunctions.showMessage(
+                  context, 'Loading login form...', Colors.green);
+            }
+            if (state is LogginInProgress) {
+              HelperFunctions.showMessage(
+                  context, 'Logging in....', Colors.green);
+            }
+            if (state is LoginError) {
+              HelperFunctions.showMessage(
+                  context, '${state.errorMessage}', Colors.red);
+            }
+            if (state is LoginChangePw) {
+              Navigator.pushNamed(context, ChangePwRoute,
+                  arguments: ChangePwArgs(state.username, state.password));
+            }
+            if (state is LoginOk) {
+              BlocProvider.of<AuthBloc>(context)
+                  .add(LoggedIn(authenticate: state.authenticate));
+            }
+          }),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+          if (state is AuthUnauthenticated) {
+            authenticate = state.authenticate;
+            companyPartyId = authenticate?.company?.partyId;
+            companyName = authenticate?.company?.name;
+          }
+          return BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+            if (state is LoginLoading)
+              return Center(child: CircularProgressIndicator());
+            if (state is LoginLoaded) {
+              companies = state?.companies;
+              _companySelected = companies != null
+                  ? companies[0]
+                  : Company(partyId: companyPartyId);
+            }
+            if (companyPartyId == null) {
+              return _changeEcommerceCompany();
+            } else {
+              return _loginToCurrentCompany(state);
+            }
+          });
+        }));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          LoginBloc(authBloc: BlocProvider.of<AuthBloc>(context), repos: repos),
-      child: BlocBuilder<LoginBloc, FormBlocState>(
-        condition: (previous, current) =>
-            previous.runtimeType != current.runtimeType ||
-            previous is FormBlocLoading && current is FormBlocLoading,
-        builder: (context, state) {
-          final loginBloc = context.bloc<LoginBloc>();
-          if (state is FormBlocLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is FormBlocLoadFailed) {
-            return Center(
-              child: RaisedButton(
-                onPressed: loginBloc.reload,
-                child: Text('Connection error,Retry?'),
-              ),
-            );
-          } else {
-            return Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: FormBlocListener<LoginBloc, String, String>(
-                onSubmitting: (context, state) {
-                  LoadingDialog.show(context);
-                },
-                onSuccess: (context, state) {
-                  LoadingDialog.hide(context);
-                  if (state.successResponse == "passwordChange") {
-                    BlocProvider.of<AuthBloc>(context).add(UpdatePassword(
-                        username: loginBloc.email.value,
-                        password: loginBloc.password.value));
-                  } else {
-                    BlocProvider.of<AuthBloc>(context)
-                        .add(LoggedIn(authenticate: loginBloc.authenticate));
-                  }
-                },
-                onFailure: (context, state) {
-                  LoadingDialog.hide(context);
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(content: Text(state.failureResponse)));
-                },
-                child: Center(
-                  child: SizedBox(
-                    width: 350,
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 40),
-                        Image.asset('assets/growerp.png', height: 100),
-                        Text(
-                          loginBloc?.authenticate?.company?.name == null
-                              ? 'Hotel'
-                              : loginBloc?.authenticate?.company?.name,
-                          style: TextStyle(
-                              color: Color(0xFFB52727),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 10),
-                        TextFieldBlocBuilder(
-                          textFieldBloc: loginBloc.email,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email),
-                          ),
-                          nextFocusNode: _focusNodes[0],
-                        ),
-                        TextFieldBlocBuilder(
-                          textFieldBloc: loginBloc.password,
-                          suffixButton: SuffixButton.obscureText,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
-                          ),
-                          focusNode: _focusNodes[0],
-                        ),
-                        SizedBox(height: 20),
-                        RaisedButton(
-                          onPressed: loginBloc.submit,
-                          child: Text('LOGIN'),
-                        ),
-                        SizedBox(height: 30),
-                        GestureDetector(
-                            child: Text(
-                              'register new account',
-                            ),
-                            onTap: () {
-                              BlocProvider.of<AuthBloc>(context)
-                                  .add(Register());
-                            }),
-                        SizedBox(height: 30),
-                        GestureDetector(
-                            child: Text(
-                              'forgot password?',
-                            ),
-                            onTap: () async {
-                              final String username =
-                                  await _sendResetPasswordDialog(context,
-                                      loginBloc.authenticate?.user?.name);
-                              if (username != null) {
-                                BlocProvider.of<AuthBloc>(context)
-                                    .add(ResetPassword(username: username));
-                              }
-                            })
-                      ],
+  Widget _changeEcommerceCompany() {
+    return Center(
+        child: Container(
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 40),
+                  Container(
+                    width: 400,
+                    height: 60,
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      border: Border.all(
+                          color: Colors.grey,
+                          style: BorderStyle.solid,
+                          width: 0.80),
+                    ),
+                    child: DropdownButton(
+                      key: ValueKey('drop_down'),
+                      underline: SizedBox(), // remove underline
+                      hint: Text('Company'),
+//                                value: _companySelected,
+                      items: companies?.map((item) {
+                        return DropdownMenuItem<Company>(
+                          child: Text(item?.name ?? 'Company??'),
+                          value: item,
+                        );
+                      })?.toList(),
+                      onChanged: (Company newValue) {
+                        authenticate.company = newValue;
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(UpdateAuth(authenticate));
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, HomeRoute, ModalRoute.withName(HomeRoute),
+                            arguments: "Ecommerce company changed!");
+                      },
+                      isExpanded: true,
                     ),
                   ),
-                ),
+                ],
               ),
-            );
-          }
-        },
-      ),
-    );
+            )));
+  }
+
+  Widget _loginToCurrentCompany(state) {
+    final _usernameController = TextEditingController()
+      ..text = authenticate?.user?.name != null
+          ? authenticate.user.name
+          : kReleaseMode ? '' : 'admin@growerp.com';
+    final _passwordController = TextEditingController()
+      ..text = kReleaseMode ? '' : 'qqqqqq9!';
+    return Center(
+        child: Container(
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(height: 40),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    key: Key('username'),
+                    decoration: InputDecoration(labelText: 'Username'),
+                    controller: _usernameController,
+                    validator: (value) {
+                      if (value.isEmpty)
+                        return 'Please enter username or email?';
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                      key: Key('password'),
+                      validator: (value) {
+                        if (value.isEmpty) return 'Please enter your password?';
+                        return null;
+                      },
+                      controller: _passwordController,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          child: Icon(_obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                        ),
+                      )),
+                  SizedBox(height: 20),
+                  RaisedButton(
+                      child: Text('Login'),
+                      onPressed: () {
+                        if (_formKey.currentState.validate() &&
+                            state is! LogginInProgress)
+                          BlocProvider.of<LoginBloc>(context).add(
+                              LoginButtonPressed(
+                                  companyPartyId: _companySelected.partyId,
+                                  username: _usernameController.text,
+                                  password: _passwordController.text));
+                      }),
+                  SizedBox(height: 30),
+                  GestureDetector(
+                    child: Text('register new account'),
+                    onTap: () async {
+                      final dynamic result =
+                          await Navigator.pushNamed(context, RegisterRoute);
+                      HelperFunctions.showMessage(
+                          context, '$result', Colors.green);
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  GestureDetector(
+                      child: Text('forgot password?'),
+                      onTap: () async {
+                        final String username = await _sendResetPasswordDialog(
+                            context,
+                            authenticate?.user?.name == null || kReleaseMode
+                                ? 'admin@growerp.com'
+                                : authenticate?.user?.name);
+                        if (username != null) {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(ResetPassword(username: username));
+                          HelperFunctions.showMessage(
+                              context,
+                              'An email with password has been '
+                              'send to $username',
+                              Colors.green);
+                        }
+                      }),
+                  Container(
+                    child: state is LogginInProgress
+                        ? CircularProgressIndicator()
+                        : null,
+                  ),
+                ],
+              ),
+            )));
   }
 }
 
 _sendResetPasswordDialog(BuildContext context, String username) async {
   return showDialog<String>(
     context: context,
-    barrierDismissible:
-        false, // dialog is dismissible with a tap on the barrier
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(
@@ -168,8 +295,8 @@ _sendResetPasswordDialog(BuildContext context, String username) async {
         title: Text(
             'Email you registered with?\nWe will send you a reset password',
             textAlign: TextAlign.center),
-        content: new Row(children: <Widget>[
-          new Expanded(
+        content: Row(children: <Widget>[
+          Expanded(
               child: TextFormField(
                   initialValue: username,
                   autofocus: true,

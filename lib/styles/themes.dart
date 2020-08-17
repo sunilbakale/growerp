@@ -19,7 +19,7 @@ class Themes {
     cardColor: Colors.black,
     canvasColor: Colors.white, // modal popup background
     scaffoldBackgroundColor: Colors.white,
-    iconTheme: IconThemeData(color: Colors.black),
+//    iconTheme: IconThemeData(color: Colors.black),
     appBarTheme: AppBarTheme(
       color: Color(0xFF4baa9b),
       elevation: 0,
