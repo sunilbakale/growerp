@@ -129,15 +129,15 @@ class _LoginHeaderState extends State<LoginHeader> {
                   : Company(partyId: companyPartyId);
             }
             if (companyPartyId == null) {
-              return changeEcommerceCompany();
+              return _changeEcommerceCompany();
             } else {
-              return loginToCurrentCompany(state);
+              return _loginToCurrentCompany(state);
             }
           });
         }));
   }
 
-  Widget changeEcommerceCompany() {
+  Widget _changeEcommerceCompany() {
     return Center(
         child: Container(
             width: 400,
@@ -184,7 +184,7 @@ class _LoginHeaderState extends State<LoginHeader> {
             )));
   }
 
-  Widget loginToCurrentCompany(state) {
+  Widget _loginToCurrentCompany(state) {
     final _usernameController = TextEditingController()
       ..text = authenticate?.user?.name != null
           ? authenticate.user.name
