@@ -23,6 +23,8 @@ flutter:
 
   assets:
     - assets/growerp.png
+    - assets/moquiLogo.png
+    - assets/ofbizLogo.png
   fonts:
     - family: Open Sans
       fonts:

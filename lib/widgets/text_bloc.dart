@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class Bloc extends StatelessWidget {
   final String header;
-  final String content;
-  const Bloc({Key key, this.header, this.content}) : super(key: key);
+  final String logo;
+  final TextSpan content;
+  const Bloc({this.header, this.content, this.logo});
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +17,19 @@ class Bloc extends StatelessWidget {
         child: Column(children: [
           SizedBox(
               child: Column(children: <Widget>[
-            Text(header,
-                style: TextStyle(
-                  fontSize: 20,
-                )),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              if (logo != null) Image.asset(logo),
+              Text(header,
+                  style: TextStyle(
+                    fontSize: 20,
+                  )),
+            ]),
             const Divider(
               color: Colors.grey,
               thickness: 1,
               height: 20,
             ),
-            Text(content)
+            RichText(text: content)
           ])),
         ]));
   }

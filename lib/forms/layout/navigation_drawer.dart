@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../routing/route_names.dart';
-import '../../constants/app_colors.dart';
-import 'navigation_bar.dart';
 import 'nav_bar_item.dart';
 
 class NavigationDrawer extends StatelessWidget {
