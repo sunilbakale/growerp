@@ -47,7 +47,7 @@ class AboutForm extends StatelessWidget {
             header: 'Growerp Applications',
             content: TextSpan(children: <TextSpan>[
               _text('We are working on the following apps:\n'),
-              _textLink('https://ecommerce.growerp.com', '1. ecommerce\n'),
+              _textLink('https://ecommerce.growerp.org', '1. ecommerce\n'),
               _text('2. restaurant\n'),
               _text('3. hotel.\n\n'),
             ])),
