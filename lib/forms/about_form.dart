@@ -16,13 +16,14 @@ class AboutForm extends StatelessWidget {
             header: 'About Growerp',
             content: TextSpan(children: <TextSpan>[
               _text('GrowERP is a Flutter frontend for either Moqui '
-                  'or Apache OFBiz(coming soon). All modules can be ran unchanged,'
-                  ' natively on currenty Mobile(IOS,Android) and in '
+                  'or Apache OFBiz(coming soon) being multi company and currency.'
+                  'All modules can be run unchanged, '
+                  'natively on currenty Mobile(IOS,Android) and in '
                   'the browser(Flutter in beta). '
                   'Linux, Mac and Windows will be available soon.\n'
                   'Yes, even this site is developed with Flutter. GrowERP is '
                   'targetted at the smaller businesses like hotels, restaurants, '
-                  'freelancers, dentists and ecommerce frontends and to larger '
+                  'freelancers, dentists and ecommerce business and to larger '
                   'companies wanting a mobile app for a particular ERP system '
                   'function.\n\n'
                   'All apps have full state management and automated tests '
@@ -46,10 +47,21 @@ class AboutForm extends StatelessWidget {
         Bloc(
             header: 'Growerp Applications',
             content: TextSpan(children: <TextSpan>[
-              _text('We are working on the following apps:\n'),
-              _textLink('https://ecommerce.growerp.org', '1. ecommerce\n'),
-              _text('2. restaurant\n'),
-              _text('3. hotel.\n\n'),
+              _text(
+                  'We are working on the following apps for mobile and web:\n\n'),
+              _textLink('https://master.growerp.org', '1. master App\n'),
+              _text('login,logout,register,forgot password,select company, '
+                  'the basis of all other apps.\n\n'),
+              _textLink('https://ecommerce.growerp.org', '2. ecommerce\n'),
+              _text('via categories/products create order and send to '
+                  'related company\n\n'),
+              _text('2. admin.\n\n'),
+              _text(
+                  'Maintenance of people, categories/products and orders\n\n'),
+              _textLink('https://hotel.growerp.org', '2. hotel.\n'),
+              _text("Hotel front desk reservation and room management\n\n"),
+              _text('3. restaurant\n'),
+              _text('Kitchen, bar and table/customer management'),
             ])),
       ],
     )));
