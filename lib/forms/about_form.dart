@@ -55,7 +55,7 @@ class AboutForm extends StatelessWidget {
               _textLink('https://ecommerce.growerp.org', '2. ecommerce\n'),
               _text('via categories/products create order and send to '
                   'related company\n\n'),
-              _text('2. admin.\n\n'),
+              _text('2. admin.\n'),
               _text(
                   'Maintenance of people, categories/products and orders\n\n'),
               _textLink('https://hotel.growerp.org', '2. hotel.\n'),
