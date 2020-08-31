@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
-import 'blocs/@bloc.dart';
+import 'blocs/@blocs.dart';
 import 'services/repos.dart';
 import 'styles/themes.dart';
 import 'router.dart' as router;
@@ -17,11 +17,8 @@ void main() {
       providers: [
         BlocProvider<AuthBloc>(
             create: (context) => AuthBloc(repos: repos)..add(LoadAuth())),
-        BlocProvider<CatalogBloc>(
-            create: (context) => CatalogBloc(repos: repos)..add(LoadCatalog())),
-        BlocProvider<CartBloc>(
-            create: (context) => CartBloc(repos: repos)..add(LoadCart())),
       ],
+      // add other blocs here
       child: MyApp(),
     ),
   ));
@@ -35,10 +32,13 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: router.generateRoute,
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            if (state is AuthLoading || state is AuthInitial) {
+            if (state is AuthLoading || state is AuthInitial)
               return SplashForm();
-            } else
-              return HomeForm();
+            if (state is AuthUnauthenticated &&
+                state.authenticate?.company == null)
+              return RegisterForm('No companies found in system, create one?');
+            else
+              return MasterHome(); // change this to HomeForm in specifc apps
           },
         ));
   }

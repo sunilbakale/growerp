@@ -2,8 +2,8 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
-import 'package:ecommerce/blocs/@bloc.dart';
-import 'package:ecommerce/services/repos.dart';
+import 'package:master/blocs/@blocs.dart';
+import 'package:master/services/repos.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
@@ -57,7 +57,8 @@ void main() {
         when(mockReposRepository.getConnected()).thenAnswer((_) async => true);
         when(mockReposRepository.getAuthenticate())
             .thenAnswer((_) async => authenticate);
-        authenticate.apiKey = 'dummyKey';
+        when(mockReposRepository.checkApikey(authenticate.apiKey))
+            .thenAnswer((_) async => true);
         bloc.add(LoadAuth());
       },
       expect: <AuthState>[

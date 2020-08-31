@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:ecommerce/blocs/@bloc.dart';
-import 'package:ecommerce/services/repos.dart';
+import 'package:master/blocs/@blocs.dart';
+import 'package:master/services/repos.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
@@ -94,7 +94,7 @@ void main() {
                 email: email))
             .thenAnswer((_) async => authenticateNoKey);
         bloc.add(LoadRegister());
-        bloc.add(CreateShopButtonPressed(
+        bloc.add(RegisterCompanyAdmin(
             companyName: companyName,
             currency: currencyId,
             firstName: firstName,

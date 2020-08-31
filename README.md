@@ -1,17 +1,27 @@
-# growerp ecommerce
+# growerp
+GrowERP Flutter frontend component for Android, IOS and Web using Flutter.
 
-Growerp flutter frontend multicompany ecommerce for external ordering for an ecommerce company.
-Runs on Android, IOS and the web, demo at: https://ecommerce.growerp.com
+Under development.
+several branches with different products, all using Flutter:
 
-It needs the Moqui.org backend system, more detail to install see the repository at: https://github.com/growerp/growerp-backend-mobile
+This master branch will catain an app which is used in all other apps.
+functions:
 
-A docker component can be created with the following command after docker is installed.
+1. login
+2. logout
+3. registration new user existing company
+4. registration of new company and admin user.
+5. forgot password
+6. change pasword
+7. communication with the server.
+8. tests of all functions.
+9. switch to new company.
+10. 'About' form describing the App.
+11. routing
+12. state management
+13. master of ALL models
 
-In the Dockerfile add --release for release version.
 
-In this home directory execute:
-docker build -t ecommerce .
-docker run -d -p 5001:80 --name ecommerce ecommerce
-
-in browser http://localhost:5001
+For the backend you need the Moqui ERP system (moqui.org) 
+with an extra component: https://github.com/growerp/growerp-backend-mobile
 
