@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
-import 'package:master/models/@models.dart';
-import 'package:master/services/repos.dart';
+import 'package:ecommerce/models/@models.dart';
+import 'package:ecommerce/services/repos.dart';
 import 'package:mockito/mockito.dart';
 import '../data.dart';
 

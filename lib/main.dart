@@ -18,6 +18,9 @@ void main() {
       providers: [
         BlocProvider<AuthBloc>(
             create: (context) => AuthBloc(repos: repos)..add(LoadAuth())),
+        BlocProvider<CatalogBloc>(
+            create: (context) => CatalogBloc(repos: repos)),
+        BlocProvider<CartBloc>(create: (context) => CartBloc(repos: repos)),
       ],
       // add other blocs here
       child: MyApp(),
@@ -52,7 +55,8 @@ class MyApp extends StatelessWidget {
                 state.authenticate?.company == null)
               return RegisterForm('No companies found in system, create one?');
             else
-              return MasterHome("Welcome!"); // change this to HomeForm in specifc apps
+              return HomeForm(
+                  "welcome!"); // change this to HomeForm in specifc apps
           },
         ));
   }

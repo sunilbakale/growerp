@@ -9,7 +9,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case HomeRoute:
       return MaterialPageRoute(
-          builder: (context) => MasterHome(settings.arguments));
+          builder: (context) => HomeForm(settings.arguments));
     case UserRoute:
       return MaterialPageRoute(
           builder: (context) => UserForm(settings.arguments));
@@ -24,6 +24,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => ChangePwForm(changePwArgs: settings.arguments));
     case AboutRoute:
       return MaterialPageRoute(builder: (context) => AboutForm());
+    case ProductRoute:
+      return MaterialPageRoute(
+          builder: (context) => ProductForm(product: settings.arguments));
+    case CartRoute:
+      return MaterialPageRoute(builder: (context) => CartForm());
     default:
       return MaterialPageRoute(
           builder: (context) => UndefinedView(name: settings.name));

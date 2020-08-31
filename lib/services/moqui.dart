@@ -10,6 +10,7 @@ class Repos {
   final Dio client;
 
   String sessionToken;
+  String partyClassificationId = 'AppEcommerceShop';
 
   Repos({@required this.client}) {
     if (kReleaseMode) {
@@ -127,7 +128,8 @@ class Repos {
 
   Future<dynamic> getCompanies() async {
     try {
-      Response response = await client.get('rest/s1/growerp/100/Companies');
+      Response response = await client.get('rest/s1/growerp/100/Companies',
+          queryParameters: {'partyClassificationId': partyClassificationId});
       List companies = List<Company>.from(
           response.data["companies"].map((x) => Company.fromJson(x)));
       return companies;
@@ -158,7 +160,7 @@ class Repos {
                 'companyPartyId': companyPartyId, // for existing companies
                 'companyName': companyName, 'currencyUomId': currency,
                 'companyEmail': email,
-                'partyClassificationId': 'AppMaster',
+                'partyClassificationId': partyClassificationId,
                 'environment': kReleaseMode,
                 'moquiSessionToken': sessionToken
               },
@@ -289,7 +291,6 @@ class Repos {
   }
 
   Future<dynamic> updateCompany(Company company) async {
-    print("===updComp==apikey: ${client.options.headers['api_key']}");
     try {
       Response response = await client.post('rest/s1/growerp/100/Company',
           data: {
@@ -316,10 +317,60 @@ class Repos {
         "file": await MultipartFile.fromFile(fileName, filename: justName),
         "moquiSessionToken": this.sessionToken
       });
-//      Authenticate authenticate = await getAuthenticate();
-//      client.options.headers['api_key'] = authenticate?.apiKey;
       await client.post("growerp/uploadImage", data: formData);
       return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> getCatalog(String companyPartyId) async {
+    try {
+/*      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('categoriesAndProducts', response.toString());
+      String catProdJson = prefs.getString('categoriesAndProducts');
+      if (catProdJson != null) return catalogFromJson(catProdJson);
+*/
+      Response response = await client.get(
+          'rest/s1/growerp/100/CategoriesAndProducts',
+          queryParameters: {'companyPartyId': companyPartyId});
+      return catalogFromJson(response.toString());
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> getCart() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+//      String orderJson = prefs.getString('orderAndItems');
+//      if (orderJson != null) return orderFromJson(orderJson);
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> saveCart({Order order}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          'orderAndItems', order == null ? null : orderToJson(order));
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> createOrder(Order order) async {
+    try {
+      Authenticate authenticate = await getAuthenticate();
+      client.options.headers['api_key'] = authenticate.apiKey;
+      Response response = await client.post('rest/s1/growerp/100/Order', data: {
+        'orderJson': orderToJson(order),
+        'moquiSessionToken': sessionToken
+      });
+      return 'orderId' + response.data["orderId"];
     } catch (e) {
       return responseMessage(e);
     }
