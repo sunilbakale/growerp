@@ -5,7 +5,8 @@
 import 'dart:convert';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str)["order"]);
-String orderToJson(Order data) => '{"order:' + json.encode(data.toJson()) + "}";
+String orderToJson(Order data) =>
+    '{"order":' + json.encode(data.toJson()) + "}";
 
 List<Order> ordersFromJson(String str) =>
     List<Order>.from(json.decode(str)["orders"].map((x) => Order.fromJson(x)));

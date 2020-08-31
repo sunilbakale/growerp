@@ -244,6 +244,7 @@ class Repos {
 
   Future<void> persistAuthenticate(Authenticate authenticate) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // await prefs.setString('authenticate', null);
     if (authenticate != null) {
       await prefs.setString('authenticate', authenticateToJson(authenticate));
     } else {
@@ -330,55 +331,58 @@ class Repos {
     }
   }
 
-/*  Future<dynamic> addImage({
-    String type, // product, user, company.....
-    String id, // id of the type
-    String size, // small medium large
-    String fileName,
-  }) async {
-    File imageFile = File(fileName);
-    var stream =
-        new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-    // get file length
-    var length = await imageFile.length(); //imageFile is your image file
-    Authenticate authenticate = await getAuthenticate();
-
-    Map<String, String> headers = {
-      "Accept": "application/json",
-      "api_key": authenticate?.apiKey
-    }; // ignore this headers if there is no authentication
-
-    // string to uri
-    var uri = Uri.parse('http://localhost:8080/growerp/uploadImage');
-
-    // create multipart request
-    var request = new http.MultipartRequest("POST", uri);
-
-    // multipart that takes file
-    var multipartFileSign = new http.MultipartFile(
-        'profile_pic', stream, length,
-        filename: basename(imageFile.path));
-
-    // add file to multipart
-    request.files.add(multipartFileSign);
-
-    //add headers
-    request.headers.addAll(headers);
-
-    //adding params
-    //request.fields['loginId'] = '12';
-    //request.fields['firstName'] = 'abc';
-    // request.fields['lastName'] = 'efg';
-
-    // send
-    var response = await request.send();
-
-    print(response.statusCode);
-
-    // listen for response
-    response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
-    });
-  }
+  Future<dynamic> getCatalog(String companyPartyId) async {
+    try {
+/*      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('categoriesAndProducts', response.toString());
+      String catProdJson = prefs.getString('categoriesAndProducts');
+      if (catProdJson != null) return catalogFromJson(catProdJson);
 */
+      Response response = await client.get(
+          'rest/s1/growerp/100/CategoriesAndProducts',
+          queryParameters: {'companyPartyId': companyPartyId});
+      return catalogFromJson(response.toString());
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> getCart() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+//      String orderJson = prefs.getString('orderAndItems');
+//      if (orderJson != null) return orderFromJson(orderJson);
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> saveCart({Order order}) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          'orderAndItems', order == null ? null : orderToJson(order));
+      return null;
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
+
+  Future<dynamic> createOrder(Order order) async {
+    try {
+      print(
+          "=!!!==client repos apiKey: ${this.apiKey} token: ${this.sessionToken}");
+      Authenticate authenticate = await getAuthenticate();
+      client.options.headers['api_key'] = authenticate.apiKey;
+//      client.options.headers['api_key'] = this.apiKey;
+      Response response = await client.post('rest/s1/growerp/100/Order', data: {
+        'orderJson': orderToJson(order),
+        'moquiSessionToken': sessionToken
+      });
+      return 'orderId' + response.data["orderId"];
+    } catch (e) {
+      return responseMessage(e);
+    }
+  }
 }

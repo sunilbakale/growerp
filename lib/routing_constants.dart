@@ -1,4 +1,5 @@
 const String HomeRoute = '/home';
+const String MasterHomeRoute = '/masterHome';
 const String LoginRoute = '/login';
 const String CartRoute = '/cart';
 const String RegisterRoute = '/register';
