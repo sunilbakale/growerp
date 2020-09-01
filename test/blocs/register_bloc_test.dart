@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:hotel/blocs/@bloc.dart';
+import 'package:hotel/blocs/@blocs.dart';
 import 'package:hotel/services/repos.dart';
 import '../data.dart';
 
@@ -94,7 +94,7 @@ void main() {
                 email: email))
             .thenAnswer((_) async => authenticateNoKey);
         bloc.add(LoadRegister());
-        bloc.add(CreateShopButtonPressed(
+        bloc.add(RegisterCompanyAdmin(
             companyName: companyName,
             currency: currencyId,
             firstName: firstName,

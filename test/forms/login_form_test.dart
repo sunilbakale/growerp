@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:hotel/blocs/@bloc.dart';
+import 'package:hotel/blocs/@blocs.dart';
 import 'package:hotel/services/repos.dart';
 import 'package:hotel/forms/@forms.dart';
 import 'package:hotel/models/@models.dart';

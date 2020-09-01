@@ -19,30 +19,29 @@ import '../blocs/@blocs.dart';
 import '../models/@models.dart';
 import '../helper_functions.dart';
 import '../routing_constants.dart';
-import 'detail_form.dart';
-import 'gantt_form.dart';
+import '@forms.dart';
 
-class HomeForm extends StatelessWidget {
+class MasterHome extends StatelessWidget {
   final String message;
-  const HomeForm({Key key, this.message}) : super(key: key);
+  const MasterHome({Key key, this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: HomeBody(message: message),
+      body: MasterHomeBody(message: message),
     );
   }
 }
 
-class HomeBody extends StatefulWidget {
+class MasterHomeBody extends StatefulWidget {
   final String message;
 
-  const HomeBody({Key key, this.message}) : super(key: key);
+  const MasterHomeBody({Key key, this.message}) : super(key: key);
   @override
-  State<HomeBody> createState() => _HomeState(message);
+  State<MasterHomeBody> createState() => _HomeState(message);
 }
 
-class _HomeState extends State<HomeBody> {
+class _HomeState extends State<MasterHomeBody> {
   final String message;
   Authenticate authenticate;
   Company company;
@@ -119,9 +118,10 @@ class _HomeState extends State<HomeBody> {
           padding: const EdgeInsets.all(8.0),
           children: <Widget>[
             _OpenContainerWrapper(
+              targetForm: DetailForm(),
               transitionType: _transitionType,
               closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                return _topCard(openContainer: openContainer);
+                return TopCard(openContainer: openContainer);
               },
             ),
             const SizedBox(height: 16.0),
@@ -129,65 +129,28 @@ class _HomeState extends State<HomeBody> {
               children: <Widget>[
                 Expanded(
                   child: _OpenContainerWrapper(
+                    targetForm: AboutForm(),
                     transitionType: _transitionType,
                     closedBuilder:
                         (BuildContext _, VoidCallback openContainer) {
-                      return _menuCard(
+                      return MenuCard(
                         openContainer: openContainer,
-                        image: 'assets/reservation.png',
-                        subtitle: 'Reservation',
+                        image: 'assets/about.png',
+                        subtitle: 'About',
                       );
                     },
                   ),
                 ),
                 Expanded(
                   child: _OpenContainerWrapper(
+                    targetForm: UsersForm(),
                     transitionType: _transitionType,
                     closedBuilder:
                         (BuildContext _, VoidCallback openContainer) {
-                      return _menuCard(
+                      return MenuCard(
                         openContainer: openContainer,
-                        image: 'assets/single-bed.png',
-                        subtitle: 'Rooms',
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: _OpenContainerWrapper(
-                    transitionType: _transitionType,
-                    closedBuilder:
-                        (BuildContext _, VoidCallback openContainer) {
-                      return _menuCard(
-                        openContainer: openContainer,
-                        image: 'assets/check-in.png',
-                        subtitle: 'Check-In',
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: _OpenContainerWrapper(
-                    transitionType: _transitionType,
-                    closedBuilder:
-                        (BuildContext _, VoidCallback openContainer) {
-                      return _menuCard(
-                        openContainer: openContainer,
-                        image: 'assets/check-out.png',
-                        subtitle: 'Check-Out',
-                      );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: _OpenContainerWrapper(
-                    transitionType: _transitionType,
-                    closedBuilder:
-                        (BuildContext _, VoidCallback openContainer) {
-                      return _menuCard(
-                        openContainer: openContainer,
-                        image: 'assets/myInfo.png',
-                        subtitle: 'My Info',
+                        image: 'assets/users.png',
+                        subtitle: 'Users',
                       );
                     },
                   ),
@@ -232,13 +195,6 @@ class _HomeState extends State<HomeBody> {
                     Navigator.popAndPushNamed(context, RegisterRoute);
                   },
                 ),
-                SizedBox(height: 20),
-                RaisedButton(
-                  child: Text('About'),
-                  onPressed: () {
-                    Navigator.popAndPushNamed(context, AboutRoute);
-                  },
-                ),
               ]),
             ));
       },
@@ -247,20 +203,21 @@ class _HomeState extends State<HomeBody> {
 }
 
 class _OpenContainerWrapper extends StatelessWidget {
+  final Widget targetForm;
+  final OpenContainerBuilder closedBuilder;
+  final ContainerTransitionType transitionType;
   const _OpenContainerWrapper({
     this.closedBuilder,
     this.transitionType,
+    this.targetForm,
   });
-
-  final OpenContainerBuilder closedBuilder;
-  final ContainerTransitionType transitionType;
 
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
       transitionType: transitionType,
       openBuilder: (BuildContext context, VoidCallback _) {
-        return DetailForm();
+        return targetForm;
       },
       tappable: false,
       closedBuilder: closedBuilder,
@@ -268,37 +225,43 @@ class _OpenContainerWrapper extends StatelessWidget {
   }
 }
 
-class _topCard extends StatelessWidget {
-  const _topCard({this.openContainer});
-
+class TopCard extends StatelessWidget {
   final VoidCallback openContainer;
+  const TopCard({this.openContainer});
 
   @override
   Widget build(BuildContext context) {
     return _InkWellOverlay(
         openContainer: openContainer,
-        height: 500,
+//        height: 500,
         child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(children: <Widget>[
               SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: GanttForm(),
-              )
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                      child: Text(
+                    '\n\n\nHome Page for a Dashboard\n\n\n\n\n'
+                    'Page Selection below\n\n\n\n\n'
+                    'This app is the basis and contains\n'
+                    'the functions which are used\n'
+                    'in most other apps.\n\n\n\n\n',
+                    textAlign: TextAlign.center,
+                  )))
             ])));
   }
 }
 
-class _menuCard extends StatelessWidget {
-  const _menuCard({
+class MenuCard extends StatelessWidget {
+  final VoidCallback openContainer;
+  final String image;
+  final String subtitle;
+
+  const MenuCard({
     this.openContainer,
     this.image,
     this.subtitle,
   });
-
-  final VoidCallback openContainer;
-  final String image;
-  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -314,17 +277,19 @@ class _menuCard extends StatelessWidget {
 }
 
 class _InkWellOverlay extends StatelessWidget {
+  final bool needsLogin;
+  final VoidCallback openContainer;
+  final double width;
+  final double height;
+  final Widget child;
+
   const _InkWellOverlay({
+    this.needsLogin = true,
     this.openContainer,
     this.width,
     this.height,
     this.child,
   });
-
-  final VoidCallback openContainer;
-  final double width;
-  final double height;
-  final Widget child;
 
   @override
   Widget build(BuildContext context) {
