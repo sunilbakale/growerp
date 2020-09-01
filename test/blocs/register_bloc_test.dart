@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:master/blocs/@blocs.dart';
-import 'package:master/services/repos.dart';
+import 'package:hotel/blocs/@blocs.dart';
+import 'package:hotel/services/repos.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
@@ -31,11 +31,9 @@ void main() {
 
     blocTest(
       'Register load success',
-      build: () => RegisterBloc(repos: mockReposRepository)..add(LoadRegister()),
-      expect: <RegisterState>[
-        RegisterLoading(),
-        RegisterLoaded()
-      ],
+      build: () =>
+          RegisterBloc(repos: mockReposRepository)..add(LoadRegister()),
+      expect: <RegisterState>[RegisterLoading(), RegisterLoaded()],
     );
 
     blocTest(

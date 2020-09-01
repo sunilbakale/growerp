@@ -1,4 +1,4 @@
-import 'package:master/models/@models.dart';
+import 'package:hotel/models/@models.dart';
 import 'data.dart';
 import 'package:flutter_test/flutter_test.dart';
 

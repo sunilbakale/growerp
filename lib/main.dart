@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
                 state.authenticate?.company == null)
               return RegisterForm('No companies found in system, create one?');
             else
-              return MasterHome("Welcome!"); // change this to HomeForm in specifc apps
+              return HomeForm(); // change this to HomeForm in specifc apps
           },
         ));
   }

@@ -1,4 +1,4 @@
-name: master
+name: hotel
 version: 0.0.1+1
 
 environment:
@@ -17,6 +17,7 @@ dependencies:
   about: ^1.1.2
   animations: ^1.0.0+5
   responsive_framework: ^0.0.8
+  date_utils: ^0.1.0+3
 
 dev_dependencies:
   flutter_test:
