@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:master/models/@models.dart';
+import 'package:ecommerce/models/@models.dart';
 import '../data.dart';
 
 void main() {
@@ -104,6 +104,16 @@ void main() {
           });
       expect(response.data['messages'].substring(0, 25),
           'A reset password was sent');
+    });
+  });
+  group('Ecommerce', () {
+    test('get catalog', () async {
+      Response response = await client.get(
+          's1/growerp/100/CategoriesAndProducts',
+          queryParameters: {'companyPartyId': login['companyPartyId']});
+      Catalog result = catalogFromJson(response.toString());
+      expect(result.products.length, 2);
+      expect(result.categories.length, 2);
     });
   });
 }

@@ -95,7 +95,6 @@ class _HomeState extends State<HomeBody> {
         }
         if (state is CatalogLoaded) {
           categories = state.catalog?.categories;
-          selectedCategoryId ??= categories[0]?.productCategoryId;
           products = state.catalog?.products;
         }
         // finally the main form!
@@ -162,52 +161,53 @@ class _HomeState extends State<HomeBody> {
                 fontWeight: FontWeight.bold)),
       );
     } else
-      return Container(
-          height: 110,
-          alignment: Alignment.centerLeft,
-          child: ListView.builder(
-              shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: categories?.length,
-              itemBuilder: (context, index) {
-                var data = categories[index];
-                return Column(children: <Widget>[
-                  GestureDetector(
-                    onTap: () => setState(
-                        () => selectedCategoryId = data.productCategoryId),
-                    child: Container(
-                      margin: EdgeInsets.all(10),
-                      width: 70,
-                      height: 70,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data.image,
-                        height: 40,
-                        width: 40,
-                      ),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            offset: Offset(0, 5),
-                            blurRadius: 30,
-                          )
-                        ],
-                      ),
+      selectedCategoryId ??= categories[0]?.productCategoryId;
+    return Container(
+        height: 110,
+        alignment: Alignment.centerLeft,
+        child: ListView.builder(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: categories?.length,
+            itemBuilder: (context, index) {
+              var data = categories[index];
+              return Column(children: <Widget>[
+                GestureDetector(
+                  onTap: () => setState(
+                      () => selectedCategoryId = data.productCategoryId),
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    width: 70,
+                    height: 70,
+                    alignment: Alignment.center,
+                    child: Image.memory(
+                      data.image,
+                      height: 40,
+                      width: 40,
+                    ),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(0, 5),
+                          blurRadius: 30,
+                        )
+                      ],
                     ),
                   ),
-                  Row(children: <Widget>[
-                    Text(data.categoryName),
-                    Icon(
-                      Icons.keyboard_arrow_right,
-                      size: 14,
-                    )
-                  ])
-                ]);
-              }));
+                ),
+                Row(children: <Widget>[
+                  Text(data.categoryName),
+                  Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 14,
+                  )
+                ])
+              ]);
+            }));
   }
 
   Widget _productsGrid() {
