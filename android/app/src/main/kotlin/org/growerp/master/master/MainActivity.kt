@@ -1,4 +1,4 @@
-package org.growerp.ecommerce.ecommerce
+package org.growerp.master.master
 
 import io.flutter.embedding.android.FlutterActivity
 

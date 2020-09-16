@@ -1,3 +1,17 @@
+/*
+ * This software is in the public domain under CC0 1.0 Universal plus a
+ * Grant of Patent License.
+ * 
+ * To the extent possible under law, the author(s) have dedicated all
+ * copyright and related and neighboring rights to this software to the
+ * public domain worldwide. This software is distributed without any
+ * warranty.
+ * 
+ * You should have received a copy of the CC0 Public Domain Dedication
+ * along with this software (see the LICENSE.md file). If not, see
+ * <http://creativecommons.org/publicdomain/zero/1.0/>.
+ */
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,73 +23,56 @@ import '../helper_functions.dart';
 import '../routing_constants.dart';
 import '@forms.dart';
 
-class UserForm extends StatelessWidget {
-  final User user;
-  UserForm(this.user);
-
+class CompanyForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Authenticate authenticate;
-    User user = this.user;
-    return  WillPopScope(
-              onWillPop: () async {
-                Navigator.pop(context, user);
-                return;
-              },
-              child: Scaffold(
-                  appBar: AppBar(
-                    title: const Text('User page'),
-                    actions: <Widget>[
-                      IconButton(
-                          icon: Icon(Icons.home),
-                          onPressed: () =>
-                              Navigator.pushNamed(context, HomeRoute)),
-                    ],
-                  ),
-                  body: BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-                    if (state is AuthProblem) {
-                      HelperFunctions.showMessage(
-                          context, '${state.errorMessage}', Colors.red);
-                    }
-                    if (state is AuthUserUpdateSuccess) {
-                      HelperFunctions.showMessage(
-                          context, 'user added/updated', Colors.green);
-                    }
-                  }, builder: (context, state) {
-                    if (state is AuthUnauthenticated) return NoAccessForm('Userlist');
-                    if (state is AuthAuthenticated) authenticate = state.authenticate;
-                    if (state is AuthLoading)
-                      return Center(child: CircularProgressIndicator());
-                    if (state is AuthUserUpdateSuccess) user = state?.authenticate?.user;
-                  
-                    return MyUserPage(authenticate, user);
-    })));
+    return Scaffold(
+        appBar: AppBar(title: const Text('Company page'), actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () => Navigator.pushNamed(context, HomeRoute)),
+        ]),
+        body: BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+          if (state is AuthCompanyUpdateSuccess) {
+            HelperFunctions.showMessage(context,
+                'Company ${authenticate.company.name} updated', Colors.green);
+          }
+          if (state is AuthProblem) {
+            HelperFunctions.showMessage(
+                context, '${state.errorMessage}', Colors.red);
+          }
+        }, builder: (context, state) {
+          if (state is AuthUnauthenticated) return NoAccessForm('Companylist');
+          if (state is AuthAuthenticated) authenticate = state.authenticate;
+          if (state is AuthLoading)
+            return Center(child: CircularProgressIndicator());
+          return CompanyPage(authenticate);
+        }));
   }
 }
 
-class MyUserPage extends StatefulWidget {
+class CompanyPage extends StatefulWidget {
+  CompanyPage(this.authenticate);
+
   final Authenticate authenticate;
-  final User user;
-  MyUserPage(this.authenticate, this.user);
+
   @override
-  _MyUserState createState() => _MyUserState(authenticate,user);
+  _CompanyState createState() => _CompanyState(authenticate);
 }
 
-class _MyUserState extends State<MyUserPage> {
+class _CompanyState extends State<CompanyPage> {
   final Authenticate authenticate;
-  final User user;
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  UserGroup _selectedUserGroup;
+  Currency _selectedCurrency;
   PickedFile _imageFile;
   dynamic _pickImageError;
   String _retrieveDataError;
   final ImagePicker _picker = ImagePicker();
 
-  _MyUserState(this.authenticate,this.user);
+  _CompanyState(this.authenticate);
 
   void _onImageButtonPressed(ImageSource source, {BuildContext context}) async {
     try {
@@ -160,15 +157,15 @@ class _MyUserState extends State<MyUserPage> {
   }
 
   Widget _showForm() {
-    _firstNameController..text = user?.firstName;
-    _lastNameController..text = user?.lastName;
-    _nameController..text = user?.name;
-    _emailController..text = user?.email;
-    User updatedUser;
+    Company company = authenticate.company;
+    _nameController..text = company.name;
+    _emailController..text = company.email;
+    Company updatedCompany;
+
     final Text retrieveError = _getRetrieveErrorWidget();
-    if (_selectedUserGroup == null && user?.userGroupId != null)
-      _selectedUserGroup =
-          userGroups.firstWhere((a) => a.userGroupId == user?.userGroupId);
+    if (_selectedCurrency == null && company?.currencyId != null && currencies != null)
+      _selectedCurrency =
+          currencies.firstWhere((a) => a.currencyId == company.currencyId);
     if (retrieveError != null) {
       return retrieveError;
     }
@@ -180,7 +177,7 @@ class _MyUserState extends State<MyUserPage> {
     }
     return WillPopScope(
         onWillPop: () async {
-          Navigator.pop(context, updatedUser);
+          Navigator.pop(context, updatedCompany);
           return false;
         },
         child: Center(
@@ -194,8 +191,8 @@ class _MyUserState extends State<MyUserPage> {
                         onTap: () async {
                           PickedFile pickedFile = await _picker.getImage(
                               source: ImageSource.gallery);
-                          BlocProvider.of<AuthBloc>(context)
-                              .add(UploadImage(user.partyId, pickedFile.path));
+                          BlocProvider.of<AuthBloc>(context).add(
+                              UploadImage(company.partyId, pickedFile.path));
                         },
                         child: CircleAvatar(
                             backgroundColor: Colors.green,
@@ -204,50 +201,29 @@ class _MyUserState extends State<MyUserPage> {
                                 ? kIsWeb
                                     ? Image.network(_imageFile.path)
                                     : Image.file(File(_imageFile.path))
-                                : user?.image != null
-                                    ? Image.memory(user?.image)
-                                    : Text(user?.firstName?.substring(0,1) ?? '',
+                                : company.image != null
+                                    ? Image.memory(company.image)
+                                    : Text(company.name.substring(0, 1) ?? '',
                                         style: TextStyle(
                                             fontSize: 30,
                                             color: Colors.black))),
                       ),
-                      SizedBox(height: 30),
-                      TextFormField(
-                        key: Key('firstName'),
-                        decoration: InputDecoration(labelText: 'First Name'),
-                        controller: _firstNameController,
-                        validator: (value) {
-                          if (value.isEmpty)
-                            return 'Please enter your first name?';
-                          return null;
-                        },
-                      ),
                       SizedBox(height: 20),
                       TextFormField(
-                        key: Key('lastName'),
-                        decoration: InputDecoration(labelText: 'Last Name'),
-                        controller: _lastNameController,
-                        validator: (value) {
-                          if (value.isEmpty)
-                            return 'Please enter your last name?';
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        key: Key('name'),
-                        decoration: InputDecoration(labelText: 'Login Name'),
+                        key: Key('companyName'),
+                        decoration: InputDecoration(labelText: 'Company Name'),
                         controller: _nameController,
                         validator: (value) {
                           if (value.isEmpty)
-                            return 'Please enter a login name?';
+                            return 'Please enter the company Name?';
                           return null;
                         },
                       ),
                       SizedBox(height: 10),
                       TextFormField(
                         key: Key('email'),
-                        decoration: InputDecoration(labelText: 'Email address'),
+                        decoration:
+                            InputDecoration(labelText: 'Company Email address'),
                         controller: _emailController,
                         validator: (String value) {
                           if (value.isEmpty)
@@ -272,18 +248,18 @@ class _MyUserState extends State<MyUserPage> {
                               style: BorderStyle.solid,
                               width: 0.80),
                         ),
-                        child: DropdownButton<UserGroup>(
+                        child: DropdownButton<Currency>(
                           key: Key('dropDown'),
                           underline: SizedBox(), // remove underline
-                          hint: Text('User Group'),
-                          value: _selectedUserGroup,
-                          items: userGroups?.map((item) {
-                            return DropdownMenuItem<UserGroup>(
+                          hint: Text('Currency'),
+                          value: _selectedCurrency,
+                          items: currencies?.map((item) {
+                            return DropdownMenuItem<Currency>(
                                 child: Text(item.description), value: item);
                           })?.toList(),
-                          onChanged: (UserGroup newValue) {
+                          onChanged: (Currency newValue) {
                             setState(() {
-                              _selectedUserGroup = newValue;
+                              _selectedCurrency = newValue;
                             });
                           },
                           isExpanded: true,
@@ -292,31 +268,24 @@ class _MyUserState extends State<MyUserPage> {
                       SizedBox(height: 20),
                       RaisedButton(
                           key: Key('update'),
-                          child:
-                              Text(user?.partyId == null ? 'Create' : 'Update'),
+                          child: Text(
+                              company.partyId == null ? 'Create' : 'Update'),
                           onPressed: () {
                             if (_formKey.currentState.validate())
                               //&& state is! UsersLoading)
-                              updatedUser = User(
+                              updatedCompany = Company(
                                 image: _imageFile != null
                                     ? File(_imageFile.path).readAsBytesSync()
                                     : null,
-                                partyId: user?.partyId,
-                                firstName: _firstNameController.text,
-                                lastName: _lastNameController.text,
+                                partyId: company.partyId,
                                 email: _emailController.text,
                                 name: _nameController.text,
-                                userGroupId: _selectedUserGroup.userGroupId,
-                                language: Localizations.localeOf(context)
-                                    .languageCode
-                                    .toString(),
-                                country: Localizations.localeOf(context)
-                                    .languageCode
-                                    .toString(),
+                                currencyId: _selectedCurrency.currencyId,
                               );
-                            BlocProvider.of<AuthBloc>(context).add(UpdateUser(
-                              widget.authenticate,
-                              updatedUser,
+                            authenticate.company = updatedCompany;
+                            BlocProvider.of<AuthBloc>(context)
+                                .add(UpdateCompany(
+                              authenticate,
                               _imageFile?.path,
                             ));
                           })

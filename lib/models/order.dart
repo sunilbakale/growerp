@@ -5,8 +5,7 @@
 import 'dart:convert';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str)["order"]);
-String orderToJson(Order data) =>
-    '{"order":' + json.encode(data.toJson()) + "}";
+String orderToJson(Order data) => '{"order:' + json.encode(data.toJson()) + "}";
 
 List<Order> ordersFromJson(String str) =>
     List<Order>.from(json.decode(str)["orders"].map((x) => Order.fromJson(x)));
@@ -16,6 +15,22 @@ String ordersToJson(List<Order> data) =>
     "}";
 
 class Order {
+  String orderId;
+  String orderStatusId;
+  String currencyId;
+  String placedDate;
+  String placedTime;
+  String companyPartyId;
+  String partyId;
+  String firstName;
+  String lastName;
+  String statusId;
+  double grandTotal;
+  String table;
+  String accommodationAreaId;
+  String accommodationSpotId;
+  List<OrderItem> orderItems;
+
   Order({
     this.orderId,
     this.orderStatusId, // 'OrderOpen','OrderPlaced','OrderApproved', 'OrderCompleted', 'OrderCancelled'
@@ -33,22 +48,6 @@ class Order {
     this.accommodationSpotId,
     this.orderItems,
   });
-
-  String orderId;
-  String orderStatusId;
-  String currencyId;
-  String placedDate;
-  String placedTime;
-  String companyPartyId;
-  String partyId;
-  String firstName;
-  String lastName;
-  String statusId;
-  double grandTotal;
-  String table;
-  String accommodationAreaId;
-  String accommodationSpotId;
-  List<OrderItem> orderItems;
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
         orderId: json["orderId"],

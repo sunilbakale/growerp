@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:ecommerce/blocs/@blocs.dart';
-import 'package:ecommerce/services/repos.dart';
-import 'package:ecommerce/forms/@forms.dart';
-import 'package:ecommerce/models/@models.dart';
-import 'package:ecommerce/router.dart' as router;
+import 'package:master/blocs/@blocs.dart';
+import 'package:master/services/repos.dart';
+import 'package:master/forms/@forms.dart';
+import 'package:master/models/@models.dart';
+import 'package:master/router.dart' as router;
 import '../data.dart';
 
 class MockRepos extends Mock implements Repos {}
@@ -36,7 +36,7 @@ void main() {
     testWidgets('check text fields with company selection',
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(null));
-      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      when(loginBloc.state).thenReturn(LoginLoaded(null, companies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -58,7 +58,7 @@ void main() {
         (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(
           Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
-      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      when(loginBloc.state).thenReturn(LoginLoaded(authenticate, companies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -80,7 +80,7 @@ void main() {
 //      when(loginBloc.state).thenReturn(LoginLoaded(companies));
       when(authBloc.state).thenReturn(AuthUnauthenticated(
           Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
-      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      when(loginBloc.state).thenReturn(LoginLoaded(authenticate, companies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
@@ -103,9 +103,7 @@ void main() {
           loginBloc,
           Stream.fromIterable(<LoginEvent>[
             LoginButtonPressed(
-                companyPartyId: companyPartyId,
-                username: username,
-                password: password)
+                company: company, username: username, password: password)
           ]));
     });
     testWidgets('goto register screen: register new customer',
@@ -132,7 +130,7 @@ void main() {
     testWidgets('forgot password', (WidgetTester tester) async {
       when(authBloc.state).thenReturn(AuthUnauthenticated(
           Authenticate(company: Company(partyId: '100000', name: 'dummy'))));
-      when(loginBloc.state).thenReturn(LoginLoaded(companies: companies));
+      when(loginBloc.state).thenReturn(LoginLoaded(authenticate, companies));
       await tester.pumpWidget(RepositoryProvider(
         create: (context) => repos,
         child: BlocProvider<AuthBloc>.value(
