@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hotel/models/@models.dart';
+import 'package:master/models/@models.dart';
 import '../data.dart';
 
 void main() {
@@ -28,13 +28,6 @@ void main() {
       sessionToken = response.data;
       expect(response.data.length, 20);
     });
-
-    test('CurrencyList', () async {
-      Response response = await client.get('s1/growerp/100/CurrencyList');
-      dynamic result = currencyListFromJson(response.toString()).currencyList;
-      expect(result.length,
-          170); // TODO: if wrong is detected but test will not fail
-    });
   });
 
   group('Register first company', () {
@@ -49,11 +42,14 @@ void main() {
       Authenticate result = authenticateFromJson(response.toString());
       authenticateNoKey.company.partyId = result.company.partyId;
       authenticateNoKey.company.image = result.company.image;
+      authenticateNoKey.company.employees = result.company.employees;
       authenticateNoKey.user.partyId = result.user?.partyId;
       authenticateNoKey.user.userId = result.user?.userId;
       authenticateNoKey.user.email = result.user?.email;
       authenticateNoKey.user.name = result.user?.name;
       authenticateNoKey.user.image = result.user?.image;
+      authenticateNoKey.user.language = result.user?.language;
+      authenticateNoKey.user.country = result.user?.country;
       authenticateNoKey.company.email = result.company.email;
       authenticateNoKey.apiKey = result.apiKey;
       apiKey = result.apiKey;

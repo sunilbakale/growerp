@@ -9,5 +9,4 @@ export 'detail_form.dart';
 export 'users_form.dart';
 export 'user_form.dart';
 export 'noAccess_form.dart';
-export 'home_form.dart';
-export 'gantt_form.dart';
+export 'company_form.dart';

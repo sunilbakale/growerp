@@ -27,7 +27,8 @@ class Authenticate {
   factory Authenticate.fromJson(Map<String, dynamic> json) => Authenticate(
         apiKey: json["apiKey"],
         moquiSessionToken: json["moquiSessionToken"],
-        company: Company.fromJson(json["company"]),
+        company:
+            json["company"] != null ? Company.fromJson(json["company"]) : null,
         user: json["user"] != null ? User.fromJson(json["user"]) : null,
       );
 
@@ -38,6 +39,7 @@ class Authenticate {
         "user": user?.toJson(),
       };
   @override
-  String toString() => 'Company: ${company?.name} [${company?.partyId}]'
-      'User: ${user?.firstName} ${user?.lastName}[${user?.partyId}]';
+  String toString() => 'Company: ${company?.name} [${company?.partyId}] '
+      'empl: ${company?.employees?.length} '
+      'User: ${user?.firstName} ${user?.lastName}[${user?.partyId}] apiKey: $apiKey';
 }

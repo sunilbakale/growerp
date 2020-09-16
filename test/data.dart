@@ -1,4 +1,4 @@
-import 'package:hotel/models/@models.dart';
+import 'package:master/models/@models.dart';
 import 'dart:math';
 
 final String randomString4 = Random().nextInt(9999).toString();
@@ -73,7 +73,14 @@ Authenticate authenticateNoKey = authenticateFromJson('''
                           "classificationId": "AppEcommerceShop",
                           "classificationDescr": "App for Ecommerce and shop",
                           "email": "dummy@example.com",
-      "image": "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+      "image": "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+                          "employees": [{"firstName": "dummyFirstName",
+                       "lastName": "dummyLastName",
+                       "email": "dummy@example.com",
+                       "name": "dummyUsername",
+                       "image": null,
+                       "groupDescription": "Admin",
+                       "userGroupId":"GROWERP_M_ADMIN"}]
                           },
               "user": {"firstName": "dummyFirstName",
                        "lastName": "dummyLastName",
@@ -170,9 +177,6 @@ final Product product = productFromJson('''
        "price": "17.13", "productCategoryId": "dummyFirstCategory",
        "description": "This is a dummy description"}
 }    ''');
-final CurrencyList currencyList = currencyListFromJson('''
-  { "currencyList" : ["Thailand Baht [THB]", "Euro [EUR]",
-    "United States Dollar [USD]"] } ''');
 final String currencyId = 'USD';
 final currencies = [
   "Thailand Baht [THB]",

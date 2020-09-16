@@ -39,8 +39,7 @@ class LoginForm extends StatelessWidget {
             ),
             body: BlocProvider(
               create: (context) => LoginBloc(repos: context.repository<Repos>())
-                ..add(LoadLogin(authenticate?.company?.partyId,
-                    authenticate?.company?.name)),
+                ..add(LoadLogin(authenticate)),
               child: LoginHeader(message),
             ),
           ));
@@ -83,7 +82,7 @@ class _LoginHeaderState extends State<LoginHeader> {
               cubit: context.bloc<AuthBloc>(),
               listener: (context, state) {
                 if (state is AuthAuthenticated) Navigator.pop(context, true);
-                if (state is AuthConnectionProblem) {
+                if (state is AuthProblem) {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     content: Text('${state.errorMessage}'),
                     backgroundColor: Colors.red,
@@ -240,7 +239,7 @@ class _LoginHeaderState extends State<LoginHeader> {
                             state is! LogginInProgress)
                           BlocProvider.of<LoginBloc>(context).add(
                               LoginButtonPressed(
-                                  companyPartyId: _companySelected.partyId,
+                                  company: _companySelected,
                                   username: _usernameController.text,
                                   password: _passwordController.text));
                       }),

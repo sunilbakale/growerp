@@ -33,7 +33,7 @@ class RegisterForm extends StatelessWidget {
           ],
         ),
         body: BlocProvider(
-          create: (BuildContext context) =>
+          create: (context) =>
               RegisterBloc(repos: context.repository<Repos>())
                 ..add(LoadRegister(
                     companyPartyId: authenticate?.company?.partyId,
@@ -94,8 +94,6 @@ class _RegisterHeaderState extends State<RegisterHeader> {
         if (state is RegisterSuccess) {
           BlocProvider.of<AuthBloc>(context)
               .add(UpdateAuth(state.authenticate));
-          print(
-              "====regsiter successs company: ${authenticate?.company?.partyId}");
           if (authenticate?.company?.partyId != null) {
             Navigator.pop(
                 context,
@@ -116,10 +114,6 @@ class _RegisterHeaderState extends State<RegisterHeader> {
             builder: (context, state) {
           if (state is RegisterLoading || state is RegisterSending)
             return Center(child: CircularProgressIndicator());
-          if (state is RegisterLoaded) {
-            currencies = state?.currencies;
-            _currencySelected = _currencySelected ?? currencies[0];
-          }
           return Center(
               child: Container(
                   width: 400,
