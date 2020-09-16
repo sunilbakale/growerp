@@ -268,10 +268,12 @@ class _HomeState extends State<HomeBody> {
                     crossAxisSpacing: 10,
                   ),
                 ),
-                _customTitle(categories
-                    .firstWhere(
-                        (i) => i.productCategoryId == selectedCategoryId)
-                    .categoryName)
+                _customTitle(categories != null && categories.length > 0
+                    ? categories
+                        .firstWhere(
+                            (i) => i.productCategoryId == selectedCategoryId)
+                        .categoryName
+                    : '')
               ])));
     }
   }
