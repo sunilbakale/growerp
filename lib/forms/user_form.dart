@@ -37,6 +37,7 @@ class UserForm extends StatelessWidget {
                     context, '${state.errorMessage}', Colors.red);
               }
               if (state is AuthUserUpdateSuccess) {
+                authenticate = state.authenticate;
                 HelperFunctions.showMessage(
                     context, 'user added/updated', Colors.green);
               }
