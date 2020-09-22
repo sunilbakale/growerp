@@ -255,7 +255,7 @@ class _LoginHeaderState extends State<LoginHeader> {
                   ),
                   SizedBox(height: 30),
                   GestureDetector(
-                      child: Text('forgot password?'),
+                      child: Text('forgot/change password?'),
                       onTap: () async {
                         final String username = await _sendResetPasswordDialog(
                             context,
