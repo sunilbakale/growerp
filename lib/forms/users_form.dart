@@ -20,7 +20,6 @@ import '../blocs/@blocs.dart';
 import '../helper_functions.dart';
 import '../routing_constants.dart';
 import '../widgets/@widgets.dart';
-import '@forms.dart';
 
 class UsersForm extends StatefulWidget {
   @override
@@ -57,7 +56,24 @@ class _UsersFormState extends State<UsersForm> {
                 context, 'Delete success', Colors.green);
           }
         }, builder: (context, state) {
-          if (state is AuthUnauthenticated) return NoAccessForm('Users');
+          if (state is AuthUnauthenticated) {
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: RaisedButton(
+                        child: Text("Press to login first!"),
+                        onPressed: () async {
+                          final dynamic result =
+                              await Navigator.pushNamed(context, LoginRoute);
+                          HelperFunctions.showMessage(
+                              context, '$result', Colors.green);
+                        }),
+                  )
+                ]);
+          }
+
           if (state is AuthAuthenticated) authenticate = state.authenticate;
           return userList(context, authenticate);
         }));
