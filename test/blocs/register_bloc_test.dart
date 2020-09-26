@@ -5,7 +5,7 @@ import 'package:ecommerce/blocs/@blocs.dart';
 import 'package:ecommerce/services/@services.dart';
 import '../data.dart';
 
-class MockReposRepository extends Mock implements Repos {}
+class MockReposRepository extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 

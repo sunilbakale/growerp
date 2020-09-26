@@ -11,12 +11,12 @@ class DioAdapterMock extends Mock implements HttpClientAdapter {}
 void main() {
   final Dio tdio = Dio();
   DioAdapterMock dioAdapterMock;
-  Repos repos;
+  Moqui repos;
 
   setUp(() {
     dioAdapterMock = DioAdapterMock();
     tdio.httpClientAdapter = dioAdapterMock;
-    repos = Repos(client: tdio);
+    repos = Moqui(client: tdio);
   });
 
   group('Repos test', () {

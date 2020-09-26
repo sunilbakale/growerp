@@ -10,7 +10,7 @@ import 'package:ecommerce/models/@models.dart';
 import 'package:ecommerce/router.dart' as router;
 import '../data.dart';
 
-class MockRepos extends Mock implements Repos {}
+class MockRepos extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
@@ -18,7 +18,7 @@ class MockLoginBloc extends MockBloc<LoginState> implements LoginBloc {}
 
 void main() {
   group('Login_Form test:', () {
-    Repos repos;
+    Object repos;
     LoginBloc loginBloc;
     AuthBloc authBloc;
 

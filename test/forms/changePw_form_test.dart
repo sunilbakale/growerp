@@ -8,7 +8,7 @@ import 'package:ecommerce/services/@services.dart';
 import 'package:ecommerce/forms/@forms.dart';
 import '../data.dart';
 
-class MockRepos extends Mock implements Repos {}
+class MockRepos extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
@@ -17,7 +17,7 @@ class MockChangePwBloc extends MockBloc<ChangePwState> implements ChangePwBloc {
 
 void main() {
   group('ChangePw_Form test: ', () {
-    Repos repos;
+    Object repos;
     ChangePwBloc changePwBloc;
     AuthBloc authBloc;
 

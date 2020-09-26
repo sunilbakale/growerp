@@ -9,7 +9,7 @@ import 'package:ecommerce/forms/@forms.dart';
 import 'package:ecommerce/router.dart' as router;
 import '../data.dart';
 
-class MockRepos extends Mock implements Repos {}
+class MockRepos extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
@@ -18,7 +18,7 @@ class MockRegisterBloc extends MockBloc<RegisterState> implements RegisterBloc {
 
 void main() {
   group('Register_Form', () {
-    Repos repos;
+    Object repos;
     RegisterBloc registerBloc;
     AuthBloc authBloc;
 
