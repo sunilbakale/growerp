@@ -18,7 +18,7 @@ class MockLoginBloc extends MockBloc<LoginState> implements LoginBloc {}
 
 void main() {
   group('Login_Form test:', () {
-    Moqui repos;
+    Object repos;
     LoginBloc loginBloc;
     AuthBloc authBloc;
 

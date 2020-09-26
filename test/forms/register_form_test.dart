@@ -18,7 +18,7 @@ class MockRegisterBloc extends MockBloc<RegisterState> implements RegisterBloc {
 
 void main() {
   group('Register_Form', () {
-    Moqui repos;
+    Object repos;
     RegisterBloc registerBloc;
     AuthBloc authBloc;
 

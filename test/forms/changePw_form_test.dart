@@ -17,7 +17,7 @@ class MockChangePwBloc extends MockBloc<ChangePwState> implements ChangePwBloc {
 
 void main() {
   group('ChangePw_Form test: ', () {
-    Moqui repos;
+    Object repos;
     ChangePwBloc changePwBloc;
     AuthBloc authBloc;
 

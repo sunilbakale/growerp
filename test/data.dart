@@ -73,7 +73,6 @@ Authenticate authenticateNoKey = authenticateFromJson('''
                           "classificationId": "AppEcommerceShop",
                           "classificationDescr": "App for Ecommerce and shop",
                           "email": "dummy@example.com",
-<<<<<<< HEAD
       "image": "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
                           "employees": [{"firstName": "dummyFirstName",
                        "lastName": "dummyLastName",
@@ -82,9 +81,6 @@ Authenticate authenticateNoKey = authenticateFromJson('''
                        "image": null,
                        "groupDescription": "Admin",
                        "userGroupId":"GROWERP_M_ADMIN"}]
-=======
-      "image": "R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
->>>>>>> 937189b... merge from master
                           },
               "user": {"firstName": "dummyFirstName",
                        "lastName": "dummyLastName",
