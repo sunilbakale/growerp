@@ -4,10 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import '../models/@models.dart';
-import '../services/repos.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  final Repos repos;
+  final repos;
   Authenticate authenticate;
 
   CartBloc({@required this.repos}) : super(CartInitial());

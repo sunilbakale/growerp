@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ecommerce/blocs/@blocs.dart';
-import 'package:ecommerce/services/repos.dart';
+import 'package:ecommerce/services/@services.dart';
 import 'package:ecommerce/forms/@forms.dart';
 import 'package:ecommerce/models/@models.dart';
 import 'package:ecommerce/router.dart' as router;

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ecommerce/models/company.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ecommerce/blocs/@blocs.dart';
-import 'package:ecommerce/services/repos.dart';
+import 'package:ecommerce/services/@services.dart';
 import '../data.dart';
 
 class MockReposRepository extends Mock implements Repos {}
