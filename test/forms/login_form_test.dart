@@ -4,13 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:hotel/blocs/@blocs.dart';
-import 'package:hotel/services/repos.dart';
+import 'package:hotel/services/@services.dart';
 import 'package:hotel/forms/@forms.dart';
 import 'package:hotel/models/@models.dart';
 import 'package:hotel/router.dart' as router;
 import '../data.dart';
 
-class MockRepos extends Mock implements Repos {}
+class MockRepos extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
@@ -18,7 +18,7 @@ class MockLoginBloc extends MockBloc<LoginState> implements LoginBloc {}
 
 void main() {
   group('Login_Form test:', () {
-    Repos repos;
+    Moqui repos;
     LoginBloc loginBloc;
     AuthBloc authBloc;
 

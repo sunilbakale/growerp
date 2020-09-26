@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
 import 'package:hotel/models/@models.dart';
-import 'package:hotel/services/repos.dart';
+import 'package:hotel/services/@services.dart';
 import 'package:mockito/mockito.dart';
 import '../data.dart';
 
@@ -11,12 +11,12 @@ class DioAdapterMock extends Mock implements HttpClientAdapter {}
 void main() {
   final Dio tdio = Dio();
   DioAdapterMock dioAdapterMock;
-  Repos repos;
+  Moqui repos;
 
   setUp(() {
     dioAdapterMock = DioAdapterMock();
     tdio.httpClientAdapter = dioAdapterMock;
-    repos = Repos(client: tdio);
+    repos = Moqui(client: tdio);
   });
 
   group('Repos test', () {

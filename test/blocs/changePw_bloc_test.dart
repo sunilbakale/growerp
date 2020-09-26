@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hotel/services/@services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:hotel/blocs/@blocs.dart';
-import 'package:hotel/services/repos.dart';
 import '../data.dart';
 
-class MockReposRepository extends Mock implements Repos {}
+class MockReposRepository extends Mock implements Moqui {}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

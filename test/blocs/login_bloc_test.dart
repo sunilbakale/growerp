@@ -2,10 +2,10 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:hotel/blocs/@blocs.dart';
-import 'package:hotel/services/repos.dart';
+import 'package:hotel/services/@services.dart';
 import '../data.dart';
 
-class MockReposRepository extends Mock implements Repos {}
+class MockReposRepository extends Mock implements Moqui {}
 
 class MockAuthBloc extends MockBloc<AuthState> implements AuthBloc {}
 
@@ -70,7 +70,7 @@ void main() {
       },
       expect: <LoginState>[
         LogginInProgress(),
-        LoginChangePw(username, password),
+        LoginChangePw(company, username, password),
       ],
     );
   });

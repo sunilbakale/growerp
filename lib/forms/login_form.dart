@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 import '../models/@models.dart';
 import '../blocs/@blocs.dart';
-import '../services/repos.dart';
 import '../routing_constants.dart';
 import 'changePw_form.dart';
 import '../helper_functions.dart';
@@ -21,28 +20,23 @@ class LoginForm extends StatelessWidget {
     Authenticate authenticate;
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
       if (state is AuthUnauthenticated) authenticate = state.authenticate;
-      return WillPopScope(
-          onWillPop: () async {
-            Navigator.pop(context, false);
-            return false;
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(authenticate?.company?.partyId == null
-                  ? 'Select company'
-                  : 'Login to: ${authenticate?.company?.name}'),
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.home),
-                    onPressed: () => Navigator.pushNamed(context, HomeRoute)),
-              ],
-            ),
-            body: BlocProvider(
-              create: (context) => LoginBloc(repos: context.repository<Repos>())
-                ..add(LoadLogin(authenticate)),
-              child: LoginHeader(message),
-            ),
-          ));
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(authenticate?.company?.partyId == null
+              ? 'Select company'
+              : 'Login to: ${authenticate?.company?.name}'),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.home),
+                onPressed: () => Navigator.pushNamed(context, HomeRoute)),
+          ],
+        ),
+        body: BlocProvider(
+          create: (context) => LoginBloc(repos: context.repository<Object>())
+            ..add(LoadLogin(authenticate)),
+          child: LoginHeader(message),
+        ),
+      );
     });
   }
 }
@@ -187,7 +181,9 @@ class _LoginHeaderState extends State<LoginHeader> {
     final _usernameController = TextEditingController()
       ..text = authenticate?.user?.name != null
           ? authenticate.user.name
-          : kReleaseMode ? '' : 'admin@growerp.com';
+          : kReleaseMode
+              ? ''
+              : 'admin@growerp.com';
     final _passwordController = TextEditingController()
       ..text = kReleaseMode ? '' : 'qqqqqq9!';
     return Center(
